@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="TitleSubtitleMultipleSelectionCollectionCellWithBorder" customModule="OnboardingiOSSDK">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="333"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="480" height="333"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kRV-fI-Uba">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="333"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="755" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="FgD-3f-74v">
+                                <rect key="frame" x="16" y="16" width="448" height="301"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text=" " textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7B2-bk-75j">
+                                        <rect key="frame" x="0.0" y="0.0" width="448" height="20.333333333333332"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aup-zu-MDb">
+                                        <rect key="frame" x="0.0" y="28.333333333333343" width="448" height="272.66666666666663"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="FgD-3f-74v" firstAttribute="leading" secondItem="kRV-fI-Uba" secondAttribute="leading" constant="16" id="Be1-ti-5Du"/>
+                            <constraint firstItem="FgD-3f-74v" firstAttribute="top" secondItem="kRV-fI-Uba" secondAttribute="top" constant="16" id="HVu-vd-cZ5"/>
+                            <constraint firstAttribute="bottom" secondItem="FgD-3f-74v" secondAttribute="bottom" constant="16" id="MUE-1L-tcs"/>
+                            <constraint firstAttribute="trailing" secondItem="FgD-3f-74v" secondAttribute="trailing" constant="16" id="k25-J9-gE1"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="kRV-fI-Uba" secondAttribute="trailing" id="4La-vE-BMH"/>
+                <constraint firstItem="kRV-fI-Uba" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="JVY-Wl-4Z9"/>
+                <constraint firstItem="kRV-fI-Uba" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="K6X-ZQ-CSl"/>
+                <constraint firstAttribute="bottom" secondItem="kRV-fI-Uba" secondAttribute="bottom" id="bfK-NR-jcV"/>
+            </constraints>
+            <size key="customSize" width="480" height="333"/>
+            <connections>
+                <outlet property="backgroundContentView" destination="kRV-fI-Uba" id="bG4-Y8-MwZ"/>
+                <outlet property="containerBottomConstraint" destination="MUE-1L-tcs" id="FRa-g3-vOe"/>
+                <outlet property="containerLeadingConstraint" destination="Be1-ti-5Du" id="njv-TZ-B3a"/>
+                <outlet property="containerTopConstraint" destination="HVu-vd-cZ5" id="301-6g-05O"/>
+                <outlet property="containerTrailingConstraint" destination="k25-J9-gE1" id="Scr-4o-LlB"/>
+                <outlet property="labelsVerticalStackView" destination="FgD-3f-74v" id="0hA-9b-1TJ"/>
+                <outlet property="subtitleLabel" destination="aup-zu-MDb" id="gXI-xZ-jbB"/>
+                <outlet property="titleLabel" destination="7B2-bk-75j" id="TvX-hM-kxh"/>
+            </connections>
+            <point key="canvasLocation" x="364.8854961832061" y="84.154929577464799"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -1,0 +1,8 @@
+apikey: 10cb7444-f8fb-4faf-aa29-9beea7ee8732
+ignore:
+    - .autoproof
+    - .DS_Store
+    - .git
+    - .svn
+    - .cvs
+projectname: OnboardingiOSSDK

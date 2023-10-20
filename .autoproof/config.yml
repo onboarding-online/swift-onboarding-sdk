@@ -1,0 +1,8 @@
+apikey: fa1ab077eebf411a8444fc478861d7cb
+ignore:
+    - .autoproof
+    - .DS_Store
+    - .git
+    - .svn
+    - .cvs
+projectname: SDK_Onboarding

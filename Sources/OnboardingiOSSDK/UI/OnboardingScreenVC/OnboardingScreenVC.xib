@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OnboardingScreenVC" customModule="OnboardingiOSSDK">
+            <connections>
+                <outlet property="backgroundContainerView" destination="i5M-Pr-FkT" id="nTD-kr-SXM"/>
+                <outlet property="childContainerView" destination="VHv-AV-b4k" id="V4c-pC-9Cx"/>
+                <outlet property="footerContainerBottomConstraint" destination="ddx-ce-yNr" id="c7q-4k-CeB"/>
+                <outlet property="footerContainerView" destination="DC4-xj-Moq" id="MGT-2z-I1b"/>
+                <outlet property="footerHeightConstraint" destination="4I5-5d-ldn" id="JhN-jz-Yng"/>
+                <outlet property="headerContainerView" destination="vgA-xK-yNf" id="g2v-FK-jsQ"/>
+                <outlet property="progressBarTopConstraint" destination="f3a-OJ-imz" id="ttU-1y-SRz"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xof-TV-YrP">
+                    <rect key="frame" x="16" y="59" width="361" height="759"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vgA-xK-yNf">
+                            <rect key="frame" x="0.0" y="0.0" width="361" height="44"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="44" id="LIm-gp-Zes"/>
+                            </constraints>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VHv-AV-b4k">
+                            <rect key="frame" x="0.0" y="44" width="361" height="543"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DC4-xj-Moq">
+                            <rect key="frame" x="0.0" y="587" width="361" height="172"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="172" id="4I5-5d-ldn"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="vgA-xK-yNf" secondAttribute="trailing" id="0rt-4Z-1uy"/>
+                        <constraint firstItem="VHv-AV-b4k" firstAttribute="top" secondItem="vgA-xK-yNf" secondAttribute="bottom" id="23b-bx-OBY"/>
+                        <constraint firstAttribute="trailing" secondItem="VHv-AV-b4k" secondAttribute="trailing" id="4uV-7c-HfE"/>
+                        <constraint firstItem="VHv-AV-b4k" firstAttribute="leading" secondItem="Xof-TV-YrP" secondAttribute="leading" id="85d-GD-hPa"/>
+                        <constraint firstItem="vgA-xK-yNf" firstAttribute="top" secondItem="Xof-TV-YrP" secondAttribute="top" id="EhV-bO-Nxb"/>
+                        <constraint firstItem="DC4-xj-Moq" firstAttribute="top" secondItem="VHv-AV-b4k" secondAttribute="bottom" id="KMZ-2s-GUn"/>
+                        <constraint firstItem="vgA-xK-yNf" firstAttribute="leading" secondItem="Xof-TV-YrP" secondAttribute="leading" id="Yse-Do-0YS"/>
+                        <constraint firstAttribute="bottom" secondItem="DC4-xj-Moq" secondAttribute="bottom" id="ddx-ce-yNr"/>
+                        <constraint firstAttribute="trailing" secondItem="DC4-xj-Moq" secondAttribute="trailing" id="igg-ql-klf"/>
+                        <constraint firstItem="DC4-xj-Moq" firstAttribute="leading" secondItem="Xof-TV-YrP" secondAttribute="leading" id="wgy-jc-PFr"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Xof-TV-YrP" secondAttribute="trailing" constant="16" id="41T-MV-ew1"/>
+                <constraint firstItem="Xof-TV-YrP" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="8nG-Dc-0BG"/>
+                <constraint firstItem="Xof-TV-YrP" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="F6k-Tj-rVS"/>
+                <constraint firstItem="Xof-TV-YrP" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="f3a-OJ-imz"/>
+            </constraints>
+            <point key="canvasLocation" x="-77.099236641221367" y="41.549295774647888"/>
+        </view>
+    </objects>
+</document>

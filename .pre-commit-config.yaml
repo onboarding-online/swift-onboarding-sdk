@@ -1,0 +1,14 @@
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+  - repo: local
+    hooks:
+      - id: validate-commit-message
+        name: Validate Commit Message
+        language: script
+        entry: ./scripts/git/commit-lint.sh
+        stages:
+          - commit-msg
