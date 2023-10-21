@@ -27,7 +27,7 @@ public final class OnboardingService {
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?
     private var navigationController: OnboardingNavigationController?
-    private var appearance: AppearanceStyle?
+    public  var appearance: AppearanceStyle?
     private var prefetchService: AssetsPrefetchService?
     private var currentLoadingViewController: UIViewController?
 
