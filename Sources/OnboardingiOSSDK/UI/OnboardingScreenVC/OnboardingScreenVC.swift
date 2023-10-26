@@ -10,6 +10,16 @@ import ScreensGraph
 
 class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
     
+    static func instantiateWith(screen: Screen,
+                                videoPreparationService: VideoPreparationService,
+                                delegate: OnboardingScreenDelegate) -> OnboardingScreenVC {
+        let vc = OnboardingScreenVC.nibInstance()
+        vc.screen = screen
+        vc.videoPreparationService = videoPreparationService
+        vc.delegate = delegate
+        return vc
+    }
+    
     @IBOutlet private weak var childContainerView: UIView!
     @IBOutlet private weak var headerContainerView: UIView!
     @IBOutlet private weak var footerContainerView: UIView!
@@ -22,6 +32,7 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
     
     weak var delegate: OnboardingScreenDelegate?
     var screen: Screen!
+    var videoPreparationService: VideoPreparationService!
     var value: Any?
     var permissionValue: Bool?
     var transitionKind: ScreenTransitionKind?
@@ -235,8 +246,9 @@ fileprivate extension OnboardingScreenVC {
                 backgroundContainerView.backgroundColor = value.color.hexStringToColor
             case .typeBackgroundStyleImage(let value):
                 updateBackground(image: value.image)
-            case .typeBackgroundStyleVideo(let value):
-                setupBackground(video: value.video)
+            case .typeBackgroundStyleVideo:
+                setupBackgroundFor(screenId: screen.id,
+                                   using: videoPreparationService)
             }
         }
     }

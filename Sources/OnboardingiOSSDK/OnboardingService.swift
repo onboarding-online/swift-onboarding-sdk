@@ -29,6 +29,7 @@ public final class OnboardingService {
     private var navigationController: OnboardingNavigationController?
     private var appearance: AppearanceStyle?
     private var prefetchService: AssetsPrefetchService?
+    private var videoPreparationService: VideoPreparationService?
     private var currentLoadingViewController: UIViewController?
 
     private var onboardingUserData: OnboardingData = [:]
@@ -50,6 +51,7 @@ extension OnboardingService {
         
         self.onboardingFinishedCallback = finishedCallback
         self.screenGraph = screenGraph
+        videoPreparationService = VideoPreparationService(screenGraph: screenGraph)
         self.appearance = configuration.appearance
         let prefetchService = AssetsPrefetchService(screenGraph: screenGraph)
         self.prefetchService = prefetchService
@@ -264,7 +266,8 @@ private extension OnboardingService {
     
     func showOnboardingFlowViewController(nextScreenId: String?,
                                           transitionKind: ScreenTransitionKind) {
-        guard let screenGraph = self.screenGraph else { return }
+        guard let screenGraph = self.screenGraph,
+            let videoPreparationService = self.videoPreparationService else { return }
         
         if let nextScreenId = nextScreenId,
            let screen = screenGraph.screens[nextScreenId] {
@@ -273,7 +276,8 @@ private extension OnboardingService {
                     finishOnboarding()
                 }
             } else {
-                let controller = onboardingViewControllerFor(screen: screen)
+                let controller = onboardingViewControllerFor(screen: screen,
+                                                             videoPreparationService: videoPreparationService)
                 controller.transitionKind = transitionKind
                 
                 if nextScreenId == screenGraph.launchScreenId {
@@ -287,10 +291,11 @@ private extension OnboardingService {
         }
     }
     
-    func onboardingViewControllerFor(screen: Screen) -> OnboardingScreenVC {
-        let vc = OnboardingScreenVC.nibInstance()
-        vc.screen = screen
-        vc.delegate = self
+    func onboardingViewControllerFor(screen: Screen,
+                                     videoPreparationService: VideoPreparationService) -> OnboardingScreenVC {
+        let vc = OnboardingScreenVC.instantiateWith(screen: screen,
+                                                    videoPreparationService: videoPreparationService,
+                                                    delegate: self)
         return vc
     }
     
@@ -393,6 +398,7 @@ private extension OnboardingService {
         self.onboardingUserData = [:]
         self.customLoadingViewController = nil
         self.currentLoadingViewController = nil
+        self.videoPreparationService = nil
     }
     
     func getWindows() -> [UIWindow] {
