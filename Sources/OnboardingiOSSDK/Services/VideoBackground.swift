@@ -49,6 +49,7 @@ public class VideoBackground {
             forName: UIApplication.willEnterForegroundNotification,
             object: nil,
             queue: .main) { [weak self] _ in
+                self?.playerLayer.player?.seek(to: .zero)
                 self?.playerLayer.player?.play()
         }
     }
