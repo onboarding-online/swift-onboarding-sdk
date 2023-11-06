@@ -311,7 +311,9 @@ private extension OnboardingService {
                 initialRootViewController = window.rootViewController
                 isAnimated = true
             }
-            setNewRootViewController(navigationController, in: window, animated: isAnimated)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.setNewRootViewController(navigationController, in: window, animated: isAnimated)
+            }
         }
         
         switch appearance {
