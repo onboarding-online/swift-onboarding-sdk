@@ -17,11 +17,19 @@ final class VideoPreparationService {
     private let queue = DispatchQueue(label: "com.onboarding.online.video.preparation")
     private var screenIdToPlayerDict: [String : PlayerPreparationDetails] = [:]
     private var playerStatusObservers = [AnyCancellable]()
-    private var onStatusCallbacks: [String : (PlayerPreparationStatus)->()] = [:]
+    private var onStatusCallbacks: [String : [(PlayerPreparationStatus)->()]] = [:]
+    private var screenIdToEdgesDict: [String : [ConditionedAction]] = [:]
     
     init(screenGraph: ScreensGraph) {
         self.screenGraph = screenGraph
+//        prepareVideo()
+        
+        findAllEdges()
+//        prepareInSequence()
         prepareVideo()
+        
+//        prepareVideoFor(screenIds: [screenGraph.launchScreenId])
+//        prepareVideoForScreens(after: screenGraph.launchScreenId)
     }
     
 }
@@ -37,9 +45,15 @@ extension VideoPreparationService {
                 return
             }
             
-            onStatusCallbacks[screenId] = callback
+            onStatusCallbacks[screenId, default: []].append(callback)
             callback(details.status)
         }
+    }
+    
+    func prepareForNextScreen(_ screenId: String?) {
+        guard let screenId else { return }
+    
+//        prepareVideoForScreens(after: screenId)
     }
 }
 
@@ -63,6 +77,62 @@ private extension VideoPreparationService {
         preparePlayers()
     }
     
+    func prepareInSequence() {
+        let screenId = screenGraph.launchScreenId
+        prepareVideoFor(screenIds: [screenId])
+        
+//        observeScreenId(screenId) { [weak self] status in
+//            DispatchQueue.main.async {
+//                switch status {
+//                case .ready, .failed:
+//                    self?.prepareVideo()
+//                default:
+//                    return
+//                }
+//            }
+//        }
+     
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.prepareVideo()
+        }
+    }
+    
+    func findAllEdges() {
+        let time = Date()
+        for (screenId, screen) in screenGraph.screens {
+            if let edges = try? screen.findAllEdges() {
+                screenIdToEdgesDict[screenId] = edges
+            }
+        }
+    }
+    
+    func prepareVideoForScreens(after screenId: String) {
+        guard let edges = screenIdToEdgesDict[screenId] else {
+            
+            return }
+        
+        let nextScreenIds = Set(edges.map { $0.nextScreenId })
+        prepareVideoFor(screenIds: nextScreenIds)
+    }
+    
+    func prepareVideoFor(screenIds: Set<String>) {
+        for screenId in screenIds where screenIdToPlayerDict[screenId] == nil {
+            guard let screen = screenGraph.screens[screenId],
+                  let baseScreenStruct = ChildControllerFabrika.viewControllerFor(screen: screen) else { continue }
+            
+            switch baseScreenStruct.baseScreen.styles.background.styles {
+            case .typeBackgroundStyleColor, .typeBackgroundStyleImage:
+                continue
+            case .typeBackgroundStyleVideo(let value):
+                let video = value.video
+                let player = createNewPlayer()
+                screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player,
+                                                                          video: video)
+            }
+        }
+        preparePlayers()
+    }
+    
     func createNewPlayer() -> AVPlayer {
         let player = AVPlayer(playerItem: nil)
         if #available(iOS 12.0, *) {
@@ -76,7 +146,9 @@ private extension VideoPreparationService {
     
     func preparePlayers() {
         for (screenId, details) in screenIdToPlayerDict {
-            preparePlayerFor(screenId: screenId, with: details)
+            if case .undefined = details.status {
+                preparePlayerFor(screenId: screenId, with: details)
+            }
         }
     }
     
@@ -135,14 +207,14 @@ private extension VideoPreparationService {
             case .failed:
                 self?.updateStatusOf(screenId: screenId, to: .failed)
             case .readyToPlay:
-                self?.updateStatusOf(screenId: screenId, 
+                self?.updateStatusOf(screenId: screenId,
                                      to: .ready(VideoBackgroundPreparedData(player: player,
                                                                             playerLayer: details.playerLayer)))
             @unknown default:
                 return
             }
         }
-        
+//        player.play()
         queue.sync {
             playerStatusObservers.append(publisher)
         }
@@ -154,7 +226,10 @@ private extension VideoPreparationService {
             
             details.status = newStatus
             screenIdToPlayerDict[screenId] = details
-            onStatusCallbacks[screenId]?(newStatus)
+            onStatusCallbacks[screenId]?.forEach { callback in
+                callback(newStatus)
+            }
+            print("LOGO: - Will update callback for \(screenId) with status \(newStatus.debugName)")
         }
     }
 }
@@ -181,10 +256,67 @@ extension VideoPreparationService {
     enum PlayerPreparationStatus {
         case undefined, preparing, failed
         case ready(VideoBackgroundPreparedData)
+        
+        fileprivate var debugName: String {
+            switch self {
+            case .undefined:
+                return "undefined"
+            case .preparing:
+                return "preparing"
+            case .failed:
+                return "failed"
+            case .ready:
+                return "ready"
+            }
+        }
     }
 }
 
 public struct VideoBackgroundPreparedData {
     let player: AVPlayer
     let playerLayer: AVPlayerLayer
+}
+
+fileprivate extension Screen {
+    func findAllEdges() throws -> [ConditionedAction] {
+        let startTime = Date()
+        let data = try JSONEncoder().encode(self)
+        let jsonSerialized = try JSONSerialization.jsonObject(with: data)
+        guard let json = jsonSerialized as? [String : Any] else {
+            throw FindEdgesError.incorrectScreenJSON
+        }
+        let edges = findAllEdges(in: json)
+        print("LOGO: - Did find edges for \(Date().timeIntervalSince(startTime))")
+        return edges
+    }
+    
+    private func findAllEdges(in json: [String : Any]) -> [ConditionedAction] {
+        var edges = [ConditionedAction]()
+        let edgesPropertyKey = "edges"
+        
+        for (key, value) in json {
+            if key == edgesPropertyKey,
+               let json = value as? [[String : Any]],
+               let thisEdgesData = try? JSONSerialization.data(withJSONObject: json),
+               let thisEdges = try? JSONDecoder().decode([ConditionedAction].self, from: thisEdgesData) {
+                edges.append(contentsOf: thisEdges)
+            } else if let json = value as? [String : Any] {
+                let thisEdges = findAllEdges(in: json)
+                edges.append(contentsOf: thisEdges)
+            } else if let jsonArray = value as? [[String : Any]] {
+                for json in jsonArray {
+                    let thisEdges = findAllEdges(in: json)
+                    edges.append(contentsOf: thisEdges)
+                }
+            }
+        }
+        
+        return edges
+    }
+    
+    enum FindEdgesError: String, LocalizedError {
+        case incorrectScreenJSON
+        
+        var errorDescription: String? { rawValue }
+    }
 }
