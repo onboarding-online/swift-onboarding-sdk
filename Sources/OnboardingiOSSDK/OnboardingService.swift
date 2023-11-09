@@ -296,6 +296,7 @@ private extension OnboardingService {
         let vc = OnboardingScreenVC.instantiateWith(screen: screen,
                                                     videoPreparationService: videoPreparationService,
                                                     delegate: self)
+        vc.loadViewIfNeeded()
         return vc
     }
     
