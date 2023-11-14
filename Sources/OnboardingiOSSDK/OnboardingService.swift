@@ -110,8 +110,9 @@ extension OnboardingService: OnboardingScreenDelegate {
         }
         let edge = findEdgeFor(action: action, screenGraph: self.screenGraph, onboardingUserData: self.onboardingUserData)
         let screenId =  edge?.nextScreenId ?? action?.edges.first?.nextScreenId
+        videoPreparationService?.prepareForNextScreen(screenId)
+
         let transitionKind = edge?.transitionKind ?? ._default
-        
         eventRegistered(event: .screenDisappeared, params: [.screenID : screen.id, .screenName : screen.name, .nextScreenId: screenId ?? "",  .userInputValue : userInputValue ?? ""])
         
         showOnboardingFlowViewController(nextScreenId: screenId,
