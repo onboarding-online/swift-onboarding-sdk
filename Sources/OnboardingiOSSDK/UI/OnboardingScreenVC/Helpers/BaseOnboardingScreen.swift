@@ -19,13 +19,13 @@ class BaseOnboardingScreen: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.isNavigationBarHidden = true
 
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.isNavigationBarHidden = true
         addKeyboardListeners()
     }
 
@@ -88,62 +88,23 @@ extension BaseOnboardingScreen {
         }
     }
     
-    func setupBackground(video: BaseVideo?) {
-        guard let video = video else {
-            backgroundView.backgroundColor = .white
-            return
-        }
-        
-        if let name = video.assetUrlByLocal()?.assetName {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                self.playVideoBackgroundWith(url: videoURL)
-                return
-            }
-        }
-
-        guard let stringURL = video.assetUrlByLocal()?.assetUrl?.origin else {
-            backgroundView.backgroundColor = .white
-            return
-        }
-        
-        if let name = stringURL.resourceNameWithoutExtension() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                self.playVideoBackgroundWith(url: videoURL)
-                return
-            }
-        }
-        
-//        var didLoadVideo = false
-//        AssetsLoadingService.shared.loadData(from: stringURL, assetType: .videoThumbnail) { result in
-//            DispatchQueue.main.async {
-//                if !didLoadVideo,
-//                   case .success(let data) = result,
-//                   let image = UIImage(data: data) {
-//                    self.setBackgroundImage(image)
-//                }
-//            }
-//        }
-        
-        AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video) { result in
+    func setupBackgroundFor(screenId: String,
+                            using preparationService: VideoPreparationService) {
+        preparationService.observeScreenId(screenId) { [weak self] status in
             DispatchQueue.main.async {
-//                didLoadVideo = true
-                if let name = stringURL.resourceName() {
-                    if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
-                        self.playVideoBackgroundWith(url: videoURL)
-                        return
-                    }
-                }
-                
-                if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
-                    self.playVideoBackgroundWith(url: storedURL)
-                } else if let url = URL(string: stringURL) {
-                    self.playVideoBackgroundWith(url: url)
+                switch status {
+                case .undefined, .preparing:
+                    return
+                case .failed:
+                    self?.backgroundView.backgroundColor = .white
+                case .ready(let preparedData):
+                    self?.playVideoBackgroundWith(preparedData: preparedData)
                 }
             }
         }
     }
     
-    func playVideoBackgroundWith(url: URL) {
+    func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
         let videoBackgroundHandler: VideoBackground
         if let videoBackground = self.videoBackground {
             videoBackgroundHandler = videoBackground
@@ -152,7 +113,8 @@ extension BaseOnboardingScreen {
             self.videoBackground = videoBackgroundHandler
         }
         
-        videoBackgroundHandler.play(view: backgroundView, url: url)
+        videoBackgroundHandler.play(in: self.backgroundView,
+                                    using: preparedData)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             UIView.animate(withDuration: 0.5) {
                 self.backgroundImageView?.alpha = 0
