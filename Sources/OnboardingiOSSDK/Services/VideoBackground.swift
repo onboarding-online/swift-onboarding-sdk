@@ -27,8 +27,6 @@ public class VideoBackground {
         }
     }
 
-    public var willLoopVideo = true
-
     public var videoGravity: AVLayerVideoGravity = .resizeAspectFill
 
     public lazy var playerLayer = AVPlayerLayer(player: player)
@@ -51,6 +49,7 @@ public class VideoBackground {
             forName: UIApplication.willEnterForegroundNotification,
             object: nil,
             queue: .main) { [weak self] _ in
+                self?.playerLayer.player?.seek(to: .zero)
                 self?.playerLayer.player?.play()
         }
     }
@@ -59,49 +58,32 @@ public class VideoBackground {
                      videoName: String,
                      videoType: String,
                      isMuted: Bool = true,
-                     darkness: CGFloat = 0,
-                     willLoopVideo: Bool = true,
-                     setAudioSessionAmbient: Bool = true,
+                     configuration: Configuration = .default,
                      preventsDisplaySleepDuringVideoPlayback: Bool = true) throws {
         guard let path = Bundle.main.path(forResource: videoName, ofType: videoType) else {
             throw VideoBackgroundError.videoNotFound((name: videoName, type: videoType))
         }
         let url = URL(fileURLWithPath: path)
-        play(
-            view: view,
-            url: url,
-            darkness: darkness,
-            isMuted: isMuted,
-            willLoopVideo: willLoopVideo,
-            setAudioSessionAmbient: setAudioSessionAmbient,
-            preventsDisplaySleepDuringVideoPlayback: preventsDisplaySleepDuringVideoPlayback
-        )
+        play(view: view,
+             url: url,
+             isMuted: isMuted,
+             configuration: configuration,
+             preventsDisplaySleepDuringVideoPlayback: preventsDisplaySleepDuringVideoPlayback)
     }
-
+    
     public func play(view: UIView,
                      url: URL,
-                     darkness: CGFloat = 0,
                      isMuted: Bool = true,
-                     willLoopVideo: Bool = true,
-                     setAudioSessionAmbient: Bool = true,
+                     configuration: Configuration = .default,
                      preventsDisplaySleepDuringVideoPlayback: Bool = true) {
         cleanUp()
-
-        if setAudioSessionAmbient {
-            if #available(iOS 10.0, *) {
-                try? AVAudioSession.sharedInstance().setCategory(
-                    AVAudioSession.Category.ambient,
-                    mode: AVAudioSession.Mode.default
-                )
-                try? AVAudioSession.sharedInstance().setActive(true)
-            }
-        }
+        prepareWith(configuration: configuration, in: view)
+        
+        let player = self.player
         if #available(iOS 12.0, *) {
             player.preventsDisplaySleepDuringVideoPlayback = preventsDisplaySleepDuringVideoPlayback
         }
-
-        self.willLoopVideo = willLoopVideo
-
+        
         if cache[url] == nil {
             cache[url] = AVPlayerItem(url: url)
         }
@@ -109,40 +91,20 @@ public class VideoBackground {
         player.replaceCurrentItem(with: cache[url])
         player.actionAtItemEnd = .none
         player.isMuted = isMuted
+        player.automaticallyWaitsToMinimizeStalling = false
         player.play()
-
-        playerLayer.frame = view.bounds
-        playerLayer.needsDisplayOnBoundsChange = true
-        playerLayer.videoGravity = videoGravity
-        playerLayer.zPosition = -1
-        view.layer.insertSublayer(playerLayer, at: 0)
-
-        darknessOverlayView = UIView(frame: view.bounds)
-        darknessOverlayView.alpha = 0
-        darknessOverlayView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        darknessOverlayView.backgroundColor = .black
-        self.darkness = darkness
-        view.addSubview(darknessOverlayView)
-        view.sendSubviewToBack(darknessOverlayView)
-
-        // Restart video when it ends
-        playerItemDidPlayToEndObserver = NotificationCenter.default.addObserver(
-            forName: .AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem,
-            queue: .main) { [weak self] _ in
-                if let willLoopVideo = self?.willLoopVideo, willLoopVideo {
-                    self?.restart()
-                }
-        }
-
-        // Adjust frames upon device rotation
-        viewBoundsObserver = view.layer.observe(\.bounds) { [weak self] view, _ in
-            DispatchQueue.main.async {
-                self?.playerLayer.frame = view.bounds
-            }
-        }
     }
-
+    
+    public func play(in view: UIView,
+                     configuration: Configuration = .default,
+                     using preparedData: VideoBackgroundPreparedData) {
+        cleanUp()
+        self.player = preparedData.player
+        self.playerLayer = preparedData.playerLayer
+        prepareWith(configuration: configuration, in: view)
+        player.play()
+    }
+    
     /// Pauses the video.
     public func pause() {
         playerLayer.player?.pause()
@@ -186,6 +148,77 @@ public class VideoBackground {
         if let applicationWillEnterForegroundObserver = applicationWillEnterForegroundObserver {
             NotificationCenter.default.removeObserver(applicationWillEnterForegroundObserver)
         }
+    }
+}
+
+// MARK: - Private methods
+private extension VideoBackground {
+    func prepareWith(configuration: Configuration, in view: UIView) {
+        setupAudioSessionAmbient(if: configuration.setAudioSessionAmbient)
+        preparePlayerLayer(in: view)
+        prepareDarknessOverlayView(in: view,
+                                   darkness: configuration.darkness)
+        prepareLoopVideoObserver(if: configuration.willLoopVideo)
+    }
+    
+    func setupAudioSessionAmbient(if setAudioSessionAmbient: Bool) {
+        if setAudioSessionAmbient {
+            try? AVAudioSession.sharedInstance().setCategory(
+                AVAudioSession.Category.ambient,
+                mode: AVAudioSession.Mode.default
+            )
+            try? AVAudioSession.sharedInstance().setActive(true)
+        }
+    }
+    
+    func preparePlayerLayer(in view: UIView) {
+        playerLayer.frame = view.bounds
+        playerLayer.needsDisplayOnBoundsChange = true
+        playerLayer.videoGravity = videoGravity
+        playerLayer.zPosition = -1
+        view.layer.insertSublayer(playerLayer, at: 0)
+        
+        // Adjust frames upon device rotation
+        viewBoundsObserver = view.layer.observe(\.bounds) { [weak self] view, _ in
+            DispatchQueue.main.async {
+                self?.playerLayer.frame = view.bounds
+            }
+        }
+    }
+    
+    func prepareDarknessOverlayView(in view: UIView,
+                                    darkness: CGFloat) {
+        darknessOverlayView = UIView(frame: view.bounds)
+        darknessOverlayView.alpha = 0
+        darknessOverlayView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        darknessOverlayView.backgroundColor = .black
+        self.darkness = darkness
+        view.addSubview(darknessOverlayView)
+        view.sendSubviewToBack(darknessOverlayView)
+    }
+
+    func prepareLoopVideoObserver(if willLoopVideo: Bool) {
+        if willLoopVideo {
+            playerItemDidPlayToEndObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime,
+                object: player.currentItem,
+                queue: .main) { [weak self] _ in
+                    self?.restart()
+                }
+        }
+    }
+}
+
+// MARK: - Configuration
+public extension VideoBackground {
+    struct Configuration {
+        let darkness: CGFloat
+        let willLoopVideo: Bool
+        let setAudioSessionAmbient: Bool
+        
+        public static let `default` = Configuration(darkness: 0,
+                                             willLoopVideo: true,
+                                             setAudioSessionAmbient: true)
     }
 }
 
