@@ -596,10 +596,7 @@ extension UITextField {
             return
         }
         
-        let titleLabelKey = text.textByLocale()
-        self.attributedPlaceholder = NSAttributedString(string: titleLabelKey,
-                                                        attributes: [.foregroundColor: text.textColor()])
-        
+        self.placeholder = text.textByLocale()
         self.apply(text: text.styles)
     }
     
