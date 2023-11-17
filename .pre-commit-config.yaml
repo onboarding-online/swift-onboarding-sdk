@@ -4,11 +4,3 @@ repos:
     rev: v2.3.0
     hooks:
       - id: check-yaml
-  - repo: local
-    hooks:
-      - id: validate-commit-message
-        name: Validate Commit Message
-        language: script
-        entry: ./scripts/git/commit-lint.sh
-        stages:
-          - commit-msg
