@@ -10,13 +10,21 @@ import ScreensGraph
 
 extension OnboardingService {
     
-    public func startOnboarding(projectId: String, localJSONFileName: String,
-                                      env: OnboardingEnvironment = .prod,
-                                      useLocalJSONAfterTimeout:TimeInterval,
-                                      finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+    public func startOnboarding(projectId: String,
+                                localJSONFileName: String,
+                                env: OnboardingEnvironment = .prod,
+                                useLocalJSONAfterTimeout:TimeInterval,
+                                launchWithAnimation: Bool = false,
+                                finishedCallback: @escaping OnboardingFinishResult) {
         if let localPath =  OnboardingService.getUrlFor(jsonName: localJSONFileName)  {
-            let loadOptions = LoadConfiguration.Options.useLocalAfterTimeout(localPath: localPath, timeout: useLocalJSONAfterTimeout)
-            let loadConfiguration = LoadConfiguration.init(projectId: projectId, options: loadOptions, env: env, appearance: .default)
+            let appearance: OnboardingService.AppearanceStyle = .default
+            let loadOptions = LoadConfiguration.Options.useLocalAfterTimeout(localPath: localPath, 
+                                                                             timeout: useLocalJSONAfterTimeout)
+            let loadConfiguration = LoadConfiguration.init(projectId: projectId, 
+                                                           options: loadOptions,
+                                                           env: env,
+                                                           appearance: appearance,
+                                                           launchWithAnimation: launchWithAnimation)
             
             loadOnboarding(configuration: loadConfiguration, finishedCallback: finishedCallback)
         } else {
@@ -25,29 +33,34 @@ extension OnboardingService {
     }
 
     public func loadOnboarding(configuration: OnboardingService.LoadConfiguration,
-                            finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
+                               finishedCallback: @escaping OnboardingFinishResult) {
         let loadingState = LoadingState()
-        showLoadingAssetsScreen(appearance: configuration.appearance)
+        showLoadingAssetsScreen(appearance: configuration.appearance,
+                                launchWithAnimation: configuration.launchWithAnimation)
         
-        downloadJSONFromServerAndStartOnboardingIfNotTimedOut(configuration: configuration, loadingState: loadingState, finishedCallback: finishedCallback)
+        downloadJSONFromServerAndStartOnboardingIfNotTimedOut(configuration: configuration, 
+                                                              loadingState: loadingState, finishedCallback: finishedCallback)
         
         if configuration.needToShowOnboardingFromLocalJson() {
-            startOnboardingFromJSON(configuration: configuration, loadingState: loadingState, finishedCallback: finishedCallback)
+            startOnboardingFromJSON(configuration: configuration,
+                                    loadingState: loadingState,
+                                    finishedCallback: finishedCallback)
         }
     }
     
     public func startOnboardingFrom(localJSONFileName: String,
-                                    finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+                                    launchWithAnimation: Bool = false,
+                                    finishedCallback: @escaping OnboardingFinishResult) {
         guard let url =  OnboardingService.getUrlFor(jsonName: localJSONFileName) else {
             finishedCallback(.failure(errorForWrong(jsonName: localJSONFileName)))
             return
         }
         
         if let localScreenGraph = getOnboardingFromLocalPath(localPath: url) {
-            let config = RunConfiguration.init(screenGraph: localScreenGraph)
-            DispatchQueue.main.async {
-                OnboardingService.shared.startOnboarding(configuration: config, finishedCallback: finishedCallback)
-            }
+            let config = RunConfiguration.init(screenGraph: localScreenGraph,
+                                               launchWithAnimation: launchWithAnimation)
+            OnboardingService.shared.startOnboarding(configuration: config,
+                                                     finishedCallback: finishedCallback)
         } else {
             finishedCallback(.failure(errorJSONWithBrokenStruct(jsonName: localJSONFileName)))
         }
@@ -60,7 +73,7 @@ private extension OnboardingService {
     
     func downloadJSONFromServerAndStartOnboardingIfNotTimedOut(configuration: OnboardingService.LoadConfiguration,
                                                                loadingState: LoadingState,
-                                                               finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
+                                                               finishedCallback: @escaping OnboardingFinishResult) {
         let requestStartDate = Date()
         
         self.loadScreenGraphFor(projectId: configuration.projectId, env: configuration.env) { [weak self](result)  in
@@ -89,7 +102,7 @@ private extension OnboardingService {
     
     func startOnboardingFromJSON(configuration: OnboardingService.LoadConfiguration,
                                 loadingState: LoadingState,
-                                finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
+                                finishedCallback: @escaping OnboardingFinishResult) {
         switch configuration.options  {
         case .useLocalAfterTimeout(let localPath, let timeout):
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {[weak self] in
@@ -100,7 +113,9 @@ private extension OnboardingService {
                     
                     strongSelf.registerSourceTypeEvent(localPath: localPath, timeout: timeout, screenGraph: localScreenGraph)
                     
-                    let config = RunConfiguration.init(screenGraph: localScreenGraph, appearance: configuration.appearance)
+                    let config = RunConfiguration.init(screenGraph: localScreenGraph,
+                                                       appearance: configuration.appearance,
+                                                       launchWithAnimation: configuration.launchWithAnimation)
                     strongSelf.startOnboarding(configuration: config, finishedCallback: finishedCallback)
                 } else {
                     finishedCallback(.failure(strongSelf.errorJSONWithBrokenStruct(jsonName: localPath.pathComponents.last ?? " ")))

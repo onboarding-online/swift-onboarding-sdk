@@ -8,10 +8,13 @@
 import UIKit
 import ScreensGraph
 
+public typealias OnboardingFinishResult = GenericResultCallback<OnboardingData>
+
 public final class OnboardingService {
     
     public static let shared = OnboardingService()
 
+    private let windowManager = OnboardingWindowManager.shared
     public var customFlow: CustomScreenCallback? = nil
     
     public var permissionRequestCallback: PermissionRequestCallback? = nil
@@ -28,12 +31,13 @@ public final class OnboardingService {
     private var initialRootViewController: UIViewController?
     private var navigationController: OnboardingNavigationController?
     public  var appearance: AppearanceStyle?
+    private var launchWithAnimation: Bool = false
     private var prefetchService: AssetsPrefetchService?
     private var videoPreparationService: VideoPreparationService?
     private var currentLoadingViewController: UIViewController?
 
     private var onboardingUserData: OnboardingData = [:]
-    private var onboardingFinishedCallback: GenericResultCallback<OnboardingData>?
+    private var onboardingFinishedCallback: OnboardingFinishResult?
     
     private init() { 
         BackgroundTasksService.shared.startTrackAppState()
@@ -53,6 +57,7 @@ extension OnboardingService {
         self.screenGraph = screenGraph
         videoPreparationService = VideoPreparationService(screenGraph: screenGraph)
         self.appearance = configuration.appearance
+        self.launchWithAnimation = configuration.launchWithAnimation
         let prefetchService = AssetsPrefetchService(screenGraph: screenGraph)
         self.prefetchService = prefetchService
         
@@ -85,8 +90,10 @@ extension OnboardingService {
         }
     }
     
-    func showLoadingAssetsScreen(appearance: AppearanceStyle) {
+    func showLoadingAssetsScreen(appearance: AppearanceStyle,
+                                 launchWithAnimation: Bool) {
         self.appearance = appearance
+        self.launchWithAnimation = launchWithAnimation
         showLoadingAssetsScreen()
     }
 
@@ -202,10 +209,10 @@ private extension OnboardingService {
     @objc func willEnterForeground() {
         // Fix inactive window
         if isRunningOnboarding,
-           getActiveWindow() == nil {
+           windowManager.getActiveWindow() == nil {
             switch appearance {
             case .default, .presentIn:
-                getWindows().first?.makeKeyAndVisible()
+                windowManager.getWindows().first?.makeKeyAndVisible()
             case .window(let window):
                 window.makeKeyAndVisible()
             case .none:
@@ -243,7 +250,8 @@ private extension OnboardingService {
     }
     
     func showLoadingAssetsScreen() {
-        if navigationController == nil {
+        if navigationController == nil,
+           currentLoadingViewController == nil {
             let currentLoadingViewController = customLoadingViewController ?? ScreenLoadingAssetsVC.nibInstance()
             self.currentLoadingViewController = currentLoadingViewController
             let loadingAssetsVC = currentLoadingViewController
@@ -308,19 +316,23 @@ private extension OnboardingService {
         func setInitialIn(window: UIWindow) {
             let navigationController = wrapViewControllerInNavigation(controller)
             self.navigationController = navigationController
-            var isAnimated = false
+            
             if !(window.rootViewController is OnboardingNavigationController) {
                 initialRootViewController = window.rootViewController
-                isAnimated = true
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.setNewRootViewController(navigationController, in: window, animated: isAnimated)
+            
+            if launchWithAnimation {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                    self?.windowManager.setNewRootViewController(navigationController, in: window, animated: true)
+                }
+            } else {
+                windowManager.setNewRootViewController(navigationController, in: window, animated: false)
             }
         }
         
         switch appearance {
         case .default:
-            guard let window = getActiveWindow() else { return }
+            guard let window = windowManager.getActiveWindow() else { return }
             
             setInitialIn(window: window)
         case .window(let window):
@@ -377,12 +389,12 @@ private extension OnboardingService {
 
         func finishIn(window: UIWindow) {
             guard let initialRootViewController = self.initialRootViewController else { return }
-            setNewRootViewController(initialRootViewController, in: window)
+            windowManager.setNewRootViewController(initialRootViewController, in: window)
         }
         
         switch appearance {
         case .default:
-            guard let window = getActiveWindow() else { return }
+            guard let window = windowManager.getActiveWindow() else { return }
             finishIn(window: window)
         case .window(let window):
             finishIn(window: window)
@@ -403,43 +415,6 @@ private extension OnboardingService {
         self.customLoadingViewController = nil
         self.currentLoadingViewController = nil
         self.videoPreparationService = nil
-    }
-    
-    func getWindows() -> [UIWindow] {
-        UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-    }
-    
-    func getActiveWindow() -> UIWindow? {
-        getWindows()
-            .first(where: \.isKeyWindow)
-    }
-
-    func setNewRootViewController(_ viewController: UIViewController,
-                                  in window: UIWindow,
-                                  animated: Bool = true,
-                                  completion: (()->())? = nil) {
-        let previousController = window.rootViewController
-        
-        if let snapshot = window.snapshotView(afterScreenUpdates: true) {
-            viewController.view.addSubview(snapshot)
-            window.rootViewController = viewController
-            
-            let animationDuration: TimeInterval = 0.3
-            
-            UIView.animate(withDuration: animationDuration, animations: {
-                snapshot.layer.opacity = 0
-                snapshot.layer.transform = CATransform3DMakeScale(1.2, 1.2, 1.2)
-            }, completion: { _ in
-                snapshot.removeFromSuperview()
-                previousController?.dismiss(animated: false)
-                completion?()
-            })
-        } else {
-            window.rootViewController = viewController
-            completion?()
-        }
     }
 }
 
@@ -502,15 +477,18 @@ extension OnboardingService {
         public let options: Options
         public var env: OnboardingEnvironment = .prod
         public var appearance: AppearanceStyle = .default
+        public var launchWithAnimation: Bool
         
         public init(projectId: String,
                     options: Options,
                     env: OnboardingEnvironment = .prod,
-                    appearance: AppearanceStyle = .default) {
+                    appearance: AppearanceStyle = .default,
+                    launchWithAnimation: Bool = false) {
             self.projectId = projectId
             self.options = options
             self.env = env
             self.appearance = appearance
+            self.launchWithAnimation = launchWithAnimation
         }
         
         public enum Options {
@@ -522,12 +500,15 @@ extension OnboardingService {
     public struct RunConfiguration {
         public let screenGraph: ScreensGraph
         public var appearance: AppearanceStyle = .default
+        public var launchWithAnimation: Bool
 
         
         public init(screenGraph: ScreensGraph,
-                    appearance: AppearanceStyle = .default) {
+                    appearance: AppearanceStyle = .default,
+                    launchWithAnimation: Bool = false) {
             self.screenGraph = screenGraph
             self.appearance = appearance
+            self.launchWithAnimation = launchWithAnimation
         }
     }
 }
