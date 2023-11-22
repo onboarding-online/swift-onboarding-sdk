@@ -225,7 +225,6 @@ private extension VideoPreparationService {
             onStatusCallbacks[screenId]?.forEach { callback in
                 callback(newStatus)
             }
-            print("LOGO: - Will update callback for \(screenId) with status \(newStatus.debugName)")
         }
     }
 }
@@ -275,14 +274,12 @@ public struct VideoBackgroundPreparedData {
 
 fileprivate extension Screen {
     func findAllEdges() throws -> [ConditionedAction] {
-        let startTime = Date()
         let data = try JSONEncoder().encode(self)
         let jsonSerialized = try JSONSerialization.jsonObject(with: data)
         guard let json = jsonSerialized as? [String : Any] else {
             throw FindEdgesError.incorrectScreenJSON
         }
         let edges = findAllEdges(in: json)
-        print("LOGO: - Did find edges for \(Date().timeIntervalSince(startTime))")
         return edges
     }
     
