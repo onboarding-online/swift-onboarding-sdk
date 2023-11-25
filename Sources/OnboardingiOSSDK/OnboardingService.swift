@@ -50,6 +50,14 @@ extension OnboardingService {
     
     public func startOnboarding(configuration: RunConfiguration,
                                 finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+        startOnboarding(configuration: configuration,
+                        prefetchService: nil,
+                        finishedCallback: finishedCallback)
+    }
+    
+    func startOnboarding(configuration: RunConfiguration,
+                         prefetchService: AssetsPrefetchService?,
+                         finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
         let screenGraph = configuration.screenGraph
         guard screenGraph.screens[screenGraph.launchScreenId] != nil else { return }
         
@@ -58,23 +66,29 @@ extension OnboardingService {
         videoPreparationService = VideoPreparationService(screenGraph: screenGraph)
         self.appearance = configuration.appearance
         self.launchWithAnimation = configuration.launchWithAnimation
-        let prefetchService = AssetsPrefetchService(screenGraph: screenGraph)
-        self.prefetchService = prefetchService
         
-        switch assetsPrefetchMode {
-        case .waitForAllDone:
-            if !screenGraph.launchScreenId.isEmpty {
-                showLoadingAssetsScreen()
+        if let prefetchService {
+            self.prefetchService = prefetchService
+            showOnboardingFlowViewController(nextScreenId: screenGraph.launchScreenId, transitionKind: ._default)
+        } else {
+            let prefetchService = AssetsPrefetchService(screenGraph: screenGraph)
+            self.prefetchService = prefetchService
+            
+            switch assetsPrefetchMode {
+            case .waitForAllDone:
+                if !screenGraph.launchScreenId.isEmpty {
+                    showLoadingAssetsScreen()
+                }
+                prefetchService.prefetchAllAssets { [weak self] _ in
+                    self?.showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
+                }
+            case .waitForFirstDone:
+                prefetchService.startLazyPrefetching()
+                showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
+            case .waitForScreenToLoad:
+                prefetchService.startLazyPrefetching()
+                showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
             }
-            prefetchService.prefetchAllAssets { [weak self] _ in
-                self?.showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
-            }
-        case .waitForFirstDone:
-            prefetchService.startLazyPrefetching()
-            showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
-        case .waitForScreenToLoad:
-            prefetchService.startLazyPrefetching()
-            showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
         }
     }
     
@@ -502,7 +516,6 @@ extension OnboardingService {
         public var appearance: AppearanceStyle = .default
         public var launchWithAnimation: Bool
 
-        
         public init(screenGraph: ScreensGraph,
                     appearance: AppearanceStyle = .default,
                     launchWithAnimation: Bool = false) {
