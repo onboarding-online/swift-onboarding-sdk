@@ -83,7 +83,9 @@ private extension OnboardingService {
                 
                 if loadingState.shouldProceedWithLoadedOnboarding() {
                     DispatchQueue.main.async {
-                        let config = RunConfiguration.init(screenGraph: screenGraph, appearance: configuration.appearance)
+                        let config = RunConfiguration.init(screenGraph: screenGraph, 
+                                                           appearance: configuration.appearance,
+                                                           launchWithAnimation: configuration.launchWithAnimation)
                         self?.startOnboarding(configuration: config, finishedCallback: finishedCallback)
                         
                         if let url = self?.buildURL(for: configuration.env) {
@@ -101,8 +103,8 @@ private extension OnboardingService {
     }
     
     func startOnboardingFromJSON(configuration: OnboardingService.LoadConfiguration,
-                                loadingState: LoadingState,
-                                finishedCallback: @escaping OnboardingFinishResult) {
+                                 loadingState: LoadingState,
+                                 finishedCallback: @escaping OnboardingFinishResult) {
         switch configuration.options  {
         case .useLocalAfterTimeout(let localPath, let timeout):
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {[weak self] in
