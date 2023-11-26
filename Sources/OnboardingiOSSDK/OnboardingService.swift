@@ -110,9 +110,8 @@ extension OnboardingService: OnboardingScreenDelegate {
         }
         let edge = findEdgeFor(action: action, screenGraph: self.screenGraph, onboardingUserData: self.onboardingUserData)
         let screenId =  edge?.nextScreenId ?? action?.edges.first?.nextScreenId
-        videoPreparationService?.prepareForNextScreen(screenId)
-
         let transitionKind = edge?.transitionKind ?? ._default
+        
         eventRegistered(event: .screenDisappeared, params: [.screenID : screen.id, .screenName : screen.name, .nextScreenId: screenId ?? "",  .userInputValue : userInputValue ?? ""])
         
         showOnboardingFlowViewController(nextScreenId: screenId,
@@ -297,7 +296,6 @@ private extension OnboardingService {
         let vc = OnboardingScreenVC.instantiateWith(screen: screen,
                                                     videoPreparationService: videoPreparationService,
                                                     delegate: self)
-        vc.loadViewIfNeeded()
         return vc
     }
     
@@ -313,6 +311,7 @@ private extension OnboardingService {
                 initialRootViewController = window.rootViewController
                 isAnimated = true
             }
+                        
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.setNewRootViewController(navigationController, in: window, animated: isAnimated)
             }
