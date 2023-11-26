@@ -21,6 +21,25 @@ public final class OnboardingPreparationService {
 
 // MARK: - Public methods
 public extension OnboardingPreparationService {
+    
+    static func donloadOnboardingAndAssetsFor(projectId: String,
+                                      localJSONFileName: String,
+                                      env: OnboardingEnvironment = .prod,
+                                      finishedCallback: @escaping OnboardingPreparationFinishCallback) {
+        OnboardingLoadingService.loadScreenGraphFor(projectId: projectId,
+                                                    env: env) { result in
+            switch result {
+            case .success(let screenGraph):
+                let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
+                loadAssetsFor(screenGraph: screenGraph,
+                              identifier: identifier,
+                              finishedCallback: finishedCallback)
+            case .failure(_):
+                OnboardingPreparationService.prepareFullOnboarding(localJSONFileName: localJSONFileName, finishedCallback: finishedCallback)
+            }
+        }
+    }
+    
     static func prepareFullOnboarding(localJSONFileName: String,
                                       finishedCallback: @escaping OnboardingPreparationFinishCallback) {
         do {
@@ -33,6 +52,8 @@ public extension OnboardingPreparationService {
         }
     }
     
+   
+    
     static func prepareFullOnboarding(projectId: String,
                                       env: OnboardingEnvironment = .prod,
                                       finishedCallback: @escaping OnboardingPreparationFinishCallback) {
@@ -41,7 +62,7 @@ public extension OnboardingPreparationService {
             switch result {
             case .success(let screenGraph):
                 let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
-                loadAssetsFor(screenGraph: screenGraph, 
+                loadAssetsFor(screenGraph: screenGraph,
                               identifier: identifier,
                               finishedCallback: finishedCallback)
             case .failure(let error):
@@ -71,10 +92,19 @@ public extension OnboardingPreparationService {
         let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
         startOnboardingWith(identifier: identifier, finishedCallback: finishedCallback)
     }
+    
+    static func startPreparedOnboarding(projectId: String,
+                                        localJSONFileName: String,
+                                        env: OnboardingEnvironment = .prod,
+                                        finishedCallback: @escaping OnboardingFinishResult) {
+        let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
+        startOnboardingWith(identifier: identifier, finishedCallback: finishedCallback)
+    }
 }
 
 // MARK: - Private methods
 private extension OnboardingPreparationService {
+    
     static func onboardingIdentifierFor(projectId: String, env: OnboardingEnvironment) -> String {
         let envIdentifier = envIdentifier(for: env)
         let identifier = projectId + "_" + envIdentifier

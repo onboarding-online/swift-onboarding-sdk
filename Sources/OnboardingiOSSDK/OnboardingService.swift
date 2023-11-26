@@ -131,9 +131,8 @@ extension OnboardingService: OnboardingScreenDelegate {
         }
         let edge = findEdgeFor(action: action, screenGraph: self.screenGraph, onboardingUserData: self.onboardingUserData)
         let screenId =  edge?.nextScreenId ?? action?.edges.first?.nextScreenId
-        videoPreparationService?.prepareForNextScreen(screenId)
-
         let transitionKind = edge?.transitionKind ?? ._default
+        
         eventRegistered(event: .screenDisappeared, params: [.screenID : screen.id, .screenName : screen.name, .nextScreenId: screenId ?? "",  .userInputValue : userInputValue ?? ""])
         
         showOnboardingFlowViewController(nextScreenId: screenId,
@@ -319,7 +318,6 @@ private extension OnboardingService {
         let vc = OnboardingScreenVC.instantiateWith(screen: screen,
                                                     videoPreparationService: videoPreparationService,
                                                     delegate: self)
-        vc.loadViewIfNeeded()
         return vc
     }
     
@@ -433,7 +431,7 @@ private extension OnboardingService {
 }
 
 // MARK: -  Custom flow
-private extension OnboardingService {
+extension OnboardingService {
     
     struct CustomFlowDescription {
         let screen: Screen
@@ -472,9 +470,9 @@ private extension OnboardingService {
 
 
 // MARK: - Open methods
-extension OnboardingService {
+public extension OnboardingService {
     
-    public enum AppearanceStyle {
+    enum AppearanceStyle {
         case `default`
         case window(_ window: UIWindow)
         case presentIn(_ viewController: UIViewController)
