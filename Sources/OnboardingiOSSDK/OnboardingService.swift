@@ -478,13 +478,13 @@ public extension OnboardingService {
         case presentIn(_ viewController: UIViewController)
     }
     
-    public enum AssetsPrefetchMode {
+    enum AssetsPrefetchMode {
         case waitForAllDone
         case waitForFirstDone
         case waitForScreenToLoad(timeout: TimeInterval)
     }
 
-    public struct LoadConfiguration {
+    struct LoadConfiguration {
         public let projectId: String
         public let options: Options
         public var env: OnboardingEnvironment = .prod
@@ -509,7 +509,7 @@ public extension OnboardingService {
         }
     }
     
-    public struct RunConfiguration {
+    struct RunConfiguration {
         public let screenGraph: ScreensGraph
         public var appearance: AppearanceStyle = .default
         public var launchWithAnimation: Bool

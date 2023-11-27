@@ -9,6 +9,10 @@ import Foundation
 import ScreensGraph
 
 final class OnboardingLoadingService {
+    
+    static private var screenGraphsCache = [String : ScreensGraph]()
+    static private let serialQueue = DispatchQueue(label: "com.onboarding.online.loading.service")
+    
     static func getOnboardingFromLocalJsonName(_ localJSONFileName: String) throws -> ScreensGraph {
         let url = try getUrlFor(jsonName: localJSONFileName)
         let localScreenGraph = try getOnboardingFromLocalPath(localPath: url)
@@ -87,8 +91,14 @@ final class OnboardingLoadingService {
     }
     
    
-    static func loadScreenGraphFor(projectId: String, env: OnboardingEnvironment = .prod,
-                            finishedCallback: @escaping GenericResultCallback<ScreensGraph>) {
+    static func loadScreenGraphFor(projectId: String,
+                                   env: OnboardingEnvironment = .prod,
+                                   finishedCallback: @escaping GenericResultCallback<ScreensGraph>) {
+        if let cachedScreenGraph = getCachedScreenGraphFor(projectId: projectId) {
+            finishedCallback(.success(cachedScreenGraph))
+            return
+        }
+        
         let url = buildURL(for: env)
         let headers  = ["X-API-Key" : projectId]
         let request = ONetworkRequest(url: url, httpMethod: .GET, headers: headers)
@@ -96,12 +106,21 @@ final class OnboardingLoadingService {
         ONetworkManager.shared.makeNetworkDecodableRequest(request, ofType: ScreensGraph.self) { (result) in
             switch result {
             case .success(let screenGraph):
+                cacheScreenGraph(screenGraph, for: projectId)
                 finishedCallback(.success(screenGraph))
             case .failure(let failure):
                 let error = GenericError.init(errorCode: 1, localizedDescription: failure.errorDescription ?? " ")
                 finishedCallback(.failure(error))
             }
         }
+    }
+    
+    private static func getCachedScreenGraphFor(projectId: String) -> ScreensGraph? {
+        serialQueue.sync { screenGraphsCache[projectId] }
+    }
+    
+    private static func cacheScreenGraph(_ screenGraph: ScreensGraph, for projectId: String) {
+        serialQueue.sync { screenGraphsCache[projectId] = screenGraph }
     }
 }
 
