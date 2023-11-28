@@ -8,9 +8,10 @@
 import Foundation
 import ScreensGraph
 
+public typealias OnboardingPreparationFinishCallback = GenericResultCallback<Void>
+
 public final class OnboardingPreparationService {
     
-    public typealias OnboardingPreparationFinishCallback = GenericResultCallback<Void>
     
     static private var preparedOnboardingDataCache = [PreparedOnboardingData]()
     static private let serialQueue = DispatchQueue(label: "com.onboarding.online.preparation.service")
@@ -20,7 +21,7 @@ public final class OnboardingPreparationService {
 }
 
 // MARK: - Public methods
-public extension OnboardingPreparationService {
+extension OnboardingPreparationService {
     static func prepareFullOnboardingFor(projectId: String,
                                          localJSONFileName: String,
                                          env: OnboardingEnvironment = .prod,
@@ -211,13 +212,15 @@ private extension OnboardingPreparationService {
     static func notifyOnboardingWaitersAndClearWith(identifier: String, state: OnboardingPreparationState) {
         mutatePreparedOnboardingData(identifier: identifier) { onboardingData in
             onboardingData.waiters.forEach { waiter in
-                switch state {
-                case .ready:
-                    waiter(.success(Void()))
-                case .failed(let error):
-                    waiter(.failure(.init(error: error)))
-                default:
-                    return
+                DispatchQueue.main.async {
+                    switch state {
+                    case .ready:
+                        waiter(.success(Void()))
+                    case .failed(let error):
+                        waiter(.failure(.init(error: error)))
+                    default:
+                        return
+                    }
                 }
             }
             onboardingData.waiters.removeAll()

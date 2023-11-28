@@ -9,10 +9,61 @@ import Foundation
 import ScreensGraph
 
 public extension OnboardingService {
+    static func prepareFullOnboardingFor(projectId: String,
+                                         localJSONFileName: String,
+                                         env: OnboardingEnvironment = .prod,
+                                         prefetchMode: OnboardingService.AssetsPrefetchMode = .waitForScreenToLoad(timeout: 0.5),
+                                         finishedCallback: @escaping OnboardingPreparationFinishCallback) {
+        OnboardingPreparationService.prepareFullOnboardingFor(projectId: projectId,
+                                                              localJSONFileName: localJSONFileName,
+                                                              env: env,
+                                                              prefetchMode: prefetchMode,
+                                                              finishedCallback: finishedCallback)
+    }
+    
+    func startPreparedOnboardingWhenReady(projectId: String,
+                                          localJSONFileName: String,
+                                          env: OnboardingEnvironment = .prod,
+                                          useLocalJSONAfterTimeout: TimeInterval,
+                                          launchWithAnimation: Bool = false,
+                                          finishedCallback: @escaping OnboardingFinishResult) {
+        let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: env)
+        
+        func startNew() {
+            startOnboarding(projectId: projectId,
+                            localJSONFileName: localJSONFileName,
+                            env: env,
+                            useLocalJSONAfterTimeout: useLocalJSONAfterTimeout,
+                            launchWithAnimation: launchWithAnimation,
+                            finishedCallback: finishedCallback)
+        }
+        
+        func startPrepared() {
+            OnboardingPreparationService.startPreparedOnboarding(projectId: projectId, env: env, finishedCallback: finishedCallback)
+        }
+        
+        
+        switch preparationState {
+        case .notStarted, .failed:
+            startNew()
+        case .preparing:
+            OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: env) { result in
+                switch result {
+                case .success:
+                    startPrepared()
+                case .failure:
+                    startNew()
+                }
+            }
+        case .ready:
+            startPrepared()
+        }
+    }
+    
     func startOnboarding(projectId: String,
                          localJSONFileName: String,
                          env: OnboardingEnvironment = .prod,
-                         useLocalJSONAfterTimeout:TimeInterval,
+                         useLocalJSONAfterTimeout: TimeInterval,
                          launchWithAnimation: Bool = false,
                          finishedCallback: @escaping OnboardingFinishResult) {
         do {
@@ -61,7 +112,6 @@ public extension OnboardingService {
             finishedCallback(.failure(.init(error: error)))
         }
     }
-
 }
 
 // MARK: - Private methods
