@@ -49,7 +49,7 @@ final class OnboardingLoadingService {
     }
     
     static func registerJSONLoadedAfterTimeOutEvent(responseTime: Double) {
-        systemEventRegistered(event: .JSONLoadedFromURLButTimeoutOccured, params: [.time: responseTime])
+        systemEventRegistered(event: .JSONLoadedFromURLButTimeoutOccurred, params: [.time: responseTime])
     }
     
     static func registerSourceTypeEvent(localPath: URL, timeout: Double, screenGraph: ScreensGraph) {

@@ -142,7 +142,7 @@ private extension OnboardingService {
                 }
                 
             case .failure(let failure):
-                self?.systemEventRegistered(event: .JSONLoadingFalure, params: [.error: failure.localizedDescription])
+                self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: failure.localizedDescription])
             }
         }
     }
