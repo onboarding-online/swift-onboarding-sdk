@@ -28,43 +28,43 @@ public enum AnalyticsEvent: String {
     
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     //    userInputValue
     case userUpdatedValue = "user updated value"
 
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     case screenDidAppear = "screen appeared"
     
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     //    userInputValue
     //    nextScreenId
     case screenDisappeared = "screen disappeared"
     
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     case rightNavbarButtonPressed = "right navbar button pressed"
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     case leftNavbarButtonPressed = "left navbar button pressed"
     
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     case firstFooterButtonPressed = "first footer button pressed"
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     case secondFooterButtonPressed = "second footer button pressed"
     
     //    Parameters:
     //    screenID
-    //    screenName
+    //    creenName
     case switchedToNewScreenOnTimer = "switched to a new screen on a timer"
     
     //    Parameters:
@@ -87,7 +87,7 @@ public enum AnalyticsEvent: String {
     //    screenName
     //    screenID
     //    customScreenUserInputValue
-    case customScreenDisappeared  = "custom screen disappeared"
+    case customScreenDisappeared  = "custom screen disapeared"
     
     //    Parameters:
     //    userInputValues
@@ -95,16 +95,16 @@ public enum AnalyticsEvent: String {
     
     //    Parameters:
     //    screenID
-    //    screenName
-    //    permissionType: . adsPermission / .pushNotificationPermission
+    //    creenName
+    //    pemitionType: . adsPemition / .pushNotificationPemition
     case permissionRequested = "permission requested"
     
     //    Parameters:
     //    screenID
-    //    screenName
-    //    permissionType: . adsPermission / .pushNotificationPermission
+    //    creenName
+    //    pemitionType: . adsPemition / .pushNotificationPemition
     //    permissionGranted: true / false
-    case permissionResponseReceived = "a response to the permission request was received"
+    case permissionResponsesReceived = "a response to the permission request was received"
     
 // System events
     
@@ -118,11 +118,11 @@ public enum AnalyticsEvent: String {
     
     //    Parameters:
     //    time
-    case JSONLoadedFromURLButTimeoutOccurred = "json was loaded but timed out"
+    case JSONLoadedFromURLButTimeoutOccured = "json was loaded but timed out"
     
     //    Parameters:
     //    error
-    case JSONLoadingFailure = "json loading error"
+    case JSONLoadingFalure = "json loading error"
     
     //    Parameters:
     //    edge
@@ -183,9 +183,9 @@ public enum AnalyticsEventParams: String {
     
     case permissionType = "permissionType"
 
-    case adsPermission = "adsPermission"
+    case adspermission = "adsPemition"
 
-    case pushNotificationPermission = "pushNotificationPermission"
+    case pushNotificationpermission = "pushNotificationPemition"
     
     case permissionGranted = "permissionGranted"
 
