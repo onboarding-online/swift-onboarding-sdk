@@ -223,6 +223,7 @@ private extension OnboardingPreparationService {
                     }
                 }
             }
+            onboardingData.state = state
             onboardingData.waiters.removeAll()
         }
     }
