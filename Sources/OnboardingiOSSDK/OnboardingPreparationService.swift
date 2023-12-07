@@ -40,8 +40,12 @@ extension OnboardingPreparationService {
             switch result {
             case .success:
                 finishedCallback(.success(Void()))
-            case .failure(_):
-                prepareFullOnboarding(localJSONFileName: localJSONFileName, identifier: identifier, prefetchMode: prefetchMode, finishedCallback: finishedCallback)
+            case .failure(let error):
+                if error.errorCode == 1 {
+                    prepareFullOnboarding(localJSONFileName: localJSONFileName, identifier: identifier, prefetchMode: prefetchMode, finishedCallback: finishedCallback)
+                } else {
+                    finishedCallback(.failure(error))
+                }
             }
         }
     }
