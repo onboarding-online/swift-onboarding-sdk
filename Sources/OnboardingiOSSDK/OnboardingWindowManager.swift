@@ -14,6 +14,7 @@ final class OnboardingWindowManager {
     private var didSetKeyWindow = false
     
     init() {
+        didSetKeyWindow = getKeyWindow() != nil
         NotificationCenter.default.addObserver(self, selector: #selector(keyWindowDidChange), name: UIWindow.didBecomeKeyNotification, object: nil)
     }
     
