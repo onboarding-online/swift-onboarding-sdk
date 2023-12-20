@@ -29,9 +29,11 @@ extension OnboardingPreparationService {
                                          finishedCallback: @escaping OnboardingPreparationFinishCallback) {
         let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
         if handleOnboardingStateIfPreparingWith(identifier: identifier, callback: finishedCallback) {
+            OnboardingLogger.logWarning("Attempt to prepare onboarding that is already preparing. Prepare should be called once. Project: \(projectId). localJSONFileName: \(localJSONFileName)")
             return
         }
-        
+        OnboardingLogger.logInfo(topic: .onboarding, "Will prepare onboarding for project: \(projectId). localJSONFileName: \(localJSONFileName)")
+
         addPreparingOnboarding(onboardingData: .init(identifier: identifier,
                                                      prefetchMode: prefetchMode,
                                                      state: .preparing))

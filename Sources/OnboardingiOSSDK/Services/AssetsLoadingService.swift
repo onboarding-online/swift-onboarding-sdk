@@ -81,8 +81,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         if let imageThatAddedManuallyInProject = url.resourceName()  {
             if let storedImage = UIImage.init(named: imageThatAddedManuallyInProject) {
                 completion(.success(storedImage))
-                print("use local image for asset - \(url)")
-
                 return
             }
         }
@@ -116,8 +114,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
             if let imageThatAddedManuallyInProject = url.resourceName()  {
                 if UIImage.init(named: imageThatAddedManuallyInProject) != nil {
                     completion(.success(Data()))
-                    // TODO: remove prints
-                    print("use local image for asset - \(url)")
                     return
                 }
             }
@@ -128,8 +124,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
             if let name = url.resourceNameWithoutExtension() {
                 if Bundle.main.url(forResource: name, withExtension: "mp4") != nil {
                     completion(.success(Data()))
-                    // TODO: remove prints
-                    print("use local video for asset - \(url)")
                     return
                 }
             }

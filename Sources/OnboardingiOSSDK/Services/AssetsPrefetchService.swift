@@ -148,7 +148,6 @@ private extension AssetsPrefetchService {
             switch result {
             case .success:
                 self?.log(message: "Did prefetch assets for \(screen.id)")
-//                print("Did prefetch assets for \(screen.id)")
                 self?.preloadedScreenIds.insert(screen.id)
             case .failure(let error):
                 self?.log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
@@ -311,7 +310,7 @@ private extension AssetsPrefetchService {
     
     func log(message: String) {
 //        OnboardingService.shared.systemEventRegistered(event: message, params: ["message": message])
-        print("[Assets-Prefetch] - \(message)")
+        OnboardingLogger.logInfo(topic: .assetsPrefetch, message)
     }
 }
 

@@ -122,7 +122,7 @@ public struct ONetworkRequest {
     }
     
     func describeSelf() {
-        print("""
+        OnboardingLogger.logInfo(topic: .network, """
 
 >>>>>>>> Network Request <<<<<<<<
 Will make network request to:
