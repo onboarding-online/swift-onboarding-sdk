@@ -42,6 +42,15 @@ extension OnboardingWindowManager {
         return nil
     }
     
+    func getCurrentWindow() -> UIWindow? {
+        if let activeWindow = getActiveWindow() {
+            return activeWindow
+        } else if UIApplication.shared.applicationState != .active {
+            return getWindows().first
+        }
+        return nil
+    }
+    
     func setNewRootViewController(_ viewController: UIViewController,
                                   in window: UIWindow,
                                   animated: Bool = true,

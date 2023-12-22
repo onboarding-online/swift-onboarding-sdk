@@ -344,7 +344,7 @@ private extension OnboardingService {
         
         switch appearance {
         case .default:
-            guard let window = windowManager.getActiveWindow() else { return }
+            guard let window = windowManager.getCurrentWindow() else { return }
             
             setInitialIn(window: window)
         case .window(let window):
@@ -406,7 +406,7 @@ private extension OnboardingService {
         
         switch appearance {
         case .default:
-            guard let window = windowManager.getActiveWindow() else { return }
+            guard let window = windowManager.getCurrentWindow() else { return }
             finishIn(window: window)
         case .window(let window):
             finishIn(window: window)
