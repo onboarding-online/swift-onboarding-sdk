@@ -16,7 +16,7 @@ protocol PaywallBottomViewDelegate: AnyObject {
 
 final class PaywallBottomView: UIView {
     
-    private let sideOffset: CGFloat = 24
+    private let sideOffset: CGFloat = { UIScreen.isIphoneSE1 ? 12 : 24 }()
 
     private var buyButtonWithInfoStack: UIStackView!
     private var buyButton: UIButton!
@@ -78,7 +78,7 @@ private extension PaywallBottomView {
         buyButtonWithInfoStack = createView()
         buyButtonWithInfoStack.axis = .vertical
         buyButtonWithInfoStack.alignment = .fill
-        buyButtonWithInfoStack.spacing = 16
+        buyButtonWithInfoStack.spacing = UIScreen.isIphoneSE1 ? 8 : 16
         addSubview(buyButtonWithInfoStack)
         
         NSLayoutConstraint.activate([
@@ -130,11 +130,12 @@ private extension PaywallBottomView {
         stack.distribution = .fillEqually
         addSubview(stack)
         
+        let bottomOffset: CGFloat = UIScreen.isIphoneSE1 ? 8 : 16
         NSLayoutConstraint.activate([
             stack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: sideOffset),
             stack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stack.topAnchor.constraint(equalTo: buyButtonWithInfoStack.bottomAnchor, constant: 24),
-            bottomAnchor.constraint(equalTo: stack.bottomAnchor, constant: 16)
+            stack.topAnchor.constraint(equalTo: buyButtonWithInfoStack.bottomAnchor, constant: sideOffset),
+            bottomAnchor.constraint(equalTo: stack.bottomAnchor, constant: bottomOffset)
         ])
     }
     

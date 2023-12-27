@@ -250,7 +250,7 @@ extension PaywallVC {
             case .separator:
                 return 1
             case .listSubscription:
-                return 77
+                return UIScreen.isIphoneSE1 ? 60 : 77
             }
         }
     }
@@ -292,9 +292,9 @@ extension PaywallVC {
 
 extension PaywallVC {
     struct Constants {
-        static let defaultHeaderHeight: CGFloat = 280
-        static let sectionsSpacing: CGFloat = 24
-        static let listItemsSpacing: CGFloat = 16
+        static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
+        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
+        static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
     }
 }
 
@@ -306,17 +306,17 @@ private extension PaywallVC.HeaderCellConfiguration {
     }
 }
 
-@available(iOS 17, *)
-#Preview {
-    PaywallVC.nibInstance()
-}
-
-//import SwiftUI
-//struct PaywallVCPreviews: PreviewProvider {
-//    static var previews: some View {
-//        UIViewControllerPreview {
-//            PaywallVC.nibInstance()
-//        }
-//        .edgesIgnoringSafeArea(.all)
-//    }
+//@available(iOS 17, *)
+//#Preview {
+//    PaywallVC.nibInstance()
 //}
+
+import SwiftUI
+struct PaywallVCPreviews: PreviewProvider {
+    static var previews: some View {
+        UIViewControllerPreview {
+            PaywallVC.nibInstance()
+        }
+        .edgesIgnoringSafeArea(.all)
+    }
+}

@@ -13,6 +13,7 @@ final class PaywallHeaderCell: UICollectionViewCell {
     @IBOutlet private weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var subtitleLabel: UILabel!
+    @IBOutlet private weak var titlesLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var gradientView: GradientView!
     
     override func awakeFromNib() {
@@ -21,6 +22,7 @@ final class PaywallHeaderCell: UICollectionViewCell {
         gradientView.gradientColors = [.clear, .white]
         gradientView.gradientDirection = .topToBottom
         clipsToBounds = false
+        titlesLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
     }
 
 }

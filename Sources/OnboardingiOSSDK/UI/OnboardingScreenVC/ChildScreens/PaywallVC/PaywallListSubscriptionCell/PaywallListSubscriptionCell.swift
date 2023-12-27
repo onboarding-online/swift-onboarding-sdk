@@ -14,13 +14,15 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var durationLabel: UILabel!
     @IBOutlet private weak var priceLabel: UILabel!
     @IBOutlet private weak var pricePerMonthLabel: UILabel!
-    
+    @IBOutlet private weak var contentLeadingConstraint: NSLayoutConstraint!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         
         contentContainerView.layer.cornerRadius = 16
         contentContainerView.backgroundColor = .lightGray
         contentContainerView.layer.borderColor = UIColor.blue.cgColor
+        contentLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
     }
 
 }

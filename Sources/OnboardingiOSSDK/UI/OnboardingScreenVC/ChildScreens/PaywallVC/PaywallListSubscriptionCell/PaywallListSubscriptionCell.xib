@@ -91,6 +91,7 @@
             <connections>
                 <outlet property="checkbox" destination="1Ep-Wc-ZXG" id="9dx-VZ-3kv"/>
                 <outlet property="contentContainerView" destination="S5s-Dr-Ix9" id="NwN-Ks-NdX"/>
+                <outlet property="contentLeadingConstraint" destination="537-NJ-17r" id="0hC-U0-KyR"/>
                 <outlet property="durationLabel" destination="eCw-jb-GHp" id="W79-bv-5Od"/>
                 <outlet property="priceLabel" destination="nh0-fV-a0E" id="vMb-yF-UPk"/>
                 <outlet property="pricePerMonthLabel" destination="dP7-pD-jZa" id="ax9-8L-nVK"/>
