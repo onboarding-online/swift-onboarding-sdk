@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="PaywallHeaderCell" customModule="OnboardingiOSSDK">
+            <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
+                        <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
+                        <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
+                        <rect key="frame" x="24" y="179" width="298" height="64"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcg-I0-OCG">
+                                <rect key="frame" x="0.0" y="0.0" width="298" height="27.666666666666668"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XBQ-Jz-Jxr">
+                                <rect key="frame" x="0.0" y="43.666666666666657" width="298" height="20.333333333333329"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.035294117647058823" green="0.035294117647058823" blue="0.035294117647058823" alpha="0.5" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="jjj-3w-9m3" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="8Rj-zq-Uga"/>
+                <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="E6W-pI-TQp"/>
+                <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Inw-Nc-nzE"/>
+                <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="Jaj-pK-fbx"/>
+                <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="Rl5-7v-cD6"/>
+                <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zkp-tp-u61"/>
+                <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="ag1-M3-WDm"/>
+                <constraint firstItem="jjj-3w-9m3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="bf1-Dm-WLp"/>
+                <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="kzy-HL-aaH"/>
+                <constraint firstAttribute="bottom" secondItem="jjj-3w-9m3" secondAttribute="bottom" constant="24" id="n45-cf-WNU"/>
+                <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="zYm-A4-zOD"/>
+            </constraints>
+            <size key="customSize" width="346" height="267"/>
+            <connections>
+                <outlet property="gradientView" destination="Jze-sG-Veo" id="e6w-Lj-w5z"/>
+                <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
+                <outlet property="imageViewTopConstraint" destination="zYm-A4-zOD" id="TwS-0q-rA9"/>
+                <outlet property="subtitleLabel" destination="XBQ-Jz-Jxr" id="BLn-Mm-Mid"/>
+                <outlet property="titleLabel" destination="wcg-I0-OCG" id="vTj-4v-XtE"/>
+            </connections>
+            <point key="canvasLocation" x="271.75572519083971" y="-34.859154929577464"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
