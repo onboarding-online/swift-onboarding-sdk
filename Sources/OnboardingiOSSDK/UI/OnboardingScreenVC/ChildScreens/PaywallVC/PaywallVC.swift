@@ -13,7 +13,8 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var bottomView: PaywallBottomView!
     
-    var selectedItem: Int = 0
+    private var selectedItem: Int = 0
+    private var isLoading = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +26,21 @@ final class PaywallVC: BaseChildScreenGraphViewController {
 
 // MARK: - PaywallBottomViewDelegate
 extension PaywallVC: PaywallBottomViewDelegate {
+    func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        
+    }
     
+    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        
+    }
+    
+    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        
+    }
+    
+    func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -52,7 +67,9 @@ extension PaywallVC: UICollectionViewDataSource {
             return cell
         case .separator:
             let cell = collectionView.dequeueCellOfType(PaywallSeparatorCell.self, at: indexPath)
-
+            return cell
+        case .loading:
+            let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
             return cell
         case .listSubscription(let configuration):
             let index = indexPath.row
@@ -73,7 +90,7 @@ extension PaywallVC: UICollectionViewDelegate {
         let row = rowsFor(section: section)[indexPath.row]
         
         switch row {
-        case .header(_), .separator:
+        case .header(_), .separator, .loading:
             return
         case .listSubscription(let item):
             let index = indexPath.row
@@ -112,6 +129,9 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         switch row {
         case .header:
             height = calculateHeaderSize(in: sections)
+        case .loading:
+            let sectionsSpacing = CGFloat(sections.count - 1) * Constants.sectionsSpacing
+            height = collectionView.bounds.height - Constants.defaultHeaderHeight - sectionsSpacing
         default:
             height = row.height
         }
@@ -119,6 +139,9 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
     }
     
     func calculateHeaderSize(in sections: [SectionType]) -> CGFloat {
+        if isLoading {
+            return Constants.defaultHeaderHeight
+        }
         var contentSize: CGFloat = 0
         for section in sections {
             switch section {
@@ -168,18 +191,40 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
 private extension PaywallVC {
     func setup() {
         setupCollectionView()
-        bottomView.delegate = self
+        setupBottomView()
+        loadProducts()
     }
     
     func setupCollectionView() {
-        collectionView.registerCellNibOfType(PaywallHeaderCell.self)
-        collectionView.registerCellNibOfType(PaywallListSubscriptionCell.self)
-        collectionView.registerCellNibOfType(PaywallSeparatorCell.self)
+        [PaywallHeaderCell.self,
+         PaywallListSubscriptionCell.self,
+         PaywallSeparatorCell.self,
+         PaywallLoadingCell.self].forEach { cellType in
+            collectionView.registerCellNibOfType(cellType)
+        }
         
         collectionView.contentInsetAdjustmentBehavior = .never
         
         collectionView.delegate = self
         collectionView.dataSource = self
+    }
+    
+    func setupBottomView() {
+        bottomView.delegate = self
+    }
+    
+    func loadProducts() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.didLoadProducts()
+        }
+    }
+    
+    func didLoadProducts() {
+        self.isLoading = false
+        let sections = allSections()
+        self.collectionView.performBatchUpdates {
+            collectionView.reloadSections(IndexSet(0..<sections.count))
+        }
     }
 }
 
@@ -196,10 +241,11 @@ extension PaywallVC {
         case header(HeaderCellConfiguration)
         case separator
         case listSubscription(ListSubscriptionCellConfiguration)
+        case loading
         
         var height: CGFloat {
             switch self {
-            case .header:
+            case .header, .loading:
                 return 0
             case .separator:
                 return 1
@@ -234,6 +280,9 @@ extension PaywallVC {
         case .separator:
             return [.separator]
         case .items:
+            if isLoading {
+                return [.loading]
+            }
             return [.listSubscription(.init()),
                     .listSubscription(.init()),
                     .listSubscription(.init())]
@@ -243,6 +292,7 @@ extension PaywallVC {
 
 extension PaywallVC {
     struct Constants {
+        static let defaultHeaderHeight: CGFloat = 280
         static let sectionsSpacing: CGFloat = 24
         static let listItemsSpacing: CGFloat = 16
     }

@@ -71,15 +71,12 @@ private extension PaywallCheckboxView {
         checkmarkLayer.strokeColor = UIColor.white.cgColor
         checkmarkLayer.fillColor = UIColor.clear.cgColor
         checkmarkLayer.lineCap = .round
-        checkmarkLayer.lineWidth = 2
-        checkmarkLayer.cornerRadius = 2
+        checkmarkLayer.lineWidth = 2.5
         let path = UIBezierPath()
         path.move(to: relativePoint(x: 0.3, y: 0.45))
         path.addLine(to: relativePoint(x: 0.45, y: 0.65))
-        path.addLine(to: relativePoint(x: 0.7, y: 0.3))
-        
+        path.addLine(to: relativePoint(x: 0.7, y: 0.33))
         checkmarkLayer.path = path.cgPath
-
         
         layer.addSublayer(checkmarkLayer)
     }

@@ -8,7 +8,10 @@
 import UIKit
 
 protocol PaywallBottomViewDelegate: AnyObject {
-    
+    func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView)
+    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView)
+    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView)
+    func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView)
 }
 
 final class PaywallBottomView: UIView {
@@ -46,7 +49,19 @@ extension PaywallBottomView {
 // MARK: - Private methods
 private extension PaywallBottomView {
     @objc func buyButtonPressed() {
-        
+        delegate?.paywallBottomViewBuyButtonPressed(self)
+    }
+    
+    @objc func ppButtonPressed() {
+        delegate?.paywallBottomViewPPButtonPressed(self)
+    }
+    
+    @objc func tacButtonPressed() {
+        delegate?.paywallBottomViewTACButtonPressed(self)
+    }
+    
+    @objc func restoreButtonPressed() {
+        delegate?.paywallBottomViewRestoreButtonPressed(self)
     }
 }
 
@@ -78,7 +93,6 @@ private extension PaywallBottomView {
         buyButton.backgroundColor = .blue
         buyButton.setTitle("Buy Now", for: .normal)
         buyButton.layer.cornerRadius = 12
-        buyButton.addTarget(self, action: #selector(buyButtonPressed), for: .touchUpInside)
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
         buyButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
     }
@@ -96,10 +110,13 @@ private extension PaywallBottomView {
     func addEssentialButtonsStack() {
         ppButton = createView()
         ppButton.setTitle("Privacy Policy", for: .normal)
+        ppButton.addTarget(self, action: #selector(ppButtonPressed), for: .touchUpInside)
         tacButton = createView()
         tacButton.setTitle("Terms of Use", for: .normal)
+        tacButton.addTarget(self, action: #selector(tacButtonPressed), for: .touchUpInside)
         restoreButton = createView()
         restoreButton.setTitle("Restore", for: .normal)
+        restoreButton.addTarget(self, action: #selector(restoreButtonPressed), for: .touchUpInside)
         
         [ppButton, tacButton, restoreButton].forEach { button in
             button?.titleLabel?.font = .systemFont(ofSize: 13, weight: .regular)
