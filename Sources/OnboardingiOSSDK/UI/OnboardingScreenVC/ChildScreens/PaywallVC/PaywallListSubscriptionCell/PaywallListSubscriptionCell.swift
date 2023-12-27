@@ -38,7 +38,7 @@ extension PaywallListSubscriptionCell {
         checkbox.isOn = isSelected
         setBadgePosition(configuration.badgePosition)
         contentContainerView.layer.borderWidth = isSelected ? 1 : 0
-        contentContainerView.backgroundColor = isSelected ? .white : .systemGray5
+        contentContainerView.backgroundColor = isSelected ? .white : .black.withAlphaComponent(0.05)
 
         if isSelected {
             contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
