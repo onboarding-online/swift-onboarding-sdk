@@ -328,5 +328,6 @@ private extension PaywallVC.HeaderCellConfiguration {
 //            PaywallVC.nibInstance()
 //        }
 //        .edgesIgnoringSafeArea(.all)
+//        .preferredColorScheme(.dark)
 //    }
 //}

@@ -95,7 +95,8 @@ private extension PaywallBottomView {
         buyButton.setTitle("Buy Now", for: .normal)
         buyButton.layer.cornerRadius = 12
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
-        buyButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        let buttonHeight: CGFloat = UIScreen.isIphoneSE1 ? 44 : 56
+        buyButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
     }
     
     func addInfoLabel() {
