@@ -190,11 +190,45 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
 
 // MARK: - Private methods
 private extension PaywallVC {
+    func loadProducts() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.didLoadProducts()
+        }
+    }
+    
+    func didLoadProducts() {
+        self.isLoading = false
+        let sections = allSections()
+        self.collectionView.performBatchUpdates {
+            collectionView.reloadSections(IndexSet(0..<sections.count))
+        }
+    }
+    
+    @objc func closeButtonPressed() {
+        
+    }
+}
+
+// MARK: - Setup methods
+private extension PaywallVC {
     func setup() {
+        setupNavigationBar()
         setupCollectionView()
         setupBottomView()
         setupGradientView()
         loadProducts()
+    }
+    
+    func setupNavigationBar() {
+//        navigationController?.navigationBar.isTranslucent = true
+        
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground()
+        navigationController?.navigationBar.standardAppearance = navBarAppearance
+        
+        let closeButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeButtonPressed))
+        closeButton.tintColor = .black
+        navigationItem.leftBarButtonItem = closeButton
     }
     
     func setupCollectionView() {
@@ -220,20 +254,6 @@ private extension PaywallVC {
         gradientView.gradientColors = [.white.withAlphaComponent(0.01),
                                        .white]
         gradientView.gradientDirection = .topToBottom
-    }
-    
-    func loadProducts() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.didLoadProducts()
-        }
-    }
-    
-    func didLoadProducts() {
-        self.isLoading = false
-        let sections = allSections()
-        self.collectionView.performBatchUpdates {
-            collectionView.reloadSections(IndexSet(0..<sections.count))
-        }
     }
 }
 
@@ -318,7 +338,10 @@ private extension PaywallVC.HeaderCellConfiguration {
 
 @available(iOS 17, *)
 #Preview {
-    PaywallVC.nibInstance()
+    let vc = PaywallVC.nibInstance()
+    let nav = UINavigationController(rootViewController: vc)
+    
+    return nav
 }
 
 //import SwiftUI
