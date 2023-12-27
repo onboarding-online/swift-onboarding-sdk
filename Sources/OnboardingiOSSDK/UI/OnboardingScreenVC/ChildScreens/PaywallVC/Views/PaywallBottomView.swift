@@ -68,6 +68,7 @@ private extension PaywallBottomView {
 // MARK: - Setup methods
 private extension PaywallBottomView {
     func setup() {
+        backgroundColor = .systemBackground
         addBuyButtonWithInfoStack()
         addBuyButton()
         addInfoLabel()
@@ -84,7 +85,7 @@ private extension PaywallBottomView {
         NSLayoutConstraint.activate([
             buyButtonWithInfoStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: sideOffset),
             buyButtonWithInfoStack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: sideOffset)
+            buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: 0)
         ])
     }
     

@@ -69,12 +69,10 @@
                                     <constraint firstItem="QUJ-zw-9BT" firstAttribute="centerX" secondItem="S5s-Dr-Ix9" secondAttribute="centerX" id="cma-S3-dY8"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="9jQ-Tk-hac" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
-                                <rect key="frame" x="31" y="-12" width="240" height="24"/>
+                            <view contentMode="scaleToFill" fixedFrame="YES" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="9jQ-Tk-hac" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
+                                <rect key="frame" x="35.666666666666657" y="-12" width="239.99999999999997" height="24"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="24" id="RTl-gU-hgh"/>
-                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -82,8 +80,6 @@
                             <constraint firstAttribute="bottom" secondItem="S5s-Dr-Ix9" secondAttribute="bottom" id="1dC-5j-uHa"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" constant="24" id="537-NJ-17r"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" id="Ua0-qc-z4m"/>
-                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" constant="-16" id="YcL-ka-g7D"/>
-                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerY" secondItem="S5s-Dr-Ix9" secondAttribute="top" id="aEh-5f-uwZ"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" id="oCb-xV-5mB"/>
                         </constraints>
                     </view>
@@ -104,6 +100,7 @@
                 <outlet property="durationLabel" destination="eCw-jb-GHp" id="W79-bv-5Od"/>
                 <outlet property="priceLabel" destination="nh0-fV-a0E" id="vMb-yF-UPk"/>
                 <outlet property="pricePerMonthLabel" destination="dP7-pD-jZa" id="ax9-8L-nVK"/>
+                <outlet property="savedMoneyView" destination="9jQ-Tk-hac" id="8ZS-2c-BZE"/>
             </connections>
             <point key="canvasLocation" x="161.06870229007632" y="25.35211267605634"/>
         </collectionViewCell>

@@ -12,6 +12,7 @@ final class PaywallVC: BaseChildScreenGraphViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var bottomView: PaywallBottomView!
+    @IBOutlet weak var gradientView: GradientView!
     
     private var selectedItem: Int = 0
     private var isLoading = true
@@ -192,6 +193,7 @@ private extension PaywallVC {
     func setup() {
         setupCollectionView()
         setupBottomView()
+        setupGradientView()
         loadProducts()
     }
     
@@ -207,10 +209,17 @@ private extension PaywallVC {
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.clipsToBounds = false
     }
     
     func setupBottomView() {
         bottomView.delegate = self
+    }
+    
+    func setupGradientView() {
+        gradientView.gradientColors = [.white.withAlphaComponent(0.01),
+                                       .white]
+        gradientView.gradientDirection = .topToBottom
     }
     
     func loadProducts() {
@@ -262,7 +271,7 @@ extension PaywallVC {
     }
     
     struct ListSubscriptionCellConfiguration {
-        
+        let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
     }
     
     func allSections() -> [SectionType] {
@@ -283,9 +292,10 @@ extension PaywallVC {
             if isLoading {
                 return [.loading]
             }
-            return [.listSubscription(.init()),
-                    .listSubscription(.init()),
-                    .listSubscription(.init())]
+            return [.listSubscription(.init(badgePosition: .left)),
+                    .listSubscription(.init(badgePosition: .center)),
+                    .listSubscription(.init(badgePosition: .right)),
+                    .listSubscription(.init(badgePosition: .none))]
         }
     }
 }

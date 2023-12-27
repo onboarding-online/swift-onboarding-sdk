@@ -13,6 +13,7 @@
             <connections>
                 <outlet property="bottomView" destination="W64-mO-hfO" id="yYf-0B-DiB"/>
                 <outlet property="collectionView" destination="znm-pk-GdZ" id="nhD-iE-CsL"/>
+                <outlet property="gradientView" destination="aik-Mc-8uZ" id="Lol-MJ-kX7"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -22,7 +23,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="690"/>
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="678"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y0e-4e-Mzq">
                         <size key="itemSize" width="128" height="128"/>
@@ -32,21 +33,32 @@
                     </collectionViewFlowLayout>
                     <cells/>
                 </collectionView>
-                <view contentMode="scaleToFill" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="128" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
-                    <rect key="frame" x="0.0" y="690" width="393" height="128"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                </view>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="BUv-x5-exQ">
+                    <rect key="frame" x="0.0" y="666" width="393" height="152"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aik-Mc-8uZ" customClass="GradientView" customModule="OnboardingiOSSDK">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="24"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="24" id="YSG-mc-Hw9"/>
+                            </constraints>
+                        </view>
+                        <view contentMode="scaleToFill" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="128" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
+                            <rect key="frame" x="0.0" y="24" width="393" height="128"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                    </subviews>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="4Pr-j2-hP0"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="-12" id="Cjy-w8-G4J"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="GaN-z7-99S"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="JDq-Np-HSu"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="W64-mO-hfO" secondAttribute="trailing" id="QFR-Ha-IYJ"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Mfv-JL-kyM"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cMD-Ky-5vG"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="dFi-Kw-eaD"/>
-                <constraint firstItem="W64-mO-hfO" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="nBR-aH-wSF"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="W64-mO-hfO" secondAttribute="bottom" id="oau-xR-j6Q"/>
-                <constraint firstItem="W64-mO-hfO" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" id="qCt-U3-0AD"/>
             </constraints>
             <point key="canvasLocation" x="-37.404580152671755" y="41.549295774647888"/>
         </view>
