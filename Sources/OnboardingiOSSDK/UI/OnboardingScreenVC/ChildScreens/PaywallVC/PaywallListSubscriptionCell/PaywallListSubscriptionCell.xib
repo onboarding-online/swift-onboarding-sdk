@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="PaywallListSubscriptionCell" customModule="OnboardingiOSSDK">
+        <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="PaywallListSubscriptionCell" customModule="OnboardingiOSSDK">
             <rect key="frame" x="0.0" y="0.0" width="311" height="96"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -69,12 +69,21 @@
                                     <constraint firstItem="QUJ-zw-9BT" firstAttribute="centerX" secondItem="S5s-Dr-Ix9" secondAttribute="centerX" id="cma-S3-dY8"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="9jQ-Tk-hac" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
+                                <rect key="frame" x="31" y="-12" width="240" height="24"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="RTl-gU-hgh"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="S5s-Dr-Ix9" secondAttribute="bottom" id="1dC-5j-uHa"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" constant="24" id="537-NJ-17r"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" id="Ua0-qc-z4m"/>
+                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" constant="-16" id="YcL-ka-g7D"/>
+                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerY" secondItem="S5s-Dr-Ix9" secondAttribute="top" id="aEh-5f-uwZ"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" id="oCb-xV-5mB"/>
                         </constraints>
                     </view>

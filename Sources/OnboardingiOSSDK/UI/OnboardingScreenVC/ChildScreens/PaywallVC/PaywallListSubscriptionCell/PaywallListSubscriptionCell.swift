@@ -19,6 +19,7 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        clipsToBounds = false
         contentContainerView.layer.cornerRadius = 16
         contentContainerView.backgroundColor = .lightGray
         contentContainerView.layer.borderColor = UIColor.blue.cgColor

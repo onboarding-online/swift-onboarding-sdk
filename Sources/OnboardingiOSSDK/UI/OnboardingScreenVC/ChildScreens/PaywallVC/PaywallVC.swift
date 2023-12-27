@@ -306,17 +306,17 @@ private extension PaywallVC.HeaderCellConfiguration {
     }
 }
 
-//@available(iOS 17, *)
-//#Preview {
-//    PaywallVC.nibInstance()
-//}
-
-import SwiftUI
-struct PaywallVCPreviews: PreviewProvider {
-    static var previews: some View {
-        UIViewControllerPreview {
-            PaywallVC.nibInstance()
-        }
-        .edgesIgnoringSafeArea(.all)
-    }
+@available(iOS 17, *)
+#Preview {
+    PaywallVC.nibInstance()
 }
+
+//import SwiftUI
+//struct PaywallVCPreviews: PreviewProvider {
+//    static var previews: some View {
+//        UIViewControllerPreview {
+//            PaywallVC.nibInstance()
+//        }
+//        .edgesIgnoringSafeArea(.all)
+//    }
+//}
