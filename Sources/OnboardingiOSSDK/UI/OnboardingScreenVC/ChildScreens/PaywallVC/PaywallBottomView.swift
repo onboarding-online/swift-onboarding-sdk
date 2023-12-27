@@ -36,8 +36,6 @@ final class PaywallBottomView: UIView {
         setup()
     }
     
-    
-    
 }
 
 // MARK: - Open methods
@@ -90,6 +88,7 @@ private extension PaywallBottomView {
         additionalInfoLabel.textColor = .black.withAlphaComponent(0.6)
         additionalInfoLabel.font = .systemFont(ofSize: 15, weight: .regular)
         additionalInfoLabel.textAlignment = .center
+        additionalInfoLabel.adjustsFontSizeToFitWidth = true
         additionalInfoLabel.text = "7 days free, then $39.99/year. Auto-renewable."
         buyButtonWithInfoStack.addArrangedSubview(additionalInfoLabel)
     }

@@ -27,13 +27,14 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="QUJ-zw-9BT">
                                         <rect key="frame" x="24" y="28" width="215" height="40"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Circle_on_dark.png" translatesAutoresizingMaskIntoConstraints="NO" id="AVn-CP-m1J">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Ep-Wc-ZXG" customClass="PaywallCheckboxView" customModule="OnboardingiOSSDK">
                                                 <rect key="frame" x="0.0" y="8" width="24" height="24"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="24" id="Bnh-eh-Ll9"/>
-                                                    <constraint firstAttribute="width" secondItem="AVn-CP-m1J" secondAttribute="height" id="Vw9-f4-4L3"/>
+                                                    <constraint firstAttribute="width" constant="24" id="1DY-od-lHi"/>
+                                                    <constraint firstAttribute="width" secondItem="1Ep-Wc-ZXG" secondAttribute="height" id="U49-49-qnt"/>
                                                 </constraints>
-                                            </imageView>
+                                            </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="6Dg-FU-sgv">
                                                 <rect key="frame" x="40.000000000000007" y="0.0" width="121.66666666666669" height="40"/>
                                                 <subviews>
@@ -88,7 +89,7 @@
             </constraints>
             <size key="customSize" width="311" height="96"/>
             <connections>
-                <outlet property="checkboxImageView" destination="AVn-CP-m1J" id="6da-Cm-zbp"/>
+                <outlet property="checkbox" destination="1Ep-Wc-ZXG" id="9dx-VZ-3kv"/>
                 <outlet property="contentContainerView" destination="S5s-Dr-Ix9" id="NwN-Ks-NdX"/>
                 <outlet property="durationLabel" destination="eCw-jb-GHp" id="W79-bv-5Od"/>
                 <outlet property="priceLabel" destination="nh0-fV-a0E" id="vMb-yF-UPk"/>
@@ -98,7 +99,6 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="Circle_on_dark.png" width="24" height="24"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

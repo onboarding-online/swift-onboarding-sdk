@@ -13,7 +13,7 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var bottomView: PaywallBottomView!
     
-    var selectedItem = [Int]()
+    var selectedItem: Int = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,9 +56,10 @@ extension PaywallVC: UICollectionViewDataSource {
             return cell
         case .listSubscription(let configuration):
             let index = indexPath.row
-            let isSelected =  selectedItem.contains(index)
+            let isSelected = selectedItem == index
             
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
+            cell.setWith(configuration: configuration, isSelected: isSelected)
             
             return cell
         }
@@ -76,18 +77,13 @@ extension PaywallVC: UICollectionViewDelegate {
             return
         case .listSubscription(let item):
             let index = indexPath.row
-            
-            if selectedItem.contains(index) {
-                selectedItem.removeObject(object: index)
-            } else {
-                selectedItem.append(index)
+            if selectedItem != index {
+                var indexPathsToReload = [indexPath]
+                indexPathsToReload.append(IndexPath(row: selectedItem, section: indexPath.section))
+                selectedItem = index
+                reloadCellsAt(indexPaths: indexPathsToReload)
             }
             
-            if #available(iOS 15.0, *) {
-                collectionView.reconfigureItems(at: [indexPath])
-            } else {
-                collectionView.reloadItems(at: [indexPath])
-            }
 //            self.delegate?.onboardingChildScreenUpdate(value: selectedItem, description: item.title.textByLocale(), logAnalytics: true)
         }
     }
@@ -95,6 +91,14 @@ extension PaywallVC: UICollectionViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let headerCell = collectionView.visibleCells.first(where: { $0 is PaywallHeaderCell }) as? PaywallHeaderCell {
             headerCell.setScrollOffset(scrollView.contentOffset)
+        }
+    }
+    
+    func reloadCellsAt(indexPaths: [IndexPath]) {
+        if #available(iOS 15.0, *) {
+            collectionView.reconfigureItems(at: indexPaths)
+        } else {
+            collectionView.reloadItems(at: indexPaths)
         }
     }
 }
@@ -244,15 +248,25 @@ extension PaywallVC {
     }
 }
 
-@available(iOS 17, *)
-#Preview {
-    PaywallVC.nibInstance()
-}
-
-extension PaywallVC.HeaderCellConfiguration {
+private extension PaywallVC.HeaderCellConfiguration {
     static func mock() -> PaywallVC.HeaderCellConfiguration {
         .init(imageURL: URL(string: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?size=626&ext=jpg&ga=GA1.1.1546980028.1703462400&semt=sph")!,
               title: "Do you have a question? ",
               subtitle: "Just ask it to our lawyer and get a quick and high-quality answer. ")
     }
 }
+
+@available(iOS 17, *)
+#Preview {
+    PaywallVC.nibInstance()
+}
+
+//import SwiftUI
+//struct PaywallVCPreviews: PreviewProvider {
+//    static var previews: some View {
+//        UIViewControllerPreview {
+//            PaywallVC.nibInstance()
+//        }
+//        .edgesIgnoringSafeArea(.all)
+//    }
+//}
