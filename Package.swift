@@ -13,6 +13,9 @@ let package = Package(
         .library(
             name: "OnboardingiOSSDK",
             targets: ["OnboardingiOSSDK"]),
+        .library(
+            name: "OnboardingPaymentKit",
+            targets: ["OnboardingPaymentKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/onboarding-online/swift-screens-graph", from: "1.0.0"),
@@ -24,7 +27,13 @@ let package = Package(
             name: "OnboardingiOSSDK",
             dependencies: [
                 .product(name: "ScreensGraph", package: "swift-screens-graph")
-            ], resources: [.process("Resources")]),
+            ], path: "Sources/OnboardingiOSSDK", resources: [.process("Resources")]),
+        .target(
+            name: "OnboardingPaymentKit",
+            dependencies: [
+                "OnboardingiOSSDK",
+            ],
+            path: "Sources/OnboardingPaymentKit"),
         .testTarget(
             name: "OnboardingiOSSDKTests",
             dependencies: ["OnboardingiOSSDK"]),

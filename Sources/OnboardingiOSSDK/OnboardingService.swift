@@ -26,6 +26,7 @@ public final class OnboardingService {
     public var assetsPrefetchMode: AssetsPrefetchMode = .waitForScreenToLoad(timeout: 0.5)
 
     public var screenGraph: ScreensGraph?
+    public var paymentService: OnboardingPaymentServiceProtocol?
 
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?
