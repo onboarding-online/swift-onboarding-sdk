@@ -14,6 +14,7 @@ public struct OnboardingLogger {
         case onboarding
         case assetsPrefetch = "Onboarding-Assets"
         case network = "Onboarding-Network"
+        case purchase = "Onboarding-Payment"
         
         case warning
         case error
