@@ -13,49 +13,31 @@ public typealias SKProductIDs = Set<String>
 
 final class OPSProductsManager {
     
-    private var activeRequests = ProcessesManager<OPSProductsRequest, OPSProductsRequestResult>()
     private var products: Set<SKProduct> = []
+    private let fetcher: any SKProductsFetcher
     
+    init(fetcher: any SKProductsFetcher) {
+        self.fetcher = fetcher
+    }
 }
 
 // MARK: - Open methods
 extension OPSProductsManager {
-    
-    func fetchProductsWith(ids: SKProductIDs, completion: @escaping OPSProductsRequestCompletion) {
+    func fetchProductsWith(ids: SKProductIDs) async throws -> OPSProductsResponse {
         if let cachedProducts = self.cachedProductsWith(ids: ids) {
             OPSLogger.logEvent("ProductsRequest.Will return products with ids \(ids) from cache")
-            completion(.success(OPSProductsResponse(products: Array(cachedProducts), invalidProductIdentifiers: [])))
-        } else if let activeRequest = self.activeRequests.processes.first(where: { $0.object.productIds == ids }) {
-            OPSLogger.logEvent("ProductsRequest.Will add completion handlers for products with ids \(ids) to ongoing queue")
-            activeRequest.addHandler(completion)
-        } else  {
-            OPSLogger.logEvent("ProductsRequest.Will start fetching products with ids \(ids)")
-            let request = OPSProductsRequest(productIds: ids, completion: { [weak self] result in
-                DispatchQueue.main.async { [weak self] in
-                    self?.handleProductsRequestResult(result, forProductIds: ids)
-                }
-            })
-            request.start()
-            
-            activeRequests.addProcess(.init(object: request, handlers: [completion]))
+            return OPSProductsResponse(products: Array(cachedProducts), invalidProductIdentifiers: [])
         }
+        OPSLogger.logEvent("ProductsRequest.Will start fetching products with ids \(ids)")
+        let response = try await fetcher.fetch(productIds: ids)
+        self.products.formUnion(response.products)
+        OPSLogger.logEvent("ProductsRequest.Did fetch products with ids \(ids)")
+        return response
     }
-    
 }
 
 // MARK: - Private methods
 private extension OPSProductsManager {
-    
-    func handleProductsRequestResult(_ result: OPSProductsRequestResult, forProductIds ids: SKProductIDs) {
-        switch result {
-        case .success(let response):
-            self.products.formUnion(response.products)
-        case .failure:
-            Void()
-        }
-        activeRequests.completeWhere({ $0.productIds == ids }, withResult: result)
-    }
-    
     func cachedProductsWith(ids: SKProductIDs) -> Set<SKProduct>? {
         let cachedProducts = products.filter({ ids.contains($0.productIdentifier) })
         if cachedProducts.count == ids.count {
@@ -64,5 +46,4 @@ private extension OPSProductsManager {
         
         return nil
     }
-    
 }

@@ -60,7 +60,6 @@ final class OPSTransactionsManager: NSObject {
 
 // MARK: - SKPaymentTransactionObserver
 extension OPSTransactionsManager: SKPaymentTransactionObserver {
-    
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         OPSLogger.logEvent("PaymentTransactions.Did update \(transactions.count) transactions")
         for transaction in transactions {
@@ -85,12 +84,10 @@ extension OPSTransactionsManager: SKPaymentTransactionObserver {
             }
         }
     }
-    
 }
 
 // MARK: - Open methods
 extension OPSTransactionsManager {
-
     func performTransaction(transaction: OPSPaymentTransaction, completion: @escaping OPSTransactionResultCallback) {
         if let activeRequest = self.activeTransactions.processes.first(where: { $0.object == transaction }) {
             OPSLogger.logEvent("PaymentTransactions.Will add completion handlers for ongoing \(transaction.logDescription)")

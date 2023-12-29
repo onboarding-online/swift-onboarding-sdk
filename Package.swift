@@ -37,5 +37,9 @@ let package = Package(
         .testTarget(
             name: "OnboardingiOSSDKTests",
             dependencies: ["OnboardingiOSSDK"]),
+        .testTarget(
+            name: "OnboardingPaymentKitTests",
+            dependencies: ["OnboardingPaymentKit"]),
     ]
 )
+
