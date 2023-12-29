@@ -29,8 +29,8 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         transactionsManager.restorePurchases(completion: completion)
     }
     
-    private func refreshReceipt(forceReload: Bool, completion: @escaping OPSEmptyResultCallback) {
-        receiptsManager.refreshReceipt(forceReload: forceReload, completion: completion)
+    private func refreshReceipt(forceReload: Bool) async throws {
+        try await receiptsManager.refreshReceipt(forceReload: forceReload)
     }
     
     private func validateReceipt(sharedSecret: String, completion: @escaping OPSReceiptValidationResultCallback) {
@@ -148,17 +148,8 @@ extension OnboardingPaymentService {
         set { OPSLogger.logLevel = newValue }
     }
     
-    @available(*, renamed: "refreshReceipt(forceReload:)")
-    public static func refreshReceipt(forceReload: Bool, completion: @escaping OPSEmptyResultCallback) {
-        shared.refreshReceipt(forceReload: forceReload, completion: completion)
-    }
-    
     public static func refreshReceipt(forceReload: Bool) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            refreshReceipt(forceReload: forceReload) { result in
-                continuation.resume(with: result)
-            }
-        }
+        try await shared.refreshReceipt(forceReload: forceReload)
     }
     
     @available(*, renamed: "validateReceipt(sharedSecret:)")

@@ -12,36 +12,41 @@ typealias ReceiptProperties = [String : Any]
 
 final class OPSRefreshReceiptRequest: NSObject {
     
-    let refreshReceiptRequest: SKReceiptRefreshRequest
-    let callback: OPSEmptyResultCallback
+    private var refreshReceiptRequest: SKReceiptRefreshRequest?
+    private var callback: OPSEmptyResultCallback?
     
-    init(receiptProperties: ReceiptProperties? = nil, callback: @escaping OPSEmptyResultCallback) {
+    @available(*, renamed: "refreshReceipt(receiptProperties:)")
+    func refreshReceipt(receiptProperties: ReceiptProperties? = nil, callback: @escaping OPSEmptyResultCallback) {
         self.callback = callback
-        self.refreshReceiptRequest = SKReceiptRefreshRequest(receiptProperties: receiptProperties)
-        super.init()
-        self.refreshReceiptRequest.delegate = self
+        let refreshReceiptRequest = SKReceiptRefreshRequest(receiptProperties: receiptProperties)
+        refreshReceiptRequest.delegate = self
+        self.refreshReceiptRequest = refreshReceiptRequest
+        
+        refreshReceiptRequest.start()
     }
     
-    func start() {
-        self.refreshReceiptRequest.start()
+    func refreshReceipt(receiptProperties: ReceiptProperties? = nil) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            refreshReceipt(receiptProperties: receiptProperties) { result in
+                continuation.resume(with: result)
+            }
+        }
     }
     
-    func cancel() {
-        self.refreshReceiptRequest.cancel()
+    private func cancel() {
+        refreshReceiptRequest?.cancel()
     }
     
 }
 
 // MARK: - SKRequestDelegate
 extension OPSRefreshReceiptRequest: SKRequestDelegate {
-    
     func requestDidFinish(_ request: SKRequest) {
-        callback(.success(Void()))
+        callback?(.success(Void()))
     }
     
     func request(_ request: SKRequest, didFailWithError error: Error) {
         // XXX could here check domain and error code to return typed exception
-        callback(.failure(error))
+        callback?(.failure(error))
     }
-    
 }

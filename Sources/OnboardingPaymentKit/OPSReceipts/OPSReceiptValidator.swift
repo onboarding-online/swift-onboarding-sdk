@@ -10,7 +10,7 @@ import Foundation
 public typealias OPSReceiptValidationResult = Result<AppStoreValidatedReceipt, ReceiptError>
 public typealias OPSReceiptValidationResultCallback = (OPSReceiptValidationResult) -> ()
 
-final class OPSValidateReceiptRequest {
+final class OPSReceiptValidator {
     
     let sharedSecret: String
     private var environment: PaymentsEnvironment = .production
@@ -115,6 +115,14 @@ final class OPSValidateReceiptRequest {
             }
         }
         task.resume()
+    }
+    
+    func validate(appStoreReceiptData: Data) async throws -> AppStoreValidatedReceipt {
+        try await withCheckedThrowingContinuation { continuation in
+            validate(appStoreReceiptData: appStoreReceiptData) { result in
+                continuation.resume(with: result)
+            }
+        }
     }
     
 }
