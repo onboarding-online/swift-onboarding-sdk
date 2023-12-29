@@ -14,7 +14,7 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
     private static let shared = OnboardingPaymentService()
     
     private let productsmanager = OPSProductsManager(fetcher: OPSSKProductsFetcher())
-    private let transactionsManager = OPSTransactionsManager()
+    private let transactionsManager: OPSTransactionsManagerProtocol = OPSTransactionsManager(paymentQueue: SKPaymentQueue.default())
     private let receiptsManager = OPSReceiptsManager()
     
     private func fetchProductsWith(ids: SKProductIDs) async throws -> OPSProductsResponse  {

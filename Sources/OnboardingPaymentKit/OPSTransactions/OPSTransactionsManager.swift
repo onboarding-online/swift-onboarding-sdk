@@ -14,25 +14,6 @@ public typealias OPSTransactionResultCallback = (OPSTransactionResult)->()
 public typealias OPSRestoreResult = Result<Void, Error>
 public typealias OPSRestoreResultCallback = (OPSRestoreResult)->()
 
-public enum OPSTransactionStatus: Sendable {
-    case purchased(completeTransaction: @Sendable ()->()), deffered
-}
-
-public enum OPSTransactionError: LocalizedError {
-    case cancelled, notFound, other(message: String)
-    
-    public var errorDescription: String? {
-        switch self {
-        case .cancelled:
-            return "cancelled"
-        case .notFound:
-            return "notFound"
-        case .other(let message):
-            return "Other: \(message)"
-        }
-    }
-}
-
 public protocol OPSTransactionsManagerDelegate: AnyObject {
     func shouldAddStorePayment(_ payment: SKPayment, for product: SKProduct) -> Bool
     func didUpdateUnexpectedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult)
@@ -42,16 +23,27 @@ public extension OPSTransactionsManagerDelegate {
     func didUpdateUnexpectedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult) { }
 }
 
+protocol OPSTransactionsManagerProtocol: AnyObject {
+    var delegate: OPSTransactionsManagerDelegate? { get set }
+    var restoredProducts: SKProductIDs { get set }
+    
+    func performTransaction(transaction: OPSPaymentTransaction, completion: @escaping OPSTransactionResultCallback)
+    func restorePurchases(completion: @escaping OPSRestoreResultCallback)
+    func canCompleteTransactionWithId(_ transactionId: String) -> Bool
+    func completeTransactionWithId(_ transactionId: String) -> Result<Void, OPSTransactionError>
+}
+
 final class OPSTransactionsManager: NSObject {
     
-    private let paymentQueue = SKPaymentQueue.default()
+    private let paymentQueue: OPSPaymentQueue
     private var activeTransactions = ProcessesManager<OPSPaymentTransaction, OPSTransactionResult>()
     private var restoreCompletion: OPSRestoreResultCallback?
     private var uncompletedTransactions = [SKPaymentTransaction]()
     public var restoredProducts = SKProductIDs()
     public weak var delegate: OPSTransactionsManagerDelegate?
 
-    override init() {
+    init(paymentQueue: OPSPaymentQueue) {
+        self.paymentQueue = paymentQueue
         super.init()
         paymentQueue.add(self)
     }
@@ -84,10 +76,22 @@ extension OPSTransactionsManager: SKPaymentTransactionObserver {
             }
         }
     }
+    
+    func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
+        restoreCompletion?(.failure(error))
+    }
+    
+    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+        restoreCompletion?(.success(Void()))
+    }
+    
+    func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {
+        delegate?.shouldAddStorePayment(payment, for: product) ?? false
+    }
 }
 
 // MARK: - Open methods
-extension OPSTransactionsManager {
+extension OPSTransactionsManager: OPSTransactionsManagerProtocol {
     func performTransaction(transaction: OPSPaymentTransaction, completion: @escaping OPSTransactionResultCallback) {
         if let activeRequest = self.activeTransactions.processes.first(where: { $0.object == transaction }) {
             OPSLogger.logEvent("PaymentTransactions.Will add completion handlers for ongoing \(transaction.logDescription)")
@@ -100,10 +104,8 @@ extension OPSTransactionsManager {
                 payment.quantity = transaction.quantity
             }
             
-            if #available(iOS 12.2, tvOS 12.2, OSX 10.14.4, watchOS 6.2, *) {
-                if let discount = transaction.discount as? SKPaymentDiscount {
-                    payment.paymentDiscount = discount
-                }
+            if let discount = transaction.discount as? SKPaymentDiscount {
+                payment.paymentDiscount = discount
             }
             
             paymentQueue.add(payment)
@@ -116,14 +118,6 @@ extension OPSTransactionsManager {
         restoredProducts.removeAll()
         self.restoreCompletion = completion
         paymentQueue.restoreCompletedTransactions()
-    }
-    
-    func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
-        restoreCompletion?(.failure(error))
-    }
-    
-    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
-        restoreCompletion?(.success(Void()))
     }
     
     func canCompleteTransactionWithId(_ transactionId: String) -> Bool {
@@ -140,16 +134,10 @@ extension OPSTransactionsManager {
             return .failure(OPSTransactionError.notFound)
         }
     }
-    
-    func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {
-        delegate?.shouldAddStorePayment(payment, for: product) ?? false
-    }
-    
 }
 
 // MARK: - Private methods
 private extension OPSTransactionsManager {
-    
     func handleTransactionPurchased(transaction: SKPaymentTransaction) {
         OPSLogger.logEvent("PaymentTransactions.Will handle Purchased \(transaction.logDescription)")
         handle(transaction: transaction, withResult: .success(.purchased(completeTransaction: { [weak self] in
@@ -160,7 +148,7 @@ private extension OPSTransactionsManager {
 
     func handleTransactionRestored(transaction: SKPaymentTransaction) {
         OPSLogger.logEvent("PaymentTransactions.Will handle Restored \(transaction.logDescription)")
-        restoredProducts.insert(transaction.payment.productIdentifier)
+        restoredProducts.insert(transaction.productId)
         paymentQueue.finishTransaction(transaction)
     }
 
@@ -187,14 +175,14 @@ private extension OPSTransactionsManager {
             }
             
             func notifyWaitersAndCompleteTransaction() {
-                if let paymentTransaction = self?.activeTransactions.objectWhere({ $0.product.productIdentifier == transaction.payment.productIdentifier }) {
+                if let paymentTransaction = self?.activeTransactions.objectWhere({ $0.product.productIdentifier == transaction.productId }) {
                     if paymentTransaction.autoComplete || transaction.transactionState == .failed {
                         completeTransaction()
                     } else {
                         self?.uncompletedTransactions.append(transaction)
                     }
                     OPSLogger.logEvent("PaymentTransactions.Will notify waiters for \(transaction.logDescription) with result \(result)")
-                    self?.activeTransactions.completeWhere({ $0.product.productIdentifier == transaction.payment.productIdentifier }, withResult: result)
+                    self?.activeTransactions.completeWhere({ $0.product.productIdentifier == transaction.productId }, withResult: result)
                 } else {
                     if transaction.transactionState == .failed {
                         completeTransaction()
@@ -210,7 +198,7 @@ private extension OPSTransactionsManager {
             case .success(let status):
                 switch status {
                 case .deffered:
-                    if let process = self?.activeTransactions.processWhere({ $0.product.productIdentifier == transaction.payment.productIdentifier }) {
+                    if let process = self?.activeTransactions.processWhere({ $0.product.productIdentifier == transaction.productId }) {
                         OPSLogger.logEvent("PaymentTransactions.Will notify about deffered \(transaction.logDescription). Ask to buy flow starts here.")
                         process.notifyWaiters(result: result)
                     }
@@ -225,3 +213,6 @@ private extension OPSTransactionsManager {
     
 }
 
+extension SKPaymentTransaction {
+    @objc var productId: String { payment.productIdentifier }
+}
