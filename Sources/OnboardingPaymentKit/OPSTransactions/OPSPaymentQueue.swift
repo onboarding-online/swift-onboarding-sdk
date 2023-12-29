@@ -14,7 +14,3 @@ protocol OPSPaymentQueue {
     func restoreCompletedTransactions()
     func finishTransaction(_ transaction: SKPaymentTransaction)
 }
-
-extension SKPaymentQueue: OPSPaymentQueue {
-    
-}

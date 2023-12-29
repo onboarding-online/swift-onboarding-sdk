@@ -34,28 +34,3 @@ public final class OPSLogger {
     }
     
 }
-
-extension SKPaymentTransactionState {
-    var debugName: String {
-        switch self {
-        case .purchasing:
-            return "Purchasing"
-        case .purchased:
-            return "Purchased"
-        case .failed:
-            return "Failed"
-        case .restored:
-            return "Restored"
-        case .deferred:
-            return "Deffered"
-        @unknown default:
-            return "Unknown transaction state"
-        }
-    }
-}
-
-extension SKPaymentTransaction {
-    var logDescription: String {
-        "Transaction \(transactionIdentifier ?? "") for product \(payment.productIdentifier), quantity: \(payment.quantity), status \(transactionState.debugName)"
-    }
-}

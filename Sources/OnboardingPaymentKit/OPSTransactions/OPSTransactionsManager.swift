@@ -127,7 +127,7 @@ extension OPSTransactionsManager: OPSTransactionsManagerProtocol {
     func completeTransactionWithId(_ transactionId: String) -> Result<Void, OPSTransactionError> {
         if let transaction = uncompletedTransactions.first(where: { $0.transactionIdentifier == transactionId }) {
             OPSLogger.logEvent("PaymentTransactions.Will finish uncompleted transaction \(transaction.logDescription)")
-            paymentQueue.finishTransaction(transaction)
+            finishTransaction(transaction)
             return .success(Void())
         } else {
             OPSLogger.logEvent("PaymentTransactions.Did not find uncompleted transaction with id \(transactionId)")
@@ -142,13 +142,20 @@ private extension OPSTransactionsManager {
         OPSLogger.logEvent("PaymentTransactions.Will handle Purchased \(transaction.logDescription)")
         handle(transaction: transaction, withResult: .success(.purchased(completeTransaction: { [weak self] in
             OPSLogger.logEvent("PaymentTransactions.Will finish Purchased \(transaction.logDescription)")
-            self?.paymentQueue.finishTransaction(transaction)
+            self?.finishTransaction(transaction)
         })))
     }
 
     func handleTransactionRestored(transaction: SKPaymentTransaction) {
         OPSLogger.logEvent("PaymentTransactions.Will handle Restored \(transaction.logDescription)")
         restoredProducts.insert(transaction.productId)
+        finishTransaction(transaction)
+    }
+    
+    func finishTransaction(_ transaction: SKPaymentTransaction) {
+        if let i = uncompletedTransactions.firstIndex(where: { $0.transactionIdentifier == transaction.transactionIdentifier }) {
+            uncompletedTransactions.remove(at: i)
+        }
         paymentQueue.finishTransaction(transaction)
     }
 
@@ -171,7 +178,7 @@ private extension OPSTransactionsManager {
         DispatchQueue.main.async { [weak self] in
             func completeTransaction() {
                 OPSLogger.logEvent("PaymentTransactions.Will complete \(transaction.logDescription)")
-                self?.paymentQueue.finishTransaction(transaction)
+                self?.finishTransaction(transaction)
             }
             
             func notifyWaitersAndCompleteTransaction() {
@@ -211,8 +218,4 @@ private extension OPSTransactionsManager {
         }
     }
     
-}
-
-extension SKPaymentTransaction {
-    @objc var productId: String { payment.productIdentifier }
 }
