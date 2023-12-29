@@ -364,7 +364,7 @@ extension MockOPSPaymentQueue: OPSPaymentQueue {
 private final class MockOPSTransactionsManagerDelegate: OPSTransactionsManagerDelegate {
     private(set) var unexpectedTransactions: [SKPaymentTransaction] = []
     
-    func didUpdateUnexpectedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult) {
+    func didUpdateUnexpectedPurchasedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult) {
         unexpectedTransactions.append(transaction)
     }
 

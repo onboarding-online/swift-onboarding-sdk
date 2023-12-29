@@ -16,11 +16,11 @@ public typealias OPSRestoreResultCallback = (OPSRestoreResult)->()
 
 public protocol OPSTransactionsManagerDelegate: AnyObject {
     func shouldAddStorePayment(_ payment: SKPayment, for product: SKProduct) -> Bool
-    func didUpdateUnexpectedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult)
+    func didUpdateUnexpectedPurchasedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult)
 }
 
 public extension OPSTransactionsManagerDelegate {
-    func didUpdateUnexpectedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult) { }
+    func didUpdateUnexpectedPurchasedTransaction(_ transaction: SKPaymentTransaction, withResult result: OPSTransactionResult) { }
 }
 
 protocol OPSTransactionsManagerProtocol: AnyObject {
@@ -196,7 +196,7 @@ private extension OPSTransactionsManager {
                     } else {
                         OPSLogger.logEvent("PaymentTransactions.No waiters for \(transaction.logDescription) with result \(result). Add to uncompleted transactions. Uncompleted transactions count: \((self?.uncompletedTransactions.count ?? 0) + 1)")
                         self?.uncompletedTransactions.append(transaction)
-                        self?.delegate?.didUpdateUnexpectedTransaction(transaction, withResult: result)
+                        self?.delegate?.didUpdateUnexpectedPurchasedTransaction(transaction, withResult: result)
                     }
                 }
             }
