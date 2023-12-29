@@ -13,7 +13,7 @@ public typealias SKProductIDs = Set<String>
 
 final class OPSProductsManager {
     
-    private var products: Set<SKProduct> = []
+    private var products: [String : SKProduct] = [:]
     private let fetcher: any SKProductsFetcher
     
     init(fetcher: any SKProductsFetcher) {
@@ -28,22 +28,39 @@ extension OPSProductsManager {
             OPSLogger.logEvent("ProductsRequest.Will return products with ids \(ids) from cache")
             return OPSProductsResponse(products: Array(cachedProducts), invalidProductIdentifiers: [])
         }
+        
         OPSLogger.logEvent("ProductsRequest.Will start fetching products with ids \(ids)")
         let response = try await fetcher.fetch(productIds: ids)
-        self.products.formUnion(response.products)
+        cacheProducts(response.products)
         OPSLogger.logEvent("ProductsRequest.Did fetch products with ids \(ids)")
+        
         return response
     }
 }
 
 // MARK: - Private methods
 private extension OPSProductsManager {
-    func cachedProductsWith(ids: SKProductIDs) -> Set<SKProduct>? {
-        let cachedProducts = products.filter({ ids.contains($0.productIdentifier) })
-        if cachedProducts.count == ids.count {
-            return cachedProducts
+    func cacheProducts(_ products: [SKProduct]) {
+        WorkingQueue.sync {
+            for product in products {
+                self.products[product.productIdentifier] = product
+            }
         }
-        
-        return nil
+    }
+    func cachedProductsWith(ids: SKProductIDs) -> Set<SKProduct>? {
+        WorkingQueue.sync {
+            var cachedProducts = Set<SKProduct>()
+            for id in ids {
+                if let product = self.products[id] {
+                    cachedProducts.insert(product)
+                }
+            }
+            
+            if cachedProducts.count == ids.count {
+                return cachedProducts
+            }
+            
+            return nil
+        }
     }
 }

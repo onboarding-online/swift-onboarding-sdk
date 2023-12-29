@@ -12,15 +12,8 @@ import StoreKit
 public typealias OPSProductsRequestResult = Result<OPSProductsResponse, Error>
 public typealias OPSProductsRequestCompletion = (OPSProductsRequestResult)->()
 
-protocol SKProductsFetcher: Equatable {
-    var productIds: Set<String> { get }
-    
-    func fetch(productIds: Set<String>) async throws -> OPSProductsResponse
-}
-
 final class OPSSKProductsFetcher: NSObject {
         
-    private(set) var productIds: Set<String> = []
     private var completion: OPSProductsRequestCompletion?
     
 }
@@ -31,7 +24,6 @@ extension OPSSKProductsFetcher: SKProductsFetcher {
     func fetch(productIds: Set<String>,
                completion: @escaping OPSProductsRequestCompletion) {
         OPSLogger.logEvent("Did start fetching products with ids \(productIds)")
-        self.productIds = productIds
         self.completion = completion
 
         let request = SKProductsRequest(productIdentifiers: productIds)
