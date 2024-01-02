@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AppStoreValidatedReceipt: Codable {
+public struct AppStoreValidatedReceipt: Codable, Hashable {
     
     public let status: Int
     public let environment: String
@@ -54,7 +54,7 @@ public struct AppStoreValidatedReceipt: Codable {
     }
 }
 
-public struct AppStoreReceipt: Codable {
+public struct AppStoreReceipt: Codable, Hashable {
     public let receiptType: String
     public let appItemId: Int
     public let receiptCreationDateMs: String
@@ -62,7 +62,7 @@ public struct AppStoreReceipt: Codable {
     public let inApp: [AppStoreReceiptInApp]?
 }
 
-public struct AppStoreReceiptInApp: Codable {
+public struct AppStoreReceiptInApp: Codable, Hashable {
     public let productId: String
     public let quantity: String
     public let transactionId: String
@@ -98,19 +98,19 @@ public struct AppStoreReceiptInApp: Codable {
     public var isSubscription: Bool { expiresDateMs != nil && cancellationDateMs == nil }
 }
 
-public struct AppStorePendingRenewalInfo: Codable {
+public struct AppStorePendingRenewalInfo: Codable, Hashable {
     public let productId: String
     public let autoRenewProductId: String
     public let originalTransactionId: String
     public let autoRenewStatus: AppStorePendingRenewalInfoStatus
 }
 
-public enum AppStorePendingRenewalInfoStatus: String, Codable {
+public enum AppStorePendingRenewalInfoStatus: String, Codable, Hashable {
     case renewOn = "1"
     case renewOff = "0"
 }
 
-public enum AppStoreCancellationReason: String, Codable {
+public enum AppStoreCancellationReason: String, Codable, Hashable {
     case issueInApp = "1"
     case otherReason = "0"
 }

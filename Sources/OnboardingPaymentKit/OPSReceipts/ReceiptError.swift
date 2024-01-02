@@ -39,3 +39,24 @@ public enum ReceiptError: Error {
         }
     }
 }
+
+extension ReceiptError: Equatable {
+    public static func == (lhs: ReceiptError, rhs: ReceiptError) -> Bool {
+        switch (lhs, rhs) {
+        case (.noReceiptData, .noReceiptData):
+            return true
+        case (.noRemoteData, .noRemoteData):
+            return true
+        case (.requestBodyEncodeError, .requestBodyEncodeError):
+            return true
+        case (.networkError, .networkError):
+            return true
+        case (.jsonDecodeError(let lhsEncodedError), .jsonDecodeError(let rhsEncodedError)):
+            return lhsEncodedError == rhsEncodedError
+        case (.receiptInvalid(let lhsEncodedError), .receiptInvalid(let rhsEncodedError)):
+            return lhsEncodedError == rhsEncodedError
+        default:
+            return false 
+        }
+    }
+}

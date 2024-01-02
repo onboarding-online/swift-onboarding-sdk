@@ -97,7 +97,6 @@ private extension OPSReceiptsManager {
         guard let appStoreReceiptURL else  {
             OPSLogger.logError(message: "AppStoreReceipt.Invalid AppStore receipt URL")
             throw OPSReceiptError.noReceiptData
-            return
         }
         
         do {
