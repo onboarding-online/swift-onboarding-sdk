@@ -39,11 +39,11 @@ extension PaywallVC: PaywallBottomViewDelegate {
     }
     
     func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        
+        showSafariWith(url: ppURL)
     }
     
     func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        
+        showSafariWith(url: tacURL)
     }
     
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
@@ -203,6 +203,13 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
 
 // MARK: - Private methods
 private extension PaywallVC {
+    private var ppURL: URL { 
+        URL(string: "https://google.com")!
+    }
+    private var tacURL: URL {
+        URL(string: "https://google.com")!
+    }
+    
     func loadProducts() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.didLoadProducts()
