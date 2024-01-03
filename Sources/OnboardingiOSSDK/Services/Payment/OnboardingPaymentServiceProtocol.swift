@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol OnboardingPaymentServiceProtocol {
-    
+    func restorePurchases() async throws
 }

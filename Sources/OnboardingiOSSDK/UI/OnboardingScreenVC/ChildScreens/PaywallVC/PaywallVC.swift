@@ -9,11 +9,18 @@ import UIKit
 import ScreensGraph
 
 final class PaywallVC: BaseChildScreenGraphViewController {
-
+    
+    static func instantiate(paymentService: OnboardingPaymentServiceProtocol) -> PaywallVC {
+        let paywallVC = PaywallVC.nibInstance()
+        paywallVC.paymentService = paymentService
+        return paywallVC
+    }
+    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var bottomView: PaywallBottomView!
     @IBOutlet weak var gradientView: GradientView!
     
+    private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedItem: Int = 0
     private var isLoading = true
 
@@ -40,7 +47,13 @@ extension PaywallVC: PaywallBottomViewDelegate {
     }
     
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        
+        Task {
+            do {
+                try await paymentService?.restorePurchases()
+            } catch {
+                handleError(error, message: "Failed to restore purchases")
+            }
+        }
     }
 }
 
@@ -206,6 +219,14 @@ private extension PaywallVC {
     
     @objc func closeButtonPressed() {
         
+    }
+    
+    @MainActor
+    func handleError(_ error: Error,
+                     message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(alert, animated: true)
     }
 }
 

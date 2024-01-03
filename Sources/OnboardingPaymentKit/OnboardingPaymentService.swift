@@ -29,6 +29,14 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         transactionsManager.restorePurchases(completion: completion)
     }
     
+    public func restorePurchases() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            restorePurchases() { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     private func refreshReceipt(forceReload: Bool) async throws {
         try await receiptsManager.refreshReceipt(forceReload: forceReload)
     }
