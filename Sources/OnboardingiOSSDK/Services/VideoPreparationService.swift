@@ -51,7 +51,7 @@ extension VideoPreparationService {
     }
     
     func prepareForNextScreen(_ screenId: String?) {
-        guard let screenId else { return }
+//        guard let screenId else { return }
     
 //        prepareVideoForScreens(after: screenId)
     }
@@ -99,7 +99,6 @@ private extension VideoPreparationService {
     }
     
     func findAllEdges() {
-        let time = Date()
         for (screenId, screen) in screenGraph.screens {
             if let edges = try? screen.findAllEdges() {
                 screenIdToEdgesDict[screenId] = edges

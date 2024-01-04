@@ -29,6 +29,11 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         transactionsManager.restorePurchases(completion: completion)
     }
     
+    public func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
+        let response: OPSProductsResponse = try await fetchProductsWith(ids: ids)
+        return response.products
+    }
+    
     public func restorePurchases() async throws {
         return try await withCheckedThrowingContinuation { continuation in
             restorePurchases() { result in

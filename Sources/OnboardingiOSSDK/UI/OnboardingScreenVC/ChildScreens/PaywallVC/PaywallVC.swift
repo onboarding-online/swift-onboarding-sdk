@@ -7,6 +7,7 @@
 
 import UIKit
 import ScreensGraph
+import StoreKit
 
 final class PaywallVC: BaseChildScreenGraphViewController {
     
@@ -23,6 +24,8 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedItem: Int = 0
     private var isLoading = true
+    private var productIds: Set<String> = []
+    private var products: [SKProduct] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +109,7 @@ extension PaywallVC: UICollectionViewDelegate {
         switch row {
         case .header(_), .separator, .loading:
             return
-        case .listSubscription(let item):
+        case .listSubscription(_):
             let index = indexPath.row
             if selectedItem != index {
                 var indexPathsToReload = [indexPath]
