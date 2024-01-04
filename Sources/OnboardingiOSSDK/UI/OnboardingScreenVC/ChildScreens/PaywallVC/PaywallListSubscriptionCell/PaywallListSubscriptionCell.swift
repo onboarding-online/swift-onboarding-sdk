@@ -35,21 +35,39 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 extension PaywallListSubscriptionCell {
     func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
                  isSelected: Bool) {
-        checkbox.isOn = isSelected
         setBadgePosition(configuration.badgePosition)
+        setSelected(isSelected)
+        
+        let subscriptionDescription = configuration.subscriptionDescription
+        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
+        let price = subscriptionDescription.localizedPrice
+        
+        durationLabel.text = periodUnitName
+        priceLabel.text = price
+    }
+    
+    func setWith(configuration: PaywallVC.ListOneTypePurchaseCellConfiguration,
+                 isSelected: Bool) {
+        // TODO: - Use different cell
+        setBadgePosition(configuration.badgePosition)
+        setSelected(isSelected)
+    }
+}
+
+// MARK: - Private methods
+private extension PaywallListSubscriptionCell {
+    func setSelected(_ isSelected: Bool) {
+        checkbox.isOn = isSelected
         contentContainerView.layer.borderWidth = isSelected ? 1 : 0
         contentContainerView.backgroundColor = isSelected ? .white : .black.withAlphaComponent(0.05)
-
+        
         if isSelected {
             contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
         } else {
             contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
         }
     }
-}
-
-// MARK: - Private methods
-private extension PaywallListSubscriptionCell {
+    
     func setBadgePosition(_ position: SavedMoneyBadgePosition) {
         savedMoneyView.isHidden = position == .none
         NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)

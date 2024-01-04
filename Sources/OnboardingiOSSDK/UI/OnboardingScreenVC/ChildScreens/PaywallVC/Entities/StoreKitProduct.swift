@@ -65,8 +65,8 @@ struct StoreKitProduct: Hashable {
             }
             
             let subscription = StoreKitSubscriptionDescription(localizedPrice: self.localizedPrice,
-                                                       period: subscriptionPeriod,
-                                                       trialDescription: trialDescription)
+                                                               period: subscriptionPeriod,
+                                                               trialDescription: trialDescription)
             self.type = .subscription(description: subscription)
         } else {
             self.type = .oneTimePurchase

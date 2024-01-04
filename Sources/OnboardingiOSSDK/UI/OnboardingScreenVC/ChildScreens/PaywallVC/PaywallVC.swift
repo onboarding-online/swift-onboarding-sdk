@@ -24,8 +24,8 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedItem: Int = 0
     private var isLoading = true
-    private var productIds: Set<String> = []
-    private var products: [SKProduct] = []
+    var productIds: [String] = [] // TODO: - Set product ids
+    private var products: [StoreKitProduct] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,6 +96,14 @@ extension PaywallVC: UICollectionViewDataSource {
             cell.setWith(configuration: configuration, isSelected: isSelected)
             
             return cell
+        case .oneTypePurchase(let configuration):
+            let index = indexPath.row
+            let isSelected = selectedItem == index
+            
+            let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
+            cell.setWith(configuration: configuration, isSelected: isSelected)
+            
+            return cell
         }
     }
 }
@@ -109,7 +117,7 @@ extension PaywallVC: UICollectionViewDelegate {
         switch row {
         case .header(_), .separator, .loading:
             return
-        case .listSubscription(_):
+        case .listSubscription, .oneTypePurchase:
             let index = indexPath.row
             if selectedItem != index {
                 var indexPathsToReload = [indexPath]
@@ -117,7 +125,6 @@ extension PaywallVC: UICollectionViewDelegate {
                 selectedItem = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
             }
-            
 //            self.delegate?.onboardingChildScreenUpdate(value: selectedItem, description: item.title.textByLocale(), logAnalytics: true)
         }
     }
@@ -207,15 +214,26 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
 // MARK: - Private methods
 private extension PaywallVC {
     private var ppURL: URL { 
-        URL(string: "https://google.com")!
+        URL(string: "https://google.com")! // TODO: - Set PP URL
     }
     private var tacURL: URL {
-        URL(string: "https://google.com")!
+        URL(string: "https://google.com")! // TODO: - Set TAC URL
     }
     
     func loadProducts() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.didLoadProducts()
+        Task {
+            let products = try await paymentService.fetchProductsWith(ids: Set(productIds))
+            self.products = products
+                .compactMap( { StoreKitProduct(skProduct: $0) })
+                .sorted(by: { lhs, rhs in
+                    guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
+                          let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
+                        return false
+                    }
+                    
+                    return lhsIndex < rhsIndex
+            })
+            didLoadProducts()
         }
     }
     
@@ -300,6 +318,7 @@ extension PaywallVC {
     enum RowType {
         case header(HeaderCellConfiguration)
         case separator
+        case oneTypePurchase(ListOneTypePurchaseCellConfiguration)
         case listSubscription(ListSubscriptionCellConfiguration)
         case loading
         
@@ -309,7 +328,7 @@ extension PaywallVC {
                 return 0
             case .separator:
                 return 1
-            case .listSubscription:
+            case .listSubscription, .oneTypePurchase:
                 return UIScreen.isIphoneSE1 ? 60 : 77
             }
         }
@@ -322,6 +341,13 @@ extension PaywallVC {
     }
     
     struct ListSubscriptionCellConfiguration {
+        let product: StoreKitProduct
+        let subscriptionDescription: StoreKitSubscriptionDescription
+        let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
+    }
+    
+    struct ListOneTypePurchaseCellConfiguration {
+        let product: StoreKitProduct
         let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
     }
     
@@ -343,10 +369,18 @@ extension PaywallVC {
             if isLoading {
                 return [.loading]
             }
-            return [.listSubscription(.init(badgePosition: .left)),
-                    .listSubscription(.init(badgePosition: .center)),
-                    .listSubscription(.init(badgePosition: .right)),
-                    .listSubscription(.init(badgePosition: .none))]
+
+            return products.map { product in
+                switch product.type {
+                case .oneTimePurchase:
+                    return .oneTypePurchase(.init(product: product,
+                                                  badgePosition: .left))
+                case .subscription(let description):
+                    return .listSubscription(.init(product: product,
+                                                   subscriptionDescription: description,
+                                                   badgePosition: .left))
+                }
+            }
         }
     }
 }
@@ -359,6 +393,43 @@ extension PaywallVC {
     }
 }
 
+@available(iOS 17, *)
+#Preview {
+    createPreviewVC()
+}
+
+//import SwiftUI
+//struct PaywallVCPreviews: PreviewProvider {
+//    static var previews: some View {
+//        UIViewControllerPreview {
+//           createPreviewVC()
+//        }
+//        .edgesIgnoringSafeArea(.all)
+//        .preferredColorScheme(.dark)
+//    }
+//}
+
+func createPreviewVC() -> UIViewController {
+    let paymentService = PreviewPaymentService()
+    let vc = PaywallVC.instantiate(paymentService: paymentService)
+    vc.productIds = ["1", "2"]
+    let nav = UINavigationController(rootViewController: vc)
+    
+    return nav
+}
+
+final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
+    func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
+        try? await Task.sleep(nanoseconds: 5_000_000)
+        
+        return SKProduct.mock(productIds: ids)
+    }
+    
+    func restorePurchases() async throws {
+        
+    }
+}
+
 private extension PaywallVC.HeaderCellConfiguration {
     static func mock() -> PaywallVC.HeaderCellConfiguration {
         .init(imageURL: URL(string: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?size=626&ext=jpg&ga=GA1.1.1546980028.1703462400&semt=sph")!,
@@ -366,22 +437,3 @@ private extension PaywallVC.HeaderCellConfiguration {
               subtitle: "Just ask it to our lawyer and get a quick and high-quality answer. ")
     }
 }
-
-@available(iOS 17, *)
-#Preview {
-    let vc = PaywallVC.nibInstance()
-    let nav = UINavigationController(rootViewController: vc)
-    
-    return nav
-}
-
-//import SwiftUI
-//struct PaywallVCPreviews: PreviewProvider {
-//    static var previews: some View {
-//        UIViewControllerPreview {
-//            PaywallVC.nibInstance()
-//        }
-//        .edgesIgnoringSafeArea(.all)
-//        .preferredColorScheme(.dark)
-//    }
-//}

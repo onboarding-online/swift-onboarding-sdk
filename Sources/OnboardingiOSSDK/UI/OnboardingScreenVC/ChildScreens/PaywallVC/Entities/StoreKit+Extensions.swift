@@ -80,3 +80,25 @@ extension SKProductSubscriptionPeriod {
     }
 }
 
+extension SKProduct {
+    static func mock(productIds: Set<String>) -> [SKProduct] {
+        var products = [SKProduct]()
+        let locale = Locale.current
+        for id in productIds {
+            let product = SKProduct()
+            let price = Double(arc4random_uniform(100)) + 3.99
+            product.setValue(id, forKey: "productIdentifier")
+            product.setValue(price, forKey: "price")
+            product.setValue(locale, forKey: "priceLocale")
+            
+            let period = SKProductSubscriptionPeriod()
+            period.setValue(SKProduct.PeriodUnit.day.rawValue, forKey: "unit")
+            period.setValue(1, forKey: "numberOfUnits")
+            
+            product.setValue(period, forKey: "subscriptionPeriod")
+            
+            products.append(product)
+        }
+        return products
+    }
+}
