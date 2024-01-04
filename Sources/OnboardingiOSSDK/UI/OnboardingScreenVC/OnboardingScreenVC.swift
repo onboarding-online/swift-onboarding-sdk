@@ -140,7 +140,7 @@ private extension OnboardingScreenVC {
     
     func setupScreenConfigAndScreenBodyContainer() {
         if let childScreen = onboardingViewControllerFor(screen: screen) {
-            addChildViewController(childScreen, andEmbedToView: childContainerView)
+            addChildViewController(childScreen, andEmbedToView: childScreen.isEmbedded ? childContainerView : view)
             self.childScreen = childScreen
         }
     }

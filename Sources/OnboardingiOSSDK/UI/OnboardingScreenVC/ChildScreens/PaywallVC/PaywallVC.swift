@@ -22,6 +22,7 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     @IBOutlet weak var bottomView: PaywallBottomView!
     @IBOutlet weak var gradientView: GradientView!
     
+    override var isEmbedded: Bool { false }
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
     private var isLoadingProducts = true
@@ -49,7 +50,7 @@ extension PaywallVC: PaywallBottomViewDelegate {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
                 // TODO: - Finish 
             } catch OnboardingPaywallError.cancelled {
-                /// Ignore 
+                /// Ignore
             } catch {
                 handleError(error, message: "Failed to purchase")
             }

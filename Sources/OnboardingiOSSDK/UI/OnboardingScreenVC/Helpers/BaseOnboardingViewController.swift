@@ -12,6 +12,7 @@ class BaseScreenGraphViewController: BaseOnboardingViewController, OnboardingScr
 
 class BaseChildScreenGraphViewController: BaseOnboardingViewController, OnboardingBodyChildScreenProtocol {
     weak var delegate: OnboardingChildScreenDelegate?
+    var isEmbedded: Bool { true }
 }
 
 class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol,  UIImageLoader  {
