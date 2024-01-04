@@ -18,14 +18,16 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomView: PaywallBottomView!
     @IBOutlet weak var gradientView: GradientView!
     
     private var paymentService: OnboardingPaymentServiceProtocol!
-    private var selectedItem: Int = 0
-    private var isLoading = true
-    var productIds: [String] = [] // TODO: - Set product ids
+    private var selectedIndex: Int = 0
+    private var isLoadingProducts = true
+    private var isBusy = true
     private var products: [StoreKitProduct] = []
+    var productIds: [String] = [] // TODO: - Set product ids
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +40,19 @@ final class PaywallVC: BaseChildScreenGraphViewController {
 // MARK: - PaywallBottomViewDelegate
 extension PaywallVC: PaywallBottomViewDelegate {
     func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        
+        guard selectedIndex < products.count else { return }
+
+        let selectedProduct = products[selectedIndex]
+        setViewBusy(true)
+        Task {
+            do {
+                try await paymentService.purchaseProduct(selectedProduct.skProduct)
+                // TODO: - Finish 
+            } catch {
+                handleError(error, message: "Failed to purchase")
+            }
+            setViewBusy(false)
+        }
     }
     
     func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView) {
@@ -50,12 +64,14 @@ extension PaywallVC: PaywallBottomViewDelegate {
     }
     
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        setViewBusy(true)
         Task {
             do {
                 try await paymentService?.restorePurchases()
             } catch {
                 handleError(error, message: "Failed to restore purchases")
             }
+            setViewBusy(false)
         }
     }
 }
@@ -90,7 +106,7 @@ extension PaywallVC: UICollectionViewDataSource {
             return cell
         case .listSubscription(let configuration):
             let index = indexPath.row
-            let isSelected = selectedItem == index
+            let isSelected = selectedIndex == index
             
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
             cell.setWith(configuration: configuration, isSelected: isSelected)
@@ -98,7 +114,7 @@ extension PaywallVC: UICollectionViewDataSource {
             return cell
         case .oneTypePurchase(let configuration):
             let index = indexPath.row
-            let isSelected = selectedItem == index
+            let isSelected = selectedIndex == index
             
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
             cell.setWith(configuration: configuration, isSelected: isSelected)
@@ -119,10 +135,10 @@ extension PaywallVC: UICollectionViewDelegate {
             return
         case .listSubscription, .oneTypePurchase:
             let index = indexPath.row
-            if selectedItem != index {
+            if selectedIndex != index {
                 var indexPathsToReload = [indexPath]
-                indexPathsToReload.append(IndexPath(row: selectedItem, section: indexPath.section))
-                selectedItem = index
+                indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
+                selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
             }
 //            self.delegate?.onboardingChildScreenUpdate(value: selectedItem, description: item.title.textByLocale(), logAnalytics: true)
@@ -144,6 +160,7 @@ extension PaywallVC: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension PaywallVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let sections = allSections()
@@ -163,7 +180,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
     }
     
     func calculateHeaderSize(in sections: [SectionType]) -> CGFloat {
-        if isLoading {
+        if isLoadingProducts {
             return Constants.defaultHeaderHeight
         }
         var contentSize: CGFloat = 0
@@ -238,7 +255,7 @@ private extension PaywallVC {
     }
     
     func didLoadProducts() {
-        self.isLoading = false
+        self.isLoadingProducts = false
         let sections = allSections()
         self.collectionView.performBatchUpdates {
             collectionView.reloadSections(IndexSet(0..<sections.count))
@@ -246,6 +263,8 @@ private extension PaywallVC {
     }
     
     @objc func closeButtonPressed() {
+        guard !isBusy else { return }
+        
         
     }
     
@@ -255,6 +274,16 @@ private extension PaywallVC {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .cancel))
         present(alert, animated: true)
+    }
+    
+    func setViewBusy(_ isBusy: Bool) {
+        self.isBusy = isBusy
+        if isBusy {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+        }
+        view.isUserInteractionEnabled = !isBusy
     }
 }
 
@@ -269,8 +298,6 @@ private extension PaywallVC {
     }
     
     func setupNavigationBar() {
-//        navigationController?.navigationBar.isTranslucent = true
-        
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithTransparentBackground()
         navigationController?.navigationBar.standardAppearance = navBarAppearance
@@ -366,7 +393,7 @@ extension PaywallVC {
         case .separator:
             return [.separator]
         case .items:
-            if isLoading {
+            if isLoadingProducts {
                 return [.loading]
             }
 
@@ -420,13 +447,18 @@ func createPreviewVC() -> UIViewController {
 
 final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
     func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
-        try? await Task.sleep(nanoseconds: 5_000_000)
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
         
         return SKProduct.mock(productIds: ids)
     }
     
     func restorePurchases() async throws {
-        
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
+    }
+    
+    func purchaseProduct(_ product: SKProduct) async throws {
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
+//        throw NSError(domain: "com", code: 12)
     }
 }
 

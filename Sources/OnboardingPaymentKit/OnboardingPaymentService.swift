@@ -25,6 +25,14 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         transactionsManager.performTransaction(transaction: transaction, completion: completion)
     }
     
+    private func perform(transaction: OPSPaymentTransaction) async throws -> OPSTransactionStatus {
+        return try await withCheckedThrowingContinuation { continuation in
+            perform(transaction: transaction) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     private func restorePurchases(completion: @escaping OPSRestoreResultCallback) {
         transactionsManager.restorePurchases(completion: completion)
     }
@@ -40,6 +48,11 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
                 continuation.resume(with: result)
             }
         }
+    }
+    
+    public func purchaseProduct(_ product: SKProduct) async throws {
+        let transaction = OPSPaymentTransaction(product: product, discount: nil, quantity: 1, simulatesAskToBuyInSandbox: false, autoComplete: true)
+        _ = try await perform(transaction: transaction)
     }
     
     private func refreshReceipt(forceReload: Bool) async throws {

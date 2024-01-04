@@ -94,6 +94,7 @@ private extension PaywallBottomView {
         buyButton.backgroundColor = .blue
         buyButton.setTitle("Buy Now", for: .normal)
         buyButton.layer.cornerRadius = 12
+        buyButton.addTarget(self, action: #selector(buyButtonPressed), for: .touchUpInside)
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
         let buttonHeight: CGFloat = UIScreen.isIphoneSE1 ? 44 : 56
         buyButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
