@@ -13,6 +13,15 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
     
     private static let shared = OnboardingPaymentService()
     
+    private var simulatesAskToBuyInSandbox: Bool
+    private var autoComplete: Bool
+    
+    public init(simulatesAskToBuyInSandbox: Bool = false,
+                autoComplete: Bool = true) {
+        self.simulatesAskToBuyInSandbox = simulatesAskToBuyInSandbox
+        self.autoComplete = autoComplete
+    }
+    
     private let productsmanager = OPSProductsManager(fetcher: OPSSKProductsFetcher())
     private let transactionsManager: OPSTransactionsManagerProtocol = OPSTransactionsManager(paymentQueue: SKPaymentQueue.default())
     private let receiptsManager = OPSReceiptsManager()
@@ -51,7 +60,11 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
     }
     
     public func purchaseProduct(_ product: SKProduct) async throws {
-        let transaction = OPSPaymentTransaction(product: product, discount: nil, quantity: 1, simulatesAskToBuyInSandbox: false, autoComplete: true)
+        let transaction = OPSPaymentTransaction(product: product,
+                                                discount: nil, 
+                                                quantity: 1,
+                                                simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox,
+                                                autoComplete: autoComplete)
         _ = try await perform(transaction: transaction)
     }
     
@@ -74,9 +87,7 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
     private func setSKTransactionsDelegate(_ delegate: OPSTransactionsManagerDelegate) {
         transactionsManager.delegate = delegate
     }
-    
-    public init() { }
-    
+        
 }
 
 // MARK: - API
