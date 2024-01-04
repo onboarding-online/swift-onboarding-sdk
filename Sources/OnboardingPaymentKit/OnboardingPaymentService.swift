@@ -61,11 +61,17 @@ public final class OnboardingPaymentService: OnboardingPaymentServiceProtocol {
     
     public func purchaseProduct(_ product: SKProduct) async throws {
         let transaction = OPSPaymentTransaction(product: product,
-                                                discount: nil, 
+                                                discount: nil,
                                                 quantity: 1,
                                                 simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox,
                                                 autoComplete: autoComplete)
-        _ = try await perform(transaction: transaction)
+        do {
+            _ = try await perform(transaction: transaction)
+        } catch OPSTransactionError.cancelled {
+           throw OnboardingPaywallError.cancelled
+        } catch {
+            throw error
+        }
     }
     
     private func refreshReceipt(forceReload: Bool) async throws {

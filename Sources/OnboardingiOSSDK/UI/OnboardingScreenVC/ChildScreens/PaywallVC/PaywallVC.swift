@@ -48,6 +48,8 @@ extension PaywallVC: PaywallBottomViewDelegate {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
                 // TODO: - Finish 
+            } catch OnboardingPaywallError.cancelled {
+                /// Ignore 
             } catch {
                 handleError(error, message: "Failed to purchase")
             }

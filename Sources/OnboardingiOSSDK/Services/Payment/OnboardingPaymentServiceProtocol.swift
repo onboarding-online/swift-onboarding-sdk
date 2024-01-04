@@ -11,5 +11,8 @@ import StoreKit
 public protocol OnboardingPaymentServiceProtocol {
     func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct]
     func restorePurchases() async throws
+    /// Purchase SKProduct
+    /// - Parameter product: SKProduct to purchase
+    /// NOTE: Throw OnboardingPaywallError.cancelled if you don't want to show error alert when user cancel purchase.
     func purchaseProduct(_ product: SKProduct) async throws
 }
