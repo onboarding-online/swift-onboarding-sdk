@@ -29,7 +29,7 @@ public extension OnboardingService {
                                           finishedCallback: @escaping OnboardingFinishResult) {
         let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: env)
         
-        print("------- onboarding assets loading state \(preparationState)")
+//        print("------- onboarding assets loading state \(preparationState)")
         func startNew() {
             startOnboarding(projectId: projectId,
                             localJSONFileName: localJSONFileName,
@@ -52,9 +52,9 @@ public extension OnboardingService {
                 switch result {
                 case .success:
                     startPrepared()
-                    print("------- onboarding assets downloaded")
+//                    print("------- onboarding assets downloaded")
                 case .failure:
-                    print("------- onboarding assets loading failed, restart onboarding")
+//                    print("------- onboarding assets loading failed, restart onboarding")
                     startNew()
                 }
             }

@@ -70,6 +70,34 @@ final class OnboardingLoadingService {
         eventRegistered(event: .startOnboarding, params: analyticParams)
     }
     
+    static func registerStartEvent(env: OnboardingEnvironment?, responseTime: Double, screenGraph: ScreensGraph?) {
+        DispatchQueue.main.async {
+            
+            let url = OnboardingLoadingService.buildURL(for: env ?? .prod)
+            
+            var analyticParams: AnalyticsEventParameters =  [.onboardingSourceType : AnalyticsEventParams.url.rawValue,
+                                                             .time: responseTime, .url: url,
+                                                             .prefetchMode : OnboardingService.shared.assetsPrefetchMode]
+            if let screenGraph = screenGraph {
+                analyticParams.merge(screenGraph.screenGraphAnalyticsParams(), uniquingKeysWith: {$1})
+            }
+            
+            eventRegistered(event: .startOnboarding, params: analyticParams)
+        }
+    }
+    
+    static func registerStartLoadingEvent(jsonDownloadTime: Double, assetsDownloadTime: Double, screenGraph: ScreensGraph?, prefetchMode: OnboardingService.AssetsPrefetchMode) {
+        DispatchQueue.main.async {
+            var analyticParams: AnalyticsEventParameters =  [.jsonLoadingTime : jsonDownloadTime, .assetsLoadingTime : assetsDownloadTime,
+                                                             .prefetchMode : prefetchMode]
+            if let screenGraph = screenGraph {
+                analyticParams.merge(screenGraph.screenGraphAnalyticsParams(), uniquingKeysWith: {$1})
+            }
+            
+            eventRegistered(event: .resourceLoaded, params: analyticParams)
+        }
+    }
+    
     static func errorForWrong(jsonName: String) -> GenericError {
         let error = GenericError.init(errorCode: 1, localizedDescription: "didn't find json file \(jsonName)")
         systemEventRegistered(event: .localJSONNotFound, params: [.jsonName: jsonName])
