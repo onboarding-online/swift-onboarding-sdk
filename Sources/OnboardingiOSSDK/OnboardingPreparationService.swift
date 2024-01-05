@@ -43,6 +43,7 @@ extension OnboardingPreparationService {
             case .success:
                 finishedCallback(.success(Void()))
             case .failure(let error):
+
                 if error.errorCode == 1 {
                     prepareFullOnboarding(localJSONFileName: localJSONFileName, identifier: identifier, prefetchMode: prefetchMode, finishedCallback: finishedCallback)
                 } else {
@@ -118,6 +119,8 @@ private extension OnboardingPreparationService {
                 }
                 
             case .failure(let error):
+                OnboardingService.shared.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: error.localizedDescription])
+
                 finishedCallback(.failure(error))
             }
         }

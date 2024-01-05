@@ -94,7 +94,7 @@ final class OnboardingLoadingService {
                 analyticParams.merge(screenGraph.screenGraphAnalyticsParams(), uniquingKeysWith: {$1})
             }
             
-            eventRegistered(event: .resourceLoaded, params: analyticParams)
+            eventRegistered(event: .jsonAndPrefetchModeAssetsLoaded, params: analyticParams)
         }
     }
     

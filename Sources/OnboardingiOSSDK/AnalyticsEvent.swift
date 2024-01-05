@@ -26,7 +26,7 @@ public enum AnalyticsEvent: String {
     //    projectId
     //    onboardingName
     //    onboardingId
-    case resourceLoaded = "resource loaded"
+    case jsonAndPrefetchModeAssetsLoaded = "json and assets loaded"
     
     //    Parameters:
     
