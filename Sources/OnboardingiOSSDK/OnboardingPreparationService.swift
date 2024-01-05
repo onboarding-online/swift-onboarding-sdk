@@ -72,7 +72,7 @@ extension OnboardingPreparationService {
                                         env: OnboardingEnvironment = .prod,
                                         finishedCallback: @escaping OnboardingFinishResult) {
         let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
-        startOnboardingWith(identifier: identifier, finishedCallback: finishedCallback)
+        startOnboardingWith(identifier: identifier, env: env, finishedCallback: finishedCallback)
     }
 }
 
@@ -97,15 +97,26 @@ private extension OnboardingPreparationService {
                                       env: OnboardingEnvironment = .prod,
                                       prefetchMode: OnboardingService.AssetsPrefetchMode,
                                       finishedCallback: @escaping OnboardingPreparationFinishCallback) {
+        let startDate = Date()
+        OnboardingService.shared.eventRegistered(event: .startResourcesLoading, params: [.prefetchMode: prefetchMode, .projectId: projectId, .environment: env])
+
         OnboardingLoadingService.loadScreenGraphFor(projectId: projectId,
                                                     env: env) { result in
+            let jsonDownloadDate = Date()
+            let jsonDownloadTime = jsonDownloadDate.timeIntervalSince(startDate)
+            
             switch result {
             case .success(let screenGraph):
                 let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
-                loadAssetsFor(screenGraph: screenGraph,
-                              identifier: identifier,
-                              prefetchMode: prefetchMode,
-                              finishedCallback: finishedCallback)
+                let startAssetDownloadDate = Date()
+                
+                loadAssetsFor(screenGraph: screenGraph, identifier: identifier, prefetchMode: prefetchMode) { (result) in
+                    let assetDownloadTime = Date().timeIntervalSince(startAssetDownloadDate)
+                    OnboardingLoadingService.registerStartLoadingEvent(jsonDownloadTime: jsonDownloadTime, assetsDownloadTime: assetDownloadTime, screenGraph: screenGraph, prefetchMode: prefetchMode)
+                    
+                    finishedCallback(.success(Void()))
+                }
+                
             case .failure(let error):
                 finishedCallback(.failure(error))
             }
@@ -234,13 +245,15 @@ private extension OnboardingPreparationService {
         }
     }
     
-    static func startOnboardingWith(identifier: String,
+    static func startOnboardingWith(identifier: String, env: OnboardingEnvironment?,
                                     finishedCallback: @escaping OnboardingFinishResult) {
         guard let onboardingData = getPreparedOnboardingData(identifier: identifier),
             let screenGraph = onboardingData.screenGraph else {
             finishedCallback(.failure(.init(error: OnboardingPreparationError.requestedOnboardingIsNotReady)))
             return
         }
+        
+        OnboardingLoadingService.registerStartEvent(env: env, responseTime: 0.0, screenGraph: screenGraph)
         
         let runConfiguration = OnboardingService.RunConfiguration(screenGraph: screenGraph,
                                                                   appearance: OnboardingService.shared.appearance ?? .default,
