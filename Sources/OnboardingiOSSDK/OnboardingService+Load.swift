@@ -29,8 +29,7 @@ public extension OnboardingService {
                                           finishedCallback: @escaping OnboardingFinishResult) {
         let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: env)
         
-        OnboardingLogger.logInfo(topic: .onboarding, "Onboarding prepration state: \(preparationState)")
-
+//        print("------- onboarding assets loading state \(preparationState)")
         func startNew() {
             startOnboarding(projectId: projectId,
                             localJSONFileName: localJSONFileName,
@@ -52,10 +51,10 @@ public extension OnboardingService {
             OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: env) { result in
                 switch result {
                 case .success:
-                    OnboardingLogger.logInfo(topic: .onboarding, "Onboarding assets ready")
                     startPrepared()
+//                    print("------- onboarding assets downloaded")
                 case .failure:
-                    OnboardingLogger.logInfo(topic: .onboarding, "Failed to prepare onboarding assets")
+//                    print("------- onboarding assets loading failed, restart onboarding")
                     startNew()
                 }
             }
@@ -83,7 +82,6 @@ public extension OnboardingService {
             
             loadOnboarding(configuration: loadConfiguration, finishedCallback: finishedCallback)
         } catch {
-            OnboardingLogger.logError("Failed to find local onboarding: \(error.localizedDescription)")
             finishedCallback(.failure(.init(error: error)))
         }
     }
@@ -114,7 +112,6 @@ public extension OnboardingService {
             OnboardingService.shared.startOnboarding(configuration: config,
                                                      finishedCallback: finishedCallback)
         } catch {
-            OnboardingLogger.logError("Failed to run local onboarding: \(error.localizedDescription)")
             finishedCallback(.failure(.init(error: error)))
         }
     }
@@ -134,7 +131,6 @@ private extension OnboardingService {
                 let responseTime = Date().timeIntervalSince(requestStartDate)
                 
                 if loadingState.shouldProceedWithLoadedOnboarding() {
-                    OnboardingLogger.logInfo(topic: .onboarding, "Did load remote onboarding in time.")
                     DispatchQueue.main.async {
                         let config = RunConfiguration.init(screenGraph: screenGraph,
                                                            appearance: configuration.appearance,
@@ -145,13 +141,11 @@ private extension OnboardingService {
                         OnboardingLoadingService.registerStartEvent(url: url, responseTime: responseTime, config: config)
                     }
                 } else {
-                    OnboardingLogger.logWarning("Did load remote onboarding after timeout. Local onboarding being used.")
                     OnboardingLoadingService.registerJSONLoadedAfterTimeOutEvent(responseTime: responseTime)
                 }
                 
-            case .failure(let error):
-                OnboardingLogger.logError("Failed to load remote onboarding: \(error.localizedDescription)")
-                self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: error.localizedDescription])
+            case .failure(let failure):
+                self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: failure.localizedDescription])
             }
         }
     }
@@ -166,19 +160,17 @@ private extension OnboardingService {
                 
                 do {
                     let localScreenGraph = try OnboardingLoadingService.getOnboardingFromLocalPath(localPath: localPath)
-                    guard loadingState.shouldProceedWithOnboardingFromLocalPath() else { return }
+                    guard  loadingState.shouldProceedWithOnboardingFromLocalPath() else { return }
                     OnboardingLoadingService.registerSourceTypeEvent(localPath: localPath, timeout: timeout, screenGraph: localScreenGraph)
                     let config = RunConfiguration.init(screenGraph: localScreenGraph,
                                                        appearance: configuration.appearance,
                                                        launchWithAnimation: configuration.launchWithAnimation)
                     strongSelf.startOnboarding(configuration: config, finishedCallback: finishedCallback)
                 } catch {
-                    OnboardingLogger.logError("Failed to run local onboarding: \(error.localizedDescription)")
                     finishedCallback(.failure(.init(error: error)))
                 }
             }
         default:
-            OnboardingLogger.logWarning("Wrong configuration option for locals json using")
             let error = GenericError.init(errorCode: 2, localizedDescription: "wrong configuration option for locals json using")
             finishedCallback(.failure(error))
         }

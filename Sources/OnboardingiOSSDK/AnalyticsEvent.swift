@@ -10,6 +10,26 @@ import Foundation
 public enum AnalyticsEvent: String {
     
     //    Parameters:
+
+    //    projectId
+    //    prefetchMode
+    //    environment
+    case startResourcesLoading = "start resources loading"
+
+    //    Parameters:
+    
+    //    jsonLoadingTime
+    //    assetsLoadingTime
+    
+    //    prefetchMode
+    //    projectName
+    //    projectId
+    //    onboardingName
+    //    onboardingId
+    case jsonAndPrefetchModeAssetsLoaded = "json and assets loaded"
+    
+    //    Parameters:
+    
     //    prefetchMode
     //    onboardingSourceType: .url / .jsonName
     //    projectName
@@ -106,6 +126,11 @@ public enum AnalyticsEvent: String {
     //    permissionGranted: true / false
     case permissionResponseReceived = "a response to the permission request was received"
     
+    //    Parameters:
+    //    time
+    //    assetsLoadedSuccess
+    case allAssetsLoaded = "all assets loaded"
+    
 // System events
     
     //    Parameters:
@@ -135,7 +160,7 @@ public enum AnalyticsEvent: String {
     //    Parameters:
     //    edge
     case nextScreenEdgeForWrongConditions = "there are no right conditions. Random edge for wrong condition used!!!"
-        
+            
 }
 
 public enum AnalyticsEventParams: String {
@@ -170,7 +195,12 @@ public enum AnalyticsEventParams: String {
     case url = "url"
     
     case time = "download time"
-        
+    
+    case assetsLoadingTime = "assets loading time"
+    case jsonLoadingTime = "json loading time"
+    case environment = "environment"
+    case assetsLoadedSuccess = "assetsLoadedSuccess"
+    
     case error = "error"
     
     case timeout = "timeout"

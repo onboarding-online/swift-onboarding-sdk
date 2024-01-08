@@ -274,7 +274,11 @@ fileprivate extension OnboardingScreenVC {
 fileprivate extension OnboardingScreenVC {
     
     func setupTimer() {
-        if let timerDuration = screenData?.timer?.duration.doubleValue {
+        if var timerDuration = screenData?.timer?.duration.doubleValue {
+//            if timerDuration == 999.0 {
+//                timerDuration = 9.2
+//            }
+            
             timer = Timer.scheduledTimer(timeInterval: timerDuration, target: self, selector: #selector(self.showNextScreen), userInfo: nil, repeats: false)
         }
     }
