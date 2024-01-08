@@ -22,7 +22,6 @@ final class OPSReceiptsManager {
     
     init(appStoreReceiptURL: URL? = Bundle.main.appStoreReceiptURL) {
         self.appStoreReceiptURL = appStoreReceiptURL
-        appStoreReceiptData = cachedReceiptData
     }
     
 }
@@ -35,11 +34,12 @@ extension OPSReceiptsManager {
             if appStoreReceiptData != nil {
                 OPSLogger.logEvent("AppStoreReceipt.Will return local app store receipt data.")
                 return
-            } else if let cachedReceipt = cachedReceiptData {
-                OPSLogger.logEvent("AppStoreReceipt.Will return cached app store receipt data.")
-                self.appStoreReceiptData = cachedReceipt
-                return
             }
+//            else if let cachedReceipt = cachedReceiptData {
+//                OPSLogger.logEvent("AppStoreReceipt.Will return cached app store receipt data.")
+//                self.appStoreReceiptData = cachedReceipt
+//                return
+//            }
         }
         
         OPSLogger.logEvent("AppStoreReceipt.Will refresh AppStore Receipt data")

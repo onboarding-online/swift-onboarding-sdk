@@ -304,9 +304,9 @@ private extension PaywallVC {
                 delegate?.onboardingChildScreenUpdate(value: nil,
                                                       description: "Did purchase product: \(selectedProduct.id)",
                                                       logAnalytics: true)
-                
                 // TODO: - Finish
                 //                onboardingChildScreenPerform
+                close()
             } catch OnboardingPaywallError.cancelled {
                 /// Ignore
                 delegate?.onboardingChildScreenUpdate(value: nil, 
