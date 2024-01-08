@@ -9,6 +9,7 @@ import UIKit
 import ScreensGraph
 import StoreKit
 
+// TODO: - Check for canMakePayments before showing paywall 
 final class PaywallVC: BaseChildScreenGraphViewController {
     
     static func instantiate(paymentService: OnboardingPaymentServiceProtocol) -> PaywallVC {
@@ -41,41 +42,31 @@ final class PaywallVC: BaseChildScreenGraphViewController {
 // MARK: - PaywallBottomViewDelegate
 extension PaywallVC: PaywallBottomViewDelegate {
     func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        guard selectedIndex < products.count else { return }
-
-        let selectedProduct = products[selectedIndex]
-        setViewBusy(true)
-        Task {
-            do {
-                try await paymentService.purchaseProduct(selectedProduct.skProduct)
-                // TODO: - Finish 
-            } catch OnboardingPaywallError.cancelled {
-                /// Ignore
-            } catch {
-                handleError(error, message: "Failed to purchase")
-            }
-            setViewBusy(false)
-        }
+        delegate?.onboardingChildScreenUpdate(value: nil, 
+                                              description: "Buy",
+                                              logAnalytics: true)
+        purchaseSelectedProduct()
     }
-    
+  
     func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        delegate?.onboardingChildScreenUpdate(value: nil,
+                                              description: "Privacy Policy",
+                                              logAnalytics: true)
         showSafariWith(url: ppURL)
     }
     
     func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        delegate?.onboardingChildScreenUpdate(value: nil,
+                                              description: "Terms and conditions",
+                                              logAnalytics: true)
         showSafariWith(url: tacURL)
     }
     
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        setViewBusy(true)
-        Task {
-            do {
-                try await paymentService?.restorePurchases()
-            } catch {
-                handleError(error, message: "Failed to restore purchases")
-            }
-            setViewBusy(false)
-        }
+        delegate?.onboardingChildScreenUpdate(value: nil, 
+                                              description: "Restore",
+                                              logAnalytics: true)
+        restoreProducts()
     }
 }
 
@@ -143,8 +134,10 @@ extension PaywallVC: UICollectionViewDelegate {
                 indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
+                delegate?.onboardingChildScreenUpdate(value: indexPath.row, 
+                                                      description: products[selectedIndex].id,
+                                                      logAnalytics: true)
             }
-//            self.delegate?.onboardingChildScreenUpdate(value: selectedItem, description: item.title.textByLocale(), logAnalytics: true)
         }
     }
     
@@ -241,19 +234,93 @@ private extension PaywallVC {
     }
     
     func loadProducts() {
+        delegate?.onboardingChildScreenUpdate(value: nil, 
+                                              description: "Will load products",
+                                              logAnalytics: true)
+
         Task {
-            let products = try await paymentService.fetchProductsWith(ids: Set(productIds))
-            self.products = products
-                .compactMap( { StoreKitProduct(skProduct: $0) })
-                .sorted(by: { lhs, rhs in
-                    guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
-                          let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
-                        return false
-                    }
-                    
-                    return lhsIndex < rhsIndex
-            })
-            didLoadProducts()
+            do {
+                let products = try await paymentService.fetchProductsWith(ids: Set(productIds))
+                delegate?.onboardingChildScreenUpdate(value: nil,
+                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
+                                                      logAnalytics: true)
+                self.products = products
+                    .compactMap( { StoreKitProduct(skProduct: $0) })
+                    .sorted(by: { lhs, rhs in
+                        guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
+                              let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
+                            return false
+                        }
+                        
+                        return lhsIndex < rhsIndex
+                    })
+                didLoadProducts()
+            } catch {
+                delegate?.onboardingChildScreenUpdate(value: nil,
+                                                      description: "Did fail to load products: \(error.localizedDescription)",
+                                                      logAnalytics: true)
+                handleError(error, message: "Something went wrong") { [weak self] in
+                    self?.loadProducts()
+                }
+            }
+        }
+    }
+    
+    func restoreProducts() {
+        setViewBusy(true)
+        Task {
+            do {
+                try await paymentService?.restorePurchases()
+                delegate?.onboardingChildScreenUpdate(value: nil, 
+                                                      description: "Did restore purchases",
+                                                      logAnalytics: true)
+                let hasActiveSubscription = try await paymentService?.hasActiveSubscription()
+                if hasActiveSubscription == true {
+                    delegate?.onboardingChildScreenUpdate(value: nil,
+                                                          description: "User has active subscription",
+                                                          logAnalytics: true)
+                    close()
+                }
+            } catch {
+                delegate?.onboardingChildScreenUpdate(value: nil, 
+                                                      description: "Did fail to restore purchases: \(error.localizedDescription)",
+                                                      logAnalytics: true)
+                handleError(error, message: "Failed to restore purchases") { [weak self] in
+                    self?.restoreProducts()
+                }
+            }
+            setViewBusy(false)
+        }
+    }
+    
+    func purchaseSelectedProduct() {
+        guard selectedIndex < products.count else { return }
+        
+        let selectedProduct = products[selectedIndex]
+        setViewBusy(true)
+        Task {
+            do {
+                try await paymentService.purchaseProduct(selectedProduct.skProduct)
+                delegate?.onboardingChildScreenUpdate(value: nil,
+                                                      description: "Did purchase product: \(selectedProduct.id)",
+                                                      logAnalytics: true)
+                
+                // TODO: - Finish
+                //                onboardingChildScreenPerform
+            } catch OnboardingPaywallError.cancelled {
+                /// Ignore
+                delegate?.onboardingChildScreenUpdate(value: nil, 
+                                                      description: "Cancelled purchase",
+                                                      logAnalytics: true)
+            } catch {
+                handleError(error, message: "Failed to purchase", retryAction: { [weak self] in
+                    self?.purchaseSelectedProduct()
+                })
+                delegate?.onboardingChildScreenUpdate(value: nil,
+                                                      description: "Did fail to purchase: \(error.localizedDescription)",
+                                                      logAnalytics: true)
+            }
+            setViewBusy(false)
         }
     }
     
@@ -268,14 +335,28 @@ private extension PaywallVC {
     @objc func closeButtonPressed() {
         guard !isBusy else { return }
         
+        delegate?.onboardingChildScreenUpdate(value: nil, 
+                                              description: "Close",
+                                              logAnalytics: true)
+        close()
+    }
+    
+    func close() {
         
     }
     
     @MainActor
     func handleError(_ error: Error,
-                     message: String) {
+                     message: String,
+                     retryAction: @escaping EmptyCallback) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
+            self?.delegate?.onboardingChildScreenUpdate(value: nil, 
+                                                        description: "Restore",
+                                                        logAnalytics: true)
+            retryAction()
+        }))
         present(alert, animated: true)
     }
     
@@ -449,6 +530,8 @@ func createPreviewVC() -> UIViewController {
 }
 
 final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
+    var canMakePayments: Bool { true }
+  
     func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         
@@ -462,6 +545,10 @@ final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
     func purchaseProduct(_ product: SKProduct) async throws {
         try? await Task.sleep(nanoseconds: 5_000_000_000)
 //        throw NSError(domain: "com", code: 12)
+    }
+    
+    func hasActiveSubscription() async throws -> Bool {
+        false
     }
 }
 
