@@ -163,10 +163,7 @@ private extension VideoBackground {
     
     func setupAudioSessionAmbient(if setAudioSessionAmbient: Bool) {
         if setAudioSessionAmbient {
-            try? AVAudioSession.sharedInstance().setCategory(
-                AVAudioSession.Category.ambient,
-                mode: AVAudioSession.Mode.default
-            )
+            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
             try? AVAudioSession.sharedInstance().setActive(true)
         }
     }

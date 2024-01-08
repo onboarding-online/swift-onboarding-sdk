@@ -35,11 +35,17 @@ extension AssetsPrefetchService {
         log(message: "Will start prefetching of all screens")
 
         let screens = self.screenGraph.screens.map({ $0.value })
+        
+        let startLoadingAssets = Date()
         prefetchAssetsFor(screens: screens, completion: { [weak self] result in
+            let time = Date().timeIntervalSince(startLoadingAssets)
+            
             switch result {
             case .success:
+                OnboardingService.shared.eventRegistered(event: .allAssetsLoaded, params: [.time: time, .assetsLoadedSuccess: true])
                 self?.log(message: "Did prefetch all screens")
             case .failure(let error):
+                OnboardingService.shared.eventRegistered(event: .allAssetsLoaded, params: [.time: time, .assetsLoadedSuccess: false])
                 self?.log(message: "Did fail to prefetch all screens with error: \(error.localizedDescription)")
             }
             completion(result)
@@ -148,7 +154,6 @@ private extension AssetsPrefetchService {
             switch result {
             case .success:
                 self?.log(message: "Did prefetch assets for \(screen.id)")
-//                print("Did prefetch assets for \(screen.id)")
                 self?.preloadedScreenIds.insert(screen.id)
             case .failure(let error):
                 self?.log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
@@ -311,7 +316,7 @@ private extension AssetsPrefetchService {
     
     func log(message: String) {
 //        OnboardingService.shared.systemEventRegistered(event: message, params: ["message": message])
-        print("[Assets-Prefetch] - \(message)")
+        OnboardingLogger.logInfo(topic: .assetsPrefetch, message)
     }
 }
 

@@ -42,7 +42,7 @@ extension AssetsStorage {
             let url = assetURL(for: key, assetType: assetType)
             try data.write(to: url)
         } catch {
-            print("Error: Couldn't save cached image to files")
+            OnboardingLogger.logError("Couldn't save cached image to files")
         }
     }
     
@@ -77,7 +77,7 @@ private extension AssetsStorage {
             do {
                 try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
             } catch {
-                print("Error: Couldn't create directory for assets at \(path)")
+                OnboardingLogger.logError("Couldn't create directory for assets at \(path)")
             }
         }
     }

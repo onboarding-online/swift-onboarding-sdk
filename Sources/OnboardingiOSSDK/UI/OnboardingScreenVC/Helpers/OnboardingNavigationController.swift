@@ -59,7 +59,6 @@ private extension OnboardingNavigationController {
             
             let translation = panGesture.translation(in: view)
             let progress = abs(translation.x / view.bounds.width)
-            print("Swipe progress \(progress)")
         default:
             return
         }

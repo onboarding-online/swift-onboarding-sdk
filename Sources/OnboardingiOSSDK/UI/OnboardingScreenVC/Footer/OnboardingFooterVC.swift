@@ -96,7 +96,6 @@ class OnboardingFooterVC: UIViewController {
         let betweenButtonsConstrain = stackView.spacing
 
         footerHeight = topConstrain  + bottomConstrain
-        print(footerHeight)
         if let firstButton = footer.button1 {
             if let height = firstButton.styles.height {
                 nextButton1Height.constant = height
