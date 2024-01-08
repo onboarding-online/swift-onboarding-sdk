@@ -10,6 +10,26 @@ import Foundation
 public enum AnalyticsEvent: String {
     
     //    Parameters:
+
+    //    projectId
+    //    prefetchMode
+    //    environment
+    case startResourcesLoading = "start resources loading"
+
+    //    Parameters:
+    
+    //    jsonLoadingTime
+    //    assetsLoadingTime
+    
+    //    prefetchMode
+    //    projectName
+    //    projectId
+    //    onboardingName
+    //    onboardingId
+    case jsonAndPrefetchModeAssetsLoaded = "json and assets loaded"
+    
+    //    Parameters:
+    
     //    prefetchMode
     //    onboardingSourceType: .url / .jsonName
     //    projectName
@@ -28,43 +48,43 @@ public enum AnalyticsEvent: String {
     
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     //    userInputValue
     case userUpdatedValue = "user updated value"
 
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     case screenDidAppear = "screen appeared"
     
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     //    userInputValue
     //    nextScreenId
     case screenDisappeared = "screen disappeared"
     
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     case rightNavbarButtonPressed = "right navbar button pressed"
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     case leftNavbarButtonPressed = "left navbar button pressed"
     
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     case firstFooterButtonPressed = "first footer button pressed"
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     case secondFooterButtonPressed = "second footer button pressed"
     
     //    Parameters:
     //    screenID
-    //    creenName
+    //    screenName
     case switchedToNewScreenOnTimer = "switched to a new screen on a timer"
     
     //    Parameters:
@@ -87,7 +107,7 @@ public enum AnalyticsEvent: String {
     //    screenName
     //    screenID
     //    customScreenUserInputValue
-    case customScreenDisappeared  = "custom screen disapeared"
+    case customScreenDisappeared  = "custom screen disappeared"
     
     //    Parameters:
     //    userInputValues
@@ -95,16 +115,21 @@ public enum AnalyticsEvent: String {
     
     //    Parameters:
     //    screenID
-    //    creenName
-    //    pemitionType: . adsPemition / .pushNotificationPemition
+    //    screenName
+    //    permissionType: . adsPermission / .pushNotificationPermission
     case permissionRequested = "permission requested"
     
     //    Parameters:
     //    screenID
-    //    creenName
-    //    pemitionType: . adsPemition / .pushNotificationPemition
+    //    screenName
+    //    permissionType: . adsPermission / .pushNotificationPermission
     //    permissionGranted: true / false
-    case permissionResponsesReceived = "a response to the permission request was received"
+    case permissionResponseReceived = "a response to the permission request was received"
+    
+    //    Parameters:
+    //    time
+    //    assetsLoadedSuccess
+    case allAssetsLoaded = "all assets loaded"
     
 // System events
     
@@ -118,11 +143,11 @@ public enum AnalyticsEvent: String {
     
     //    Parameters:
     //    time
-    case JSONLoadedFromURLButTimeoutOccured = "json was loaded but timed out"
+    case JSONLoadedFromURLButTimeoutOccurred = "json was loaded but timed out"
     
     //    Parameters:
     //    error
-    case JSONLoadingFalure = "json loading error"
+    case JSONLoadingFailure = "json loading error"
     
     //    Parameters:
     //    edge
@@ -135,7 +160,7 @@ public enum AnalyticsEvent: String {
     //    Parameters:
     //    edge
     case nextScreenEdgeForWrongConditions = "there are no right conditions. Random edge for wrong condition used!!!"
-        
+            
 }
 
 public enum AnalyticsEventParams: String {
@@ -170,7 +195,12 @@ public enum AnalyticsEventParams: String {
     case url = "url"
     
     case time = "download time"
-        
+    
+    case assetsLoadingTime = "assets loading time"
+    case jsonLoadingTime = "json loading time"
+    case environment = "environment"
+    case assetsLoadedSuccess = "assetsLoadedSuccess"
+    
     case error = "error"
     
     case timeout = "timeout"
@@ -183,9 +213,9 @@ public enum AnalyticsEventParams: String {
     
     case permissionType = "permissionType"
 
-    case adspermission = "adsPemition"
+    case adsPermission = "adsPermission"
 
-    case pushNotificationpermission = "pushNotificationPemition"
+    case pushNotificationPermission = "pushNotificationPermission"
     
     case permissionGranted = "permissionGranted"
 

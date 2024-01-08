@@ -190,7 +190,6 @@ fileprivate extension KOCalendarView {
             self?.endDate = endDate
             
             self?.monthsData = months
-            print("Result: \(Date().timeIntervalSince(date))")
             self?.mainQueue.async { [weak self] in
                 self?.reloadData()
             }

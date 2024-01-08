@@ -108,7 +108,6 @@ fileprivate extension  ScreenImageTitleSubtitle1Subtitle2TimerVC {
     func setupProgressView() {
         timeToFill = screenData.slider.timer.duration.doubleValue
         startTimer()
-//        setupImageContentMode()
        
         progressCallback = { [weak self](percentCount) in
             let progress = percentCount > 100 ? 100 : percentCount

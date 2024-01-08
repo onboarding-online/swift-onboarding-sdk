@@ -26,10 +26,10 @@ final class VideoPreparationService {
         
         findAllEdges()
 //        prepareInSequence()
-//        prepareVideo()
+        prepareVideo()
         
-        prepareVideoFor(screenIds: [screenGraph.launchScreenId])
-        prepareVideoForScreens(after: screenGraph.launchScreenId)
+//        prepareVideoFor(screenIds: [screenGraph.launchScreenId])
+//        prepareVideoForScreens(after: screenGraph.launchScreenId)
     }
     
 }
@@ -53,12 +53,13 @@ extension VideoPreparationService {
     func prepareForNextScreen(_ screenId: String?) {
         guard let screenId else { return }
     
-        prepareVideoForScreens(after: screenId)
+//        prepareVideoForScreens(after: screenId)
     }
 }
 
 // MARK: - Private methods
 private extension VideoPreparationService {
+    
     func prepareVideo() {
         for (screenId, screen) in screenGraph.screens {
             guard let baseScreenStruct = ChildControllerFabrika.viewControllerFor(screen: screen) else { continue }
@@ -92,9 +93,13 @@ private extension VideoPreparationService {
 //            }
 //        }
      
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.prepareVideo()
+        }
     }
     
     func findAllEdges() {
+        let time = Date()
         for (screenId, screen) in screenGraph.screens {
             if let edges = try? screen.findAllEdges() {
                 screenIdToEdgesDict[screenId] = edges
@@ -225,7 +230,6 @@ private extension VideoPreparationService {
             onStatusCallbacks[screenId]?.forEach { callback in
                 callback(newStatus)
             }
-            print("LOGO: - Will update callback for \(screenId) with status \(newStatus.debugName)")
         }
     }
 }
@@ -275,14 +279,12 @@ public struct VideoBackgroundPreparedData {
 
 fileprivate extension Screen {
     func findAllEdges() throws -> [ConditionedAction] {
-        let startTime = Date()
         let data = try JSONEncoder().encode(self)
         let jsonSerialized = try JSONSerialization.jsonObject(with: data)
         guard let json = jsonSerialized as? [String : Any] else {
             throw FindEdgesError.incorrectScreenJSON
         }
         let edges = findAllEdges(in: json)
-        print("LOGO: - Did find edges for \(Date().timeIntervalSince(startTime))")
         return edges
     }
     
