@@ -30,6 +30,7 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     private var isBusy = true
     private var products: [StoreKitProduct] = []
     var productIds: [String] = [] // TODO: - Set product ids
+    var shouldCloseOnPurchaseCancel = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -308,10 +309,12 @@ private extension PaywallVC {
                 //                onboardingChildScreenPerform
                 close()
             } catch OnboardingPaywallError.cancelled {
-                /// Ignore
                 delegate?.onboardingChildScreenUpdate(value: nil, 
                                                       description: "Cancelled purchase",
                                                       logAnalytics: true)
+                if shouldCloseOnPurchaseCancel {
+                    close()
+                }
             } catch {
                 handleError(error, message: "Failed to purchase", retryAction: { [weak self] in
                     self?.purchaseSelectedProduct()
