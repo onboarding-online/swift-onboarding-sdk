@@ -19,7 +19,7 @@ final class ImagesCacheStorage {
     private let maxCacheSize: Int
     private let serialQueue = DispatchQueue(label: "com.onboarding.online.image.cache.serial")
     
-    init(maxCacheSize: Int = 250_000_000) { // 250 MB
+    init(maxCacheSize: Int = 1_250_000_000) { // 1250 MB
         self.maxCacheSize = maxCacheSize
     }
 }

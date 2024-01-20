@@ -31,13 +31,18 @@ final class AssetsLoadingService {
     
     private let assetsServiceSerialQueue =  DispatchQueue(label: "OnboardingAssetsServiceQueue")
     private let assetsServiceConcurrentQueue =  DispatchQueue(label: "OnboardingAssetsServiceConcurrentQueue", qos: .userInteractive, attributes: [.concurrent])
-    private let imageCache = NSCache<NSString, UIImage>()
+    private let loader: AssetDataLoader
     private let storage: AssetsStorageProtocol
+    private let cacheStorage: ImagesCacheStorageProtocol
     
     private var currentProcess = [String : [AssetDataLoadingResultCallback]]()
     
-    init(storage: AssetsStorageProtocol = AssetsStorage()) {
+    init(loader: AssetDataLoader = DefaultAssetDataLoader(),
+         storage: AssetsStorageProtocol = AssetsStorage(),
+         cacheStorage: ImagesCacheStorageProtocol = ImagesCacheStorage()) {
+        self.loader = loader
         self.storage = storage
+        self.cacheStorage = cacheStorage
     }
 }
 
@@ -71,13 +76,13 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
     func loadImage(from url: String,
                    assetType: StoredAssetType = .image,
                    completion: @escaping ImageLoadingServiceResultCallback) {
-        if let cachedImage = self.imageCache.object(forKey: url as NSString) {
+        if let cachedImage = cacheStorage.getCachedImage(for: url) {
             completion(.success(cachedImage))
             return
         }
         
         if let storedImage = getStoredImage(for: url) {
-            self.imageCache.setObject(storedImage, forKey: url as NSString)
+            cacheStorage.cache(image: storedImage, forKey: url)
             completion(.success(storedImage))
             return
         }
@@ -94,7 +99,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
             switch result {
             case .success(let imageData):
                 if let image = UIImage(data: imageData) {
-                    self.imageCache.setObject(image, forKey: url as NSString)
+                    self.cacheStorage.cache(image: image, forKey: url)
                     completion(.success(image))
                 } else {
                     completion(.failure(.invalidAssetData))
