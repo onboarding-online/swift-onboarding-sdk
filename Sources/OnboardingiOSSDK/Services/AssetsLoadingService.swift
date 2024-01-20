@@ -20,20 +20,25 @@ protocol AssetsLoadingServiceProtocol {
     func loadImageFromURL(_ url: URL, intoView imageView: UIImageView, placeholderImageName: String?)
     func loadImage(from url: String, assetType: StoredAssetType, completion: @escaping ImageLoadingServiceResultCallback)
     func loadData(from url: String, assetType: StoredAssetType, completion: @escaping AssetDataLoadingResultCallback)
+    func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
+    func clearStoredAssets()
 }
 
 // MARK: - ImageLoadingService
 final class AssetsLoadingService {
     
-    public static let shared = AssetsLoadingService()
-   
+    public static let shared: AssetsLoadingServiceProtocol = AssetsLoadingService()
+    
     private let assetsServiceSerialQueue =  DispatchQueue(label: "OnboardingAssetsServiceQueue")
     private let assetsServiceConcurrentQueue =  DispatchQueue(label: "OnboardingAssetsServiceConcurrentQueue", qos: .userInteractive, attributes: [.concurrent])
     private let imageCache = NSCache<NSString, UIImage>()
-    private let storage = AssetsStorage()
-
+    private let storage: AssetsStorageProtocol
+    
     private var currentProcess = [String : [AssetDataLoadingResultCallback]]()
     
+    init(storage: AssetsStorageProtocol = AssetsStorage()) {
+        self.storage = storage
+    }
 }
 
 // MARK: - ImageLoadingServiceProtocol
@@ -176,7 +181,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         storage.assetURLIfExist(for: url, assetType: assetType)
     }
     
-    public func clearStoredAssets() {
+    func clearStoredAssets() {
         storage.clearStoredAssets()
     }
 }

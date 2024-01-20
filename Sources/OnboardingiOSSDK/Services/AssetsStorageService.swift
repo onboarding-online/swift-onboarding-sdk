@@ -7,6 +7,13 @@
 
 import Foundation
 
+protocol AssetsStorageProtocol {
+    func assetURLIfExist(for key: String, assetType: StoredAssetType) -> URL?
+    func getStoredAssetData(for key: String, assetType: StoredAssetType) -> Data?
+    func storeAssetData(_ data: Data, for key: String, assetType: StoredAssetType)
+    func clearStoredAssets()
+}
+
 struct AssetsStorage {
     
     private let fileManager: FileManager
@@ -18,7 +25,7 @@ struct AssetsStorage {
 }
 
 // MARK: - Open methods
-extension AssetsStorage {
+extension AssetsStorage: AssetsStorageProtocol {
     func assetURLIfExist(for key: String, assetType: StoredAssetType) -> URL? {
         let path = assetType.pathForStoredAssetAtKey(key)
         if !fileManager.fileExists(atPath: path) {

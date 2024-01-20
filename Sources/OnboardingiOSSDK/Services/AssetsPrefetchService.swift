@@ -367,7 +367,7 @@ private extension AssetsPrefetchService {
     struct AssetsLoader {
         func loadImage(assetUrl: AssetUrl, completion: @escaping AssetsPrefetchResultCallback) {
             let url = assetUrl.origin
-            AssetsLoadingService.shared.loadImage(from: url) { result in
+            AssetsLoadingService.shared.loadImage(from: url, assetType: .image) { result in
                 switch result {
                 case .success:
                     completion(.success(Void()))
