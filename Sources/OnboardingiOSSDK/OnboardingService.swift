@@ -27,11 +27,11 @@ public final class OnboardingService {
 
     public var screenGraph: ScreensGraph?
     public var paymentService: OnboardingPaymentServiceProtocol?
+    public  var appearance: AppearanceStyle?
 
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?
     private var navigationController: OnboardingNavigationController?
-    public  var appearance: AppearanceStyle?
     private var launchWithAnimation: Bool = false
     private var prefetchService: AssetsPrefetchService?
     private var videoPreparationService: VideoPreparationService?
@@ -112,6 +112,9 @@ extension OnboardingService {
         showLoadingAssetsScreen()
     }
 
+    public func clearStoredAssets() {
+        AssetsLoadingService.shared.clearStoredAssets()
+    }
 }
 
 // MARK: - OnboardingScreenDelegate

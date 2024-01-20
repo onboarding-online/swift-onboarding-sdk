@@ -23,14 +23,14 @@ protocol AssetsLoadingServiceProtocol {
 }
 
 // MARK: - ImageLoadingService
-public final class AssetsLoadingService {
+final class AssetsLoadingService {
     
     public static let shared = AssetsLoadingService()
    
     private let assetsServiceSerialQueue =  DispatchQueue(label: "OnboardingAssetsServiceQueue")
     private let assetsServiceConcurrentQueue =  DispatchQueue(label: "OnboardingAssetsServiceConcurrentQueue", qos: .userInteractive, attributes: [.concurrent])
     private let imageCache = NSCache<NSString, UIImage>()
-    public let storage = AssetsStorage()
+    private let storage = AssetsStorage()
 
     private var currentProcess = [String : [AssetDataLoadingResultCallback]]()
     
@@ -38,7 +38,6 @@ public final class AssetsLoadingService {
 
 // MARK: - ImageLoadingServiceProtocol
 extension AssetsLoadingService: AssetsLoadingServiceProtocol {
-    
     func loadImageFromURL(_ url: URL,
                           intoView imageView: UIImageView,
                           placeholderImageName: String?) {
@@ -184,7 +183,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
 
 // MARK: - Private methods
 fileprivate extension AssetsLoadingService {
-    
     func nofiyWaitersFor(url: String, withResult result: AssetDataLoadingResult) {
         assetsServiceSerialQueue.async { [unowned self] in
             if let completions = self.currentProcess[url] {
@@ -216,5 +214,4 @@ enum AssetLoadingError: String, LocalizedError {
     public var errorDescription: String? {
         rawValue
     }
-        
 }

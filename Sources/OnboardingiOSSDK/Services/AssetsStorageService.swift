@@ -7,43 +7,34 @@
 
 import Foundation
 
-public struct AssetsStorage {
+struct AssetsStorage {
     
-    private let fileManager = FileManager.default
+    private let fileManager: FileManager
     
-    init() {
+    init(fileManager: FileManager = .default) {
+        self.fileManager = fileManager
         checkStoredAssetsDirectory()
     }
 }
 
 // MARK: - Open methods
 extension AssetsStorage {
-    
     func assetURLIfExist(for key: String, assetType: StoredAssetType) -> URL? {
-        let path = pathForStoredAssetAtKey(key, assetType: assetType)
+        let path = assetType.pathForStoredAssetAtKey(key)
         if !fileManager.fileExists(atPath: path) {
             return nil
         }
         return URL(fileURLWithPath: path)
     }
     
-    func assetURL(for key: String, assetType: StoredAssetType) -> URL {
-        let path = pathForStoredAssetAtKey(key, assetType: assetType)
-        return URL(fileURLWithPath: path)
-    }
-    
     func getStoredAssetData(for key: String, assetType: StoredAssetType) -> Data? {
-        let url = assetURL(for: key, assetType: assetType)
-        return try? Data.init(contentsOf: url)
+        let path = assetType.pathForStoredAssetAtKey(key)
+        return fileManager.contents(atPath: path)
     }
     
     func storeAssetData(_ data: Data, for key: String, assetType: StoredAssetType) {
-        do {
-            let url = assetURL(for: key, assetType: assetType)
-            try data.write(to: url)
-        } catch {
-            OnboardingLogger.logError("Couldn't save cached image to files")
-        }
+        let path = assetType.pathForStoredAssetAtKey(key)
+        fileManager.createFile(atPath: path, contents: data)
     }
     
     func clearStoredAssets() {
@@ -55,17 +46,6 @@ extension AssetsStorage {
 
 // MARK: - Private methods
 private extension AssetsStorage {
-    
-    func pathForStoredAssetAtKey(_ key: String, assetType: StoredAssetType) -> String {
-        let encodedKey = Data(key.utf8).base64EncodedString().replacingOccurrences(of: "/", with: "").prefix(250)
-        return pathForStoredAssetWithName(String(encodedKey), assetType: assetType)
-    }
-    
-    
-    func pathForStoredAssetWithName(_ name: String, assetType: StoredAssetType) -> String {
-        (assetType.storagePath.appendingPathComponent(name) as NSString).appendingPathExtension(assetType.pathExtension)!
-    }
-    
     func checkStoredAssetsDirectory() {
         StoredAssetType.allCases.forEach { type in
             checkStoredDirectory(path: type.storagePath as String)
@@ -116,4 +96,13 @@ enum StoredAssetType: CaseIterable {
             return "mp4"
         }
     }
+    
+    func pathForStoredAssetAtKey(_ key: String) -> String {
+        let encodedKey = Data(key.utf8).base64EncodedString().replacingOccurrences(of: "/", with: "").prefix(250)
+        return pathForStoredAssetWithName(String(encodedKey))
     }
+    
+    func pathForStoredAssetWithName(_ name: String) -> String {
+        (storagePath.appendingPathComponent(name) as NSString).appendingPathExtension(pathExtension)!
+    }
+}
