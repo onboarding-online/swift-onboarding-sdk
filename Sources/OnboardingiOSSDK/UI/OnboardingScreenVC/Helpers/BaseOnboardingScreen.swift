@@ -57,11 +57,9 @@ extension BaseOnboardingScreen {
                let image = UIImage(data: data) {
                 setBackgroundImage(image)
             } else {
-                AssetsLoadingService.shared.loadData(from: stringURL, assetType: .image) { result in
-                    DispatchQueue.main.async {
-                        if case .success(let data) = result, let image = UIImage(data: data) {
-                            self.setBackgroundImage(image)
-                        }
+                Task { @MainActor in
+                    if let image = await AssetsLoadingService.shared.loadImage(from: stringURL) {
+                        self.setBackgroundImage(image)
                     }
                 }
             }

@@ -46,7 +46,6 @@ extension ImagesCacheStorage: ImagesCacheStorageProtocol {
     
     func cache(image: UIImage, forKey key: String) {
         serialQueue.sync {
-            
             var currentCacheUsage = cacheMemoryUsage
             let newImageMemoryUsage = image.memoryUsage
             if (currentCacheUsage + newImageMemoryUsage) > maxCacheSize {

@@ -156,6 +156,7 @@ private extension VideoPreparationService {
         updateStatusOf(screenId: screenId, to: .preparing)
         let video = preparationDetails.video
         
+        // TODO: - Move to assets service 
         if let name = video.assetUrlByLocal()?.assetName {
             if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
                 setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
@@ -175,20 +176,19 @@ private extension VideoPreparationService {
             }
         }
         
-        AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video) { result in
-            DispatchQueue.main.async {
-                if let name = stringURL.resourceName() {
-                    if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
-                        self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                        return
-                    }
-                }
-                
-                if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
-                    self.setPlayVideoBackgroundFor(screenId: screenId, with: storedURL)
-                } else if let url = URL(string: stringURL) {
-                    self.setPlayVideoBackgroundFor(screenId: screenId, with: url)
-                }
+        if let name = stringURL.resourceName() {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
+                self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
+                return
+            }
+        }
+        
+        Task { @MainActor in
+            let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
+            if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
+                self.setPlayVideoBackgroundFor(screenId: screenId, with: storedURL)
+            } else if let url = URL(string: stringURL) {
+                self.setPlayVideoBackgroundFor(screenId: screenId, with: url)
             }
         }
     }

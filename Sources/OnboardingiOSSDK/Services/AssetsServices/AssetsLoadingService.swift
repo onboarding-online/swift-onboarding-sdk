@@ -18,8 +18,8 @@ typealias AssetDataLoadingResultCallback = (AssetDataLoadingResult) -> ()
 // MARK: - ImageLoadingServiceProtocol
 protocol AssetsLoadingServiceProtocol {
     func loadImageFromURL(_ url: URL, intoView imageView: UIImageView, placeholderImageName: String?)
-    func loadImage(from url: String, completion: @escaping ImageLoadingServiceResultCallback)
-    func loadData(from url: String, assetType: StoredAssetType, completion: @escaping AssetDataLoadingResultCallback)
+    func loadImage(from url: String) async -> UIImage?
+    func loadData(from url: String, assetType: StoredAssetType) async -> Data?
     func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
     func clearStoredAssets()
 }
@@ -29,14 +29,13 @@ final class AssetsLoadingService {
     
     public static let shared: AssetsLoadingServiceProtocol = AssetsLoadingService()
     
-    private let assetsServiceSerialQueue =  DispatchQueue(label: "OnboardingAssetsServiceQueue")
-    private let assetsServiceConcurrentQueue =  DispatchQueue(label: "OnboardingAssetsServiceConcurrentQueue", qos: .userInteractive, attributes: [.concurrent])
+    private let serialQueue =  DispatchQueue(label: "OnboardingAssetsServiceQueue")
     private let loader: AssetDataLoader
     private let storage: AssetsStorageProtocol
     private let cacheStorage: ImagesCacheStorageProtocol
     
-    private var currentProcess = [String : [AssetDataLoadingResultCallback]]()
-    
+    private var currentAsyncProcess = [String : Task<Data?, Never>]()
+
     init(loader: AssetDataLoader = DefaultAssetDataLoader(),
          storage: AssetsStorageProtocol = AssetsStorage(),
          cacheStorage: ImagesCacheStorageProtocol = ImagesCacheStorage()) {
@@ -52,123 +51,86 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
                           intoView imageView: UIImageView,
                           placeholderImageName: String?) {
         
-        if let placeholderImageName = placeholderImageName {
-            imageView.image = UIImage(named: placeholderImageName)
-        }
-        let urlHash = url.absoluteString.hash
-        imageView.tag = urlHash
-        self.loadImage(from: url.absoluteString) { (result) in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let image):
-                    if imageView.tag == urlHash {
-                        if imageView.image != image {
-                            imageView.setImage(image, animated: true)
-                        }
-                    }
-                case .failure:
-                    return
+        Task { @MainActor in
+            if let placeholderImageName = placeholderImageName {
+                imageView.image = UIImage(named: placeholderImageName)
+            }
+            let urlHash = url.absoluteString.hash
+            imageView.tag = urlHash
+            
+            let image = await loadImage(from: url.absoluteString)
+            if imageView.tag == urlHash {
+                if imageView.image != image {
+                    imageView.setImage(image, animated: true)
                 }
             }
         }
     }
-    
-    func loadImage(from url: String,
-                   completion: @escaping ImageLoadingServiceResultCallback) {
-        if let cachedImage = cacheStorage.getCachedImage(for: url) {
-            completion(.success(cachedImage))
-            return
+  
+    func loadImage(from url: String) async -> UIImage? {
+        let key = url
+        if let cachedImage = cacheStorage.getCachedImage(for: key) {
+            OnboardingLogger.logInfo(topic: .assetsPrefetch, "Will return cached image for key: \(key)")
+            return cachedImage
         }
         
-        if let storedImage = getStoredImage(for: url) {
-            cacheStorage.cache(image: storedImage, forKey: url)
-            completion(.success(storedImage))
-            return
+        if let imageData = await loadData(from: url, assetType: .image),
+           let image = UIImage(data: imageData) {
+            self.cacheStorage.cache(image: image, forKey: url)
+            return image
         }
         
-        if let imageThatAddedManuallyInProject = url.resourceName()  {
-            if let storedImage = UIImage.init(named: imageThatAddedManuallyInProject) {
-                completion(.success(storedImage))
-                return
-            }
-        }
-        
-        loadData(from: url,
-                 assetType: .image) { result in
-            switch result {
-            case .success(let imageData):
-                if let image = UIImage(data: imageData) {
-                    self.cacheStorage.cache(image: image, forKey: url)
-                    completion(.success(image))
-                } else {
-                    completion(.failure(.invalidAssetData))
-                }
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
+        return nil
     }
-    
+  
     func loadData(from url: String,
-                  assetType: StoredAssetType,
-                  completion: @escaping AssetDataLoadingResultCallback) {
-        guard let assetURL = URL(string: url) else {
-            completion(.failure(.invalidAssetURL))
-            return
-        }
-        
-        switch assetType {
-        case .image:
-            if let imageThatAddedManuallyInProject = url.resourceName()  {
-                if UIImage.init(named: imageThatAddedManuallyInProject) != nil {
-                    completion(.success(Data()))
-                    return
-                }
-            }
-            
-        case .videoThumbnail:
-            return
-        case .video:
-            if let name = url.resourceNameWithoutExtension() {
-                if Bundle.main.url(forResource: name, withExtension: "mp4") != nil {
-                    completion(.success(Data()))
-                    return
-                }
-            }
-        }
-        
-        assetsServiceSerialQueue.async { [unowned self] in
-            let processUrl = url + assetType.pathExtension
-            if let data = storage.getStoredAssetData(for: url, assetType: assetType) {
-                completion(.success(data))
-                return
-            } else if self.currentProcess[processUrl] != nil {
-                self.currentProcess[processUrl]?.append(completion)
-                return
-            } else {
-                self.currentProcess[processUrl] = [completion]
-            }
-            
-            self.assetsServiceConcurrentQueue.async { [unowned self] in
-                if let assetData = fetchDataFrom(url: assetURL, assetType: assetType) {
-                    self.storage.storeAssetData(assetData, for: assetURL.absoluteString, assetType: assetType)
-                    self.nofiyWaitersFor(url: processUrl, withResult: .success(assetData))
-                } else {
-                    self.nofiyWaitersFor(url: processUrl, withResult: .failure(.failedToLoadAsset))
-                }
-            }
-        }
-    }
-    
-    func fetchDataFrom(url: URL, assetType: StoredAssetType) -> Data? {
+                  assetType: StoredAssetType) async -> Data? {
+
+        // Check if file is from assets
         switch assetType {
         case .image, .video:
-            return try? Data(contentsOf: url)
+            if let data = getPreparedAssetData(from: url,
+                                               assetType: assetType) {
+                return data
+            }
         case .videoThumbnail:
-            return getThumbnailImage(forUrl: url)?.jpegData(compressionQuality: 1)
+            return nil
         }
+        
+        let key = url
+        
+        // Check if process already in progress
+        if let dataTask = serialQueue.sync(execute: { currentAsyncProcess[key] }) {
+            OnboardingLogger.logInfo(topic: .assetsPrefetch, "Will return active data loading task for key: \(key)")
+            return await dataTask.value
+        }
+        
+        guard let assetURL = URL(string: url) else {
+            return nil
+        }
+        
+        let task: Task<Data?, Never> = Task.detached(priority: .medium) {
+            if let storedData = self.storage.getStoredAssetData(for: key, assetType: assetType) {
+                OnboardingLogger.logInfo(topic: .assetsPrefetch, "Will return stored data for key: \(key)")
+                return storedData
+            }
+            
+            if let assetData = try? await self.loadAssetData(from: assetURL) {
+                self.storage.storeAssetData(assetData, for: key, assetType: assetType)
+                OnboardingLogger.logInfo(topic: .assetsPrefetch, "Will return loaded data for key: \(key)")
+                return assetData
+            } else {
+                return nil
+            }
+        }
+        
+        serialQueue.sync { currentAsyncProcess[key] = task }
+        let data = await task.value
+        serialQueue.sync { currentAsyncProcess[key] = nil }
+        
+        return data
     }
-    
+ 
     func getThumbnailImage(forUrl url: URL) -> UIImage? {
         let asset: AVAsset = AVAsset(url: url)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
@@ -192,19 +154,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
 
 // MARK: - Private methods
 fileprivate extension AssetsLoadingService {
-    func fetchImageFor(url: URL) async -> UIImage? {
-        do {
-            let imageData = try await loadAssetData(from: url)
-            if let image = UIImage(data: imageData) {
-                storeAndCache(imageData: imageData, image: image, forKey: url.absoluteString)
-                return image
-            }
-            return nil
-        } catch {
-            return nil
-        }
-    }
-    
     func loadAssetData(from url: URL) async throws -> Data {
         try await withCheckedThrowingContinuation { continuation in
             Task.detached {
@@ -218,31 +167,23 @@ fileprivate extension AssetsLoadingService {
         }
     }
     
-    func storeAndCache(imageData: Data, image: UIImage, forKey key: String) {
-        storage.storeAssetData(imageData, for: key, assetType: .image)
-        cacheStorage.cache(image: image, forKey: key)
-    }
-    
-    func nofiyWaitersFor(url: String, withResult result: AssetDataLoadingResult) {
-        assetsServiceSerialQueue.async { [unowned self] in
-            if let completions = self.currentProcess[url] {
-                for completion in completions {
-                    completion(result)
-                }
+    func getPreparedAssetData(from url: String,
+                              assetType: StoredAssetType) -> Data? {
+        switch assetType {
+        case .image:
+            if let imageThatAddedManuallyInProject = url.resourceName(),
+               let image = UIImage.init(named: imageThatAddedManuallyInProject){
+                return image.jpegData(compressionQuality: 1)
             }
-            self.currentProcess[url] = nil
-        }
-    }
-    
-    func getStoredImage(for url: String) -> UIImage? {
-        if let storedImageData = getStoredImageData(for: url) {
-            return UIImage(data: storedImageData)
+        case .videoThumbnail:
+            return nil
+        case .video:
+            if let name = url.resourceNameWithoutExtension(),
+               let url = Bundle.main.url(forResource: name, withExtension: "mp4") {
+                return try? Data(contentsOf: url)
+            }
         }
         return nil
-    }
-    
-    func getStoredImageData(for url: String) -> Data? {
-        storage.getStoredAssetData(for: url, assetType: .image)
     }
 }
 

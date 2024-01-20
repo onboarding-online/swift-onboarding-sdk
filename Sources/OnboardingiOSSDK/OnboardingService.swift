@@ -80,8 +80,9 @@ extension OnboardingService {
                 if !screenGraph.launchScreenId.isEmpty {
                     showLoadingAssetsScreen()
                 }
-                prefetchService.prefetchAllAssets { [weak self] _ in
-                    self?.showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
+                Task { @MainActor in
+                    try? await prefetchService.prefetchAllAssets()
+                    showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
                 }
             case .waitForFirstDone:
                 prefetchService.startLazyPrefetching()
@@ -282,11 +283,10 @@ private extension OnboardingService {
         if screenId == screenGraph?.launchScreenId {
             showLoadingAssetsScreen()
         }
-        prefetchService?.onScreenReady(screenId: screenId,
-                                       timeout: timeout) { [weak self] _ in
-            DispatchQueue.main.async { [weak self] in
-                self?.showOnboardingFlowViewController(nextScreenId: screenId, transitionKind: transitionKind)
-            }
+        Task { @MainActor in
+            try? await prefetchService?.onScreenReady(screenId: screenId,
+                                                      timeout: timeout)
+            showOnboardingFlowViewController(nextScreenId: screenId, transitionKind: transitionKind)
         }
     }
     

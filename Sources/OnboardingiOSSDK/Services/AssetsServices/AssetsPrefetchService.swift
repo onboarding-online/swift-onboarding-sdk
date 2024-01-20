@@ -31,48 +31,46 @@ final class AssetsPrefetchService {
 
 // MARK: - Open methods
 extension AssetsPrefetchService {
-    func prefetchAllAssets(completion: @escaping AssetsPrefetchResultCallback) {
+    func prefetchAllAssets() async throws {
         log(message: "Will start prefetching of all screens")
 
         let screens = self.screenGraph.screens.map({ $0.value })
         
         let startLoadingAssets = Date()
-        prefetchAssetsFor(screens: screens, completion: { [weak self] result in
+        do { 
+            try await prefetchAssetsFor(screens: screens)
             let time = Date().timeIntervalSince(startLoadingAssets)
-            
-            switch result {
-            case .success:
-                OnboardingService.shared.eventRegistered(event: .allAssetsLoaded, params: [.time: time, .assetsLoadedSuccess: true])
-                self?.log(message: "Did prefetch all screens")
-            case .failure(let error):
-                OnboardingService.shared.eventRegistered(event: .allAssetsLoaded, params: [.time: time, .assetsLoadedSuccess: false])
-                self?.log(message: "Did fail to prefetch all screens with error: \(error.localizedDescription)")
-            }
-            completion(result)
-        })
+            OnboardingService.shared.eventRegistered(event: .allAssetsLoaded, params: [.time: time, .assetsLoadedSuccess: true])
+            log(message: "Did prefetch all screens")
+        } catch {
+            OnboardingService.shared.eventRegistered(event: .allAssetsLoaded, params: [.time: time, .assetsLoadedSuccess: false])
+            log(message: "Did fail to prefetch all screens with error: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     func startLazyPrefetching() {
         didStartPrefetching = true
         log(message: "Will start prefetching")
-        prefetchFirstScreen { [weak self] result in
-            self?.log(message: "Did prefetch first screen. Will start prefetching of the rest")
-            self?.prefetchAllAssets(completion: { _ in })
+        Task {
+            try? await prefetchFirstScreen()
+            log(message: "Did prefetch first screen. Will start prefetching of the rest")
+            try? await prefetchAllAssets()
         }
     }
     
-    func onScreenReady(screenId: String, timeout: TimeInterval? = nil, callback: @escaping AssetsPrefetchResultCallback) {
+    func onScreenReady(screenId: String, timeout: TimeInterval? = nil) async throws {
         if isScreenAssetsPrefetched(screenId: screenId) {
-            callback(.success(Void()))
+            return
         } else if isScreenAssetsPrefetchFailed(screenId: screenId) {
-            callback(.failure(.prefetchFailed))
+            throw AssetsPrefetchError.prefetchFailed
         } else {
-            let callbackHolder = ResultCallbackHolder(callback: callback)
+            let callbackHolder = ResultCallbackHolder()
             
             if let timeout = timeout {
                 let task = DispatchWorkItem { [weak self] in
                     self?.removeWaiterWith(id: callbackHolder.id, from: screenId)
-                    callback(.success(Void()))
+                    self?.notifyWaitersFor(screenId: screenId, result: .success(Void()))
                 }
                 log(message: "Will set waiter timeout \(screenId)")
                 serialQueue.sync {
@@ -89,6 +87,8 @@ extension AssetsPrefetchService {
             if !didStartPrefetching {
                 startLazyPrefetching()
             }
+            
+            try await callbackHolder.wait()
         }
     }
     
@@ -103,151 +103,147 @@ extension AssetsPrefetchService {
 
 // MARK: - Private methods
 private extension AssetsPrefetchService {
-    func prefetchFirstScreen(completion: @escaping AssetsPrefetchResultCallback) {
+    func prefetchFirstScreen() async throws {
         guard let firstScreen = screenGraph.screens[screenGraph.launchScreenId] else {
-            completion(.success(Void()))
             return
         }
         
-        prefetchAssetsFor(screen: firstScreen, completion: completion)
+        try await prefetchAssetsFor(screen: firstScreen)
     }
     
-    func prefetchAssetsFor(screens: [Screen], completion: @escaping AssetsPrefetchResultCallback) {
+    func prefetchAssetsFor(screens: [Screen]) async throws {
         let notPrefetchedScreens = screens.filter({ !isScreenAssetsPrefetched(screenId: $0.id) })
+        guard !notPrefetchedScreens.isEmpty else { return }
         
-        guard !notPrefetchedScreens.isEmpty else {
-            completion(.success(Void()))
-            return
-        }
+        var loadingErrors: [Error] = []
         
-        let group = DispatchGroup()
-        var loadingError: AssetsPrefetchError?
-        
-        for screen in notPrefetchedScreens {
-            group.enter()
-            prefetchAssetsFor(screen: screen) { result in
-                if case .failure(let error) = result {
-                    loadingError = error
+        await withTaskGroup(of: Error?.self) { taskGroup in
+            for screen in notPrefetchedScreens {
+                taskGroup.addTask {
+                    do {
+                        try await self.prefetchAssetsFor(screen: screen)
+                        return nil
+                    } catch {
+                        return error
+                    }
                 }
-                group.leave()
+            }
+            
+            for await error in taskGroup {
+                if let error {
+                    loadingErrors.append(error)
+                }
             }
         }
-        
-        group.notify(queue: .main) {
-            if let error = loadingError {
-                completion(.failure(error))
-            } else {
-                completion(.success(Void()))
-            }
+        if !loadingErrors.isEmpty {
+            throw AssetLoadingError.failedToLoadAsset
         }
     }
     
-    func prefetchAssetsFor(screen: Screen, completion: @escaping AssetsPrefetchResultCallback) {
+    func prefetchAssetsFor(screen: Screen) async throws {
         guard !preloadedScreenIds.contains(screen.id) else {
-            completion(.success(Void()))
             return
         }
         
         log(message: "Will prefetch assets for \(screen.id)")
-        prefetchAssetsFor(screenStruct: screen._struct, completion: { [weak self] result in
-            switch result {
-            case .success:
-                self?.log(message: "Did prefetch assets for \(screen.id)")
-                self?.preloadedScreenIds.insert(screen.id)
-            case .failure(let error):
-                self?.log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
-                self?.failedScreenIds.insert(screen.id)
-            }
-            self?.notifyWaitersFor(screenId: screen.id, result: result)
-            completion(result)
-        })
+        do {
+            try await prefetchAssetsFor(screenStruct: screen._struct)
+            log(message: "Did prefetch assets for \(screen.id)")
+            preloadedScreenIds.insert(screen.id)
+            notifyWaitersFor(screenId: screen.id, result: .success(Void()))
+        } catch {
+            log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
+            failedScreenIds.insert(screen.id)
+            notifyWaitersFor(screenId: screen.id, result: .failure(.prefetchFailed))
+            throw error
+        }
     }
     
-    func prefetchAssetsFor(screenStruct: ScreenStruct, completion: @escaping AssetsPrefetchResultCallback) {
+    func prefetchAssetsFor(screenStruct: ScreenStruct) async throws {
         switch screenStruct {
         case .typeScreenImageTitleSubtitles(let value):
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenProgressBarTitle(let value):
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenImageTitleSubtitlePicker(let value):
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenTitleSubtitleCalendar(let value):
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenTitleSubtitleField(let value):
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenTooltipPermissions(let value):
             let imageList = [value.tooltip.image]
 
-            prefetchAssetsFor(type: value, imageList: imageList, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: imageList)
         case .typeCustomScreen(let value):
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
 
         case .typeScreenTableMultipleSelection(let value):
-            if ImageLabelCollectionCell.isImageHiddenFor(itemType: value.list.itemType) {
-                prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            if await ImageLabelCollectionCell.isImageHiddenFor(itemType: value.list.itemType) {
+                try await prefetchAssetsFor(type: value, imageList: nil)
             } else {
-                prefetchAssetsFor(type: value, imageList: value.list.items, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: value.list.items)
             }
             
         case .typeScreenTableSingleSelection(let value):
            
             if CellConfigurator.isImageHiddenFor(itemType: value.list.itemType) {
-                prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: nil)
             } else {
-                prefetchAssetsFor(type: value, imageList: value.list.items, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: value.list.items)
             }
             
         case .typeScreenImageTitleSubtitleList(let value):
 
-            prefetchAssetsFor(type: value, imageList: value.list.items, completion: completion)            
+            try await prefetchAssetsFor(type: value, imageList: value.list.items)
         case .typeScreenTwoColumnMultipleSelection(let value):
             if CellConfigurator.isImageHiddenFor(itemType: value.list.itemType) {
-                prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: nil)
             } else {
-                prefetchAssetsFor(type: value, imageList: value.list.items, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: value.list.items)
             }
             
         case .typeScreenTwoColumnSingleSelection(let value):
             
             if CellConfigurator.isImageHiddenFor(itemType: value.list.itemType) {
-                prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: nil)
             } else {
-                prefetchAssetsFor(type: value, imageList: value.list.items, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: value.list.items)
             }
             
         case .typeScreenImageTitleSubtitleMultipleSelectionList(let value):
-            if ImageLabelCollectionCell.isImageHiddenFor(itemType: value.list.itemType) {
-                prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            if await ImageLabelCollectionCell.isImageHiddenFor(itemType: value.list.itemType) {
+                try await prefetchAssetsFor(type: value, imageList: nil)
             } else {
-                prefetchAssetsFor(type: value, imageList: value.list.items, completion: completion)
+                try await prefetchAssetsFor(type: value, imageList: value.list.items)
             }
             
         case .typeScreenSlider(let value):
             
             let imageList = value.slider.items.compactMap({$0.content})
-            prefetchAssetsFor(type: value, imageList: imageList, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: imageList)
         case .typeScreenTitleSubtitlePicker(let value):
             
-            prefetchAssetsFor(type: value, imageList: nil, completion: completion)
+            try await prefetchAssetsFor(type: value, imageList: nil)
         }
     }
     
-    func prefetchAssetsFor(type: Any, imageList: Any?, completion: @escaping AssetsPrefetchResultCallback) {
-        var allAsets = [AssetPrefetchType]()
+    func prefetchAssetsFor(type: Any, imageList: Any?) async throws {
+        var allAssets = [AssetPrefetchType]()
         if let sceenDataType = type as? ImageProtocol {
             let image: [AssetPrefetchType] = [.from(image: sceenDataType.image)].compactMap({ $0 })
-            allAsets += image
+            allAssets += image
         }
         
         if let sceenDataType = type as? BaseScreenStyleProtocol {
             let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background)
-            allAsets += backgroundAssets
+            allAssets += backgroundAssets
         }
         
         let listAsset = prefetchAssetsFor(list: imageList)
-        allAsets += listAsset
+        allAssets += listAsset
         
-        load(assets: allAsets, completion: completion)
+        try await load(assets: allAssets)
     }
     
     func prefetchAssetsFor(list: Any?) -> [AssetPrefetchType]  {
@@ -296,7 +292,7 @@ private extension AssetsPrefetchService {
         let callbacks = serialQueue.sync { waiters[screenId] ?? [] }
         
         callbacks.forEach { holder in
-            holder.callback(result)
+            holder.finish(result: result)
         }
         
         serialQueue.sync {
@@ -320,39 +316,42 @@ private extension AssetsPrefetchService {
 
 // MARK: - Private methods
 private extension AssetsPrefetchService {
-    func load(asset: AssetPrefetchType, completion: @escaping AssetsPrefetchResultCallback) {
+    func load(asset: AssetPrefetchType) async throws  {
         switch asset {
         case .image(let assetUrl):
-            assetsLoader.loadImage(assetUrl: assetUrl, completion: completion)
+            try await assetsLoader.loadImage(assetUrl: assetUrl)
         case .video(let assetUrl):
-            assetsLoader.loadVideo(assetUrl: assetUrl, completion: completion)
+            try await assetsLoader.loadVideo(assetUrl: assetUrl)
         }
     }
     
-    func load(assets: [AssetPrefetchType], completion: @escaping AssetsPrefetchResultCallback) {
+    func load(assets: [AssetPrefetchType]) async throws  {
         guard !assets.isEmpty else {
-            completion(.success(Void()))
             return
         }
-        let group = DispatchGroup()
         
-        var loadingError: AssetsPrefetchError?
-        for asset in assets {
-            group.enter()
-            load(asset: asset) { result in
-                if case .failure(let error) = result {
-                    loadingError = error
+        var loadingErrors: [Error] = []
+        
+        await withTaskGroup(of: Error?.self) { taskGroup in
+            for asset in assets {
+                taskGroup.addTask {
+                    do {
+                        try await self.load(asset: asset)
+                        return nil
+                    } catch {
+                        return error
+                    }
                 }
-                group.leave()
+            }
+            
+            for await error in taskGroup {
+                if let error {
+                    loadingErrors.append(error)
+                }
             }
         }
-        
-        group.notify(queue: .main) {
-            if let error = loadingError {
-                completion(.failure(error))
-            } else {
-                completion(.success(Void()))
-            }
+        if !loadingErrors.isEmpty {
+            throw AssetLoadingError.failedToLoadAsset
         }
     }
 }
@@ -360,38 +359,52 @@ private extension AssetsPrefetchService {
 // MARK: - Private methods
 private extension AssetsPrefetchService {
     struct AssetsLoader {
-        func loadImage(assetUrl: AssetUrl, completion: @escaping AssetsPrefetchResultCallback) {
+        func loadImage(assetUrl: AssetUrl) async throws {
             let url = assetUrl.origin
-            AssetsLoadingService.shared.loadImage(from: url) { result in
-                switch result {
-                case .success:
-                    completion(.success(Void()))
-                case .failure(let error):
-                    completion(.failure(.imageLoadingError(error)))
-                }
+            
+            if await AssetsLoadingService.shared.loadImage(from: url) == nil {
+                throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
         }
         
-        func loadVideo(assetUrl: AssetUrl, completion: @escaping AssetsPrefetchResultCallback) {
+        func loadVideo(assetUrl: AssetUrl) async throws {
             let url = assetUrl.origin
           
 //            AssetsLoadingService.shared.loadData(from: url,
 //                                                 assetType: .videoThumbnail) { _ in }
-            AssetsLoadingService.shared.loadData(from: url,
-                                                 assetType: .video) { result in
-                switch result {
-                case .success:
-                    completion(.success(Void()))
-                case .failure(let error):
-                    completion(.failure(.imageLoadingError(error)))
-                }
+            if await AssetsLoadingService.shared.loadData(from: url, assetType: .video) == nil {
+                throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
         }
     }
     
-    struct ResultCallbackHolder {
+    final class ResultCallbackHolder {
         let id: UUID = UUID()
-        let callback: AssetsPrefetchResultCallback
+        private var callback: AssetsPrefetchResultCallback?
+        var task: Task<Void, Error>!
+        
+        init() {
+            task = Task<Void, Error> { [weak self] in
+                try await withCheckedThrowingContinuation { [weak self] continuation in
+                    self?.callback = { result in
+                        switch result {
+                        case .success:
+                            continuation.resume(returning: Void())
+                        case .failure(let error):
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            }
+        }
+        
+        func wait() async throws {
+            try await task.value
+        }
+        
+        func finish(result: AssetsPrefetchResult) {
+            callback?(result)
+        }
     }
 }
 

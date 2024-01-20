@@ -152,34 +152,23 @@ private extension OnboardingPreparationService {
             preparingOnboarding.prefetchService = prefetchService
         }
         
-        switch prefetchMode {
-        case .waitForAllDone:
-            prefetchService.prefetchAllAssets { result in
-                handleAssetsLoadedResultWith(identifier: identifier, result: result, finishedCallback: finishedCallback)
+        Task { @MainActor in
+            do {
+                switch prefetchMode {
+                case .waitForAllDone:
+                    try await prefetchService.prefetchAllAssets()
+                case .waitForFirstDone:
+                    prefetchService.startLazyPrefetching()
+                    try await prefetchService.onScreenReady(screenId: screenGraph.launchScreenId)
+                case .waitForScreenToLoad(let timeout):
+                    prefetchService.startLazyPrefetching()
+                    try await prefetchService.onScreenReady(screenId: screenGraph.launchScreenId, timeout: timeout)
+                }
+                
+                notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .ready)
+            } catch {
+                notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .failed(error))
             }
-        case .waitForFirstDone:
-            prefetchService.startLazyPrefetching()
-            prefetchService.onScreenReady(screenId: screenGraph.launchScreenId) { result in
-                handleAssetsLoadedResultWith(identifier: identifier, result: result, finishedCallback: finishedCallback)
-            }
-        case .waitForScreenToLoad(let timeout):
-            prefetchService.startLazyPrefetching()
-            prefetchService.onScreenReady(screenId: screenGraph.launchScreenId, timeout: timeout) { result in
-                handleAssetsLoadedResultWith(identifier: identifier, result: result, finishedCallback: finishedCallback)
-            }
-        }
-    }
-    
-    static func handleAssetsLoadedResultWith(identifier: String,
-                                             result: AssetsPrefetchResult,
-                                             finishedCallback: @escaping OnboardingPreparationFinishCallback) {
-        switch result {
-        case .success:
-            finishedCallback(.success(Void()))
-            notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .ready)
-        case .failure(let error):
-            finishedCallback(.failure(.init(error: error)))
-            notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .failed(error))
         }
     }
     
