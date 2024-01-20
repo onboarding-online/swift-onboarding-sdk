@@ -51,7 +51,7 @@ extension UIImageLoader {
             }
             
             button.setBackgroundImage(nil, for: .normal)
-            AssetsLoadingService.shared.loadImage(from: url, assetType: .image) { (result) in
+            AssetsLoadingService.shared.loadImage(from: url) { (result) in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let image):

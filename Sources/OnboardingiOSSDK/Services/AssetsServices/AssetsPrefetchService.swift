@@ -103,7 +103,6 @@ extension AssetsPrefetchService {
 
 // MARK: - Private methods
 private extension AssetsPrefetchService {
-    
     func prefetchFirstScreen(completion: @escaping AssetsPrefetchResultCallback) {
         guard let firstScreen = screenGraph.screens[screenGraph.launchScreenId] else {
             completion(.success(Void()))
@@ -234,9 +233,9 @@ private extension AssetsPrefetchService {
     }
     
     func prefetchAssetsFor(type: Any, imageList: Any?, completion: @escaping AssetsPrefetchResultCallback) {
-        var allAsets = [AssetPrfetch]()
+        var allAsets = [AssetPrefetchType]()
         if let sceenDataType = type as? ImageProtocol {
-            let image: [AssetPrfetch] = [.from(image: sceenDataType.image)].compactMap({ $0 })
+            let image: [AssetPrefetchType] = [.from(image: sceenDataType.image)].compactMap({ $0 })
             allAsets += image
         }
         
@@ -251,7 +250,7 @@ private extension AssetsPrefetchService {
         load(assets: allAsets, completion: completion)
     }
     
-    func prefetchAssetsFor(list: Any?) -> [AssetPrfetch]  {
+    func prefetchAssetsFor(list: Any?) -> [AssetPrefetchType]  {
         if let imageList = list as? (any Sequence)  {
             let images = imageList.compactMap { item in
                 if let image =  item as? ImageProtocol {
@@ -267,14 +266,13 @@ private extension AssetsPrefetchService {
         return []
     }
     
-    func prefetchAssetsFor(type: [ImageProtocol]) -> [AssetPrfetch]  {
+    func prefetchAssetsFor(type: [ImageProtocol]) -> [AssetPrefetchType]  {
         let images = type.map({ $0.image })
-        let imageAssets = images.compactMap({ AssetPrfetch.from(image: $0) })
+        let imageAssets = images.compactMap({ AssetPrefetchType.from(image: $0) })
         return imageAssets
     }
-
     
-    func assetsFor(backgroundStyle: BackgroundStyle) -> [AssetPrfetch] {
+    func assetsFor(backgroundStyle: BackgroundStyle) -> [AssetPrefetchType] {
         switch backgroundStyle.styles {
         case .typeBackgroundStyleColor:
             return []
@@ -322,7 +320,7 @@ private extension AssetsPrefetchService {
 
 // MARK: - Private methods
 private extension AssetsPrefetchService {
-    func load(asset: AssetPrfetch, completion: @escaping AssetsPrefetchResultCallback) {
+    func load(asset: AssetPrefetchType, completion: @escaping AssetsPrefetchResultCallback) {
         switch asset {
         case .image(let assetUrl):
             assetsLoader.loadImage(assetUrl: assetUrl, completion: completion)
@@ -331,7 +329,7 @@ private extension AssetsPrefetchService {
         }
     }
     
-    func load(assets: [AssetPrfetch], completion: @escaping AssetsPrefetchResultCallback) {
+    func load(assets: [AssetPrefetchType], completion: @escaping AssetsPrefetchResultCallback) {
         guard !assets.isEmpty else {
             completion(.success(Void()))
             return
@@ -357,17 +355,14 @@ private extension AssetsPrefetchService {
             }
         }
     }
-    
-
 }
 
 // MARK: - Private methods
 private extension AssetsPrefetchService {
-    
     struct AssetsLoader {
         func loadImage(assetUrl: AssetUrl, completion: @escaping AssetsPrefetchResultCallback) {
             let url = assetUrl.origin
-            AssetsLoadingService.shared.loadImage(from: url, assetType: .image) { result in
+            AssetsLoadingService.shared.loadImage(from: url) { result in
                 switch result {
                 case .success:
                     completion(.success(Void()))
@@ -414,24 +409,22 @@ enum AssetsPrefetchError: LocalizedError {
     }
 }
 
-enum AssetPrfetch {
-    
+private enum AssetPrefetchType {
     case image(_ assetUrl: AssetUrl)
     case video(_ assetUrl: AssetUrl)
     
-    static func from(image: Image) -> AssetPrfetch? {
+    static func from(image: Image) -> AssetPrefetchType? {
         guard let assetUrl = image.assetUrlByLocal()?.assetUrl else { return nil }
         return .image(assetUrl)
     }
     
-    static func from(baseImage: BaseImage) -> AssetPrfetch? {
+    static func from(baseImage: BaseImage) -> AssetPrefetchType? {
         guard let assetUrl = baseImage.assetUrlByLocal()?.assetUrl else { return nil }
         return .image(assetUrl)
     }
     
-    static func from(baseVideo: BaseVideo) -> AssetPrfetch? {
+    static func from(baseVideo: BaseVideo) -> AssetPrefetchType? {
         guard let assetUrl = baseVideo.assetUrlByLocal()?.assetUrl else { return nil }
         return .video(assetUrl)
     }
-    
 }

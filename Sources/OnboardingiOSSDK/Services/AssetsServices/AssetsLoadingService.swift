@@ -18,7 +18,7 @@ typealias AssetDataLoadingResultCallback = (AssetDataLoadingResult) -> ()
 // MARK: - ImageLoadingServiceProtocol
 protocol AssetsLoadingServiceProtocol {
     func loadImageFromURL(_ url: URL, intoView imageView: UIImageView, placeholderImageName: String?)
-    func loadImage(from url: String, assetType: StoredAssetType, completion: @escaping ImageLoadingServiceResultCallback)
+    func loadImage(from url: String, completion: @escaping ImageLoadingServiceResultCallback)
     func loadData(from url: String, assetType: StoredAssetType, completion: @escaping AssetDataLoadingResultCallback)
     func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
     func clearStoredAssets()
@@ -74,7 +74,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
     }
     
     func loadImage(from url: String,
-                   assetType: StoredAssetType = .image,
                    completion: @escaping ImageLoadingServiceResultCallback) {
         if let cachedImage = cacheStorage.getCachedImage(for: url) {
             completion(.success(cachedImage))
@@ -95,7 +94,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         }
         
         loadData(from: url,
-                 assetType: assetType) { result in
+                 assetType: .image) { result in
             switch result {
             case .success(let imageData):
                 if let image = UIImage(data: imageData) {
@@ -193,6 +192,37 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
 
 // MARK: - Private methods
 fileprivate extension AssetsLoadingService {
+    func fetchImageFor(url: URL) async -> UIImage? {
+        do {
+            let imageData = try await loadAssetData(from: url)
+            if let image = UIImage(data: imageData) {
+                storeAndCache(imageData: imageData, image: image, forKey: url.absoluteString)
+                return image
+            }
+            return nil
+        } catch {
+            return nil
+        }
+    }
+    
+    func loadAssetData(from url: URL) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            Task.detached {
+                do {
+                    let imageData = try await self.loader.loadAssetDataFrom(url: url)
+                    continuation.resume(returning: imageData)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func storeAndCache(imageData: Data, image: UIImage, forKey key: String) {
+        storage.storeAssetData(imageData, for: key, assetType: .image)
+        cacheStorage.cache(image: image, forKey: key)
+    }
+    
     func nofiyWaitersFor(url: String, withResult result: AssetDataLoadingResult) {
         assetsServiceSerialQueue.async { [unowned self] in
             if let completions = self.currentProcess[url] {
