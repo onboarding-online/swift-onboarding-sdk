@@ -10,9 +10,9 @@ import ScreensGraph
 import StoreKit
 
 // TODO: - Check for canMakePayments before showing paywall 
-final class PaywallVC: BaseChildScreenGraphViewController {
+ public final class PaywallVC: BaseChildScreenGraphViewController {
     
-    static func instantiate(paymentService: OnboardingPaymentServiceProtocol) -> PaywallVC {
+    public static func instantiate(paymentService: OnboardingPaymentServiceProtocol) -> PaywallVC {
         let paywallVC = PaywallVC.nibInstance()
         paywallVC.paymentService = paymentService
         return paywallVC
@@ -29,10 +29,13 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     private var isLoadingProducts = true
     private var isBusy = true
     private var products: [StoreKitProduct] = []
-    var productIds: [String] = [] // TODO: - Set product ids
+    public var productIds: [String] = [] // TODO: - Set product ids
     var shouldCloseOnPurchaseCancel = false
+    
+    public var dismissalHandler: (() -> ())!
 
-    override func viewDidLoad() {
+
+     public override func viewDidLoad() {
         super.viewDidLoad()
 
         setup()
@@ -73,17 +76,17 @@ extension PaywallVC: PaywallBottomViewDelegate {
 
 // MARK: - UICollectionViewDataSource
 extension PaywallVC: UICollectionViewDataSource {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
         allSections().count
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let section = allSections()[section]
         
         return rowsFor(section: section).count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
         
@@ -121,7 +124,7 @@ extension PaywallVC: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 extension PaywallVC: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
         
@@ -142,7 +145,7 @@ extension PaywallVC: UICollectionViewDelegate {
         }
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let headerCell = collectionView.visibleCells.first(where: { $0 is PaywallHeaderCell }) as? PaywallHeaderCell {
             headerCell.setScrollOffset(scrollView.contentOffset)
         }
@@ -159,7 +162,7 @@ extension PaywallVC: UICollectionViewDelegate {
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension PaywallVC: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let sections = allSections()
         let section = sections[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
@@ -198,7 +201,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         return collectionView.bounds.height - contentSize
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         let section = allSections()[section]
         
         switch section {
@@ -209,7 +212,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         let section = allSections()[section]
         switch section {
         case .header, .separator:
@@ -220,7 +223,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return .zero
     }
 }
@@ -507,10 +510,10 @@ extension PaywallVC {
     }
 }
 
-@available(iOS 17, *)
-#Preview {
-    createPreviewVC()
-}
+//@available(iOS 17, *)
+//#Preview {
+//    createPreviewVC()
+//}
 
 //import SwiftUI
 //struct PaywallVCPreviews: PreviewProvider {

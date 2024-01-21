@@ -10,12 +10,12 @@ class BaseScreenGraphViewController: BaseOnboardingViewController, OnboardingScr
     weak var delegate: OnboardingScreenDelegate?
 }
 
-class BaseChildScreenGraphViewController: BaseOnboardingViewController, OnboardingBodyChildScreenProtocol {
+public class BaseChildScreenGraphViewController: BaseOnboardingViewController, OnboardingBodyChildScreenProtocol {
     weak var delegate: OnboardingChildScreenDelegate?
     var isEmbedded: Bool { true }
 }
 
-class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol,  UIImageLoader  {
+public class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol,  UIImageLoader  {
     
     var loadingIndicator: LoadingIndicatorView?
         
@@ -25,7 +25,7 @@ class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol
     var animationEnabled = false
 
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         setupNavBar()
@@ -35,11 +35,11 @@ class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol
         NotificationCenter.default.removeObserver(self)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if animationEnabled {
