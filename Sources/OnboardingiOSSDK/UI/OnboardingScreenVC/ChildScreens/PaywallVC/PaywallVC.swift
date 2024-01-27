@@ -470,7 +470,7 @@ extension PaywallVC {
         case separator
         case oneTimePurchase(ListOneTimePurchaseCellConfiguration)
         case listSubscription(ListSubscriptionCellConfiguration)
-        case tileSubscription(ListSubscriptionCellConfiguration)
+        case tileSubscription(TileSubscriptionCellConfiguration)
         case loading
         
         var height: CGFloat {
@@ -502,6 +502,13 @@ extension PaywallVC {
     struct ListOneTimePurchaseCellConfiguration {
         let product: StoreKitProduct
         let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
+    }
+    
+    struct TileSubscriptionCellConfiguration {
+        let product: StoreKitProduct
+        let subscriptionDescription: StoreKitSubscriptionDescription
+        let badgePosition: PaywallTileSubscriptionCell.SavedMoneyBadgePosition
+        let checkmarkPosition: PaywallTileSubscriptionCell.CheckmarkPosition
     }
     
     func allSections() -> [SectionType] {
@@ -542,7 +549,8 @@ extension PaywallVC {
                     
                     return .tileSubscription(.init(product: product,
                                                    subscriptionDescription: description,
-                                                   badgePosition: .left))
+                                                   badgePosition: .right,
+                                                   checkmarkPosition: .left))
                 }
             }
         }
@@ -556,7 +564,7 @@ extension PaywallVC {
         static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
         static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
         static let subscriptionTileItemSize: CGSize = {
-            UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 160)
+            UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 150)
         }()
     }
 }
