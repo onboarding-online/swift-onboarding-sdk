@@ -181,7 +181,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             height = calculateHeaderSize(in: sections)
         case .loading:
             let sectionsSpacing = CGFloat(sections.count - 1) * Constants.sectionsSpacing
-            height = collectionView.bounds.height - Constants.defaultHeaderHeight - sectionsSpacing
+            height = collectionView.bounds.height - calculateHeaderSize(in: sections) - sectionsSpacing
         case .tileSubscription:
             return Constants.subscriptionTileItemSize
         default:
