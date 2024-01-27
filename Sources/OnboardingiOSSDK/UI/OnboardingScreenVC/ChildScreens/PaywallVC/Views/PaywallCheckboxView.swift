@@ -11,6 +11,7 @@ final class PaywallCheckboxView: UIView {
     
     private var style: Style = .circle
     private var checkmarkLayer: CAShapeLayer?
+    var offBorderColor: UIColor? = nil { didSet { updateAppearance() } }
     var isOn: Bool = false { didSet { updateAppearance() }}
     
     override init(frame: CGRect) {
@@ -41,7 +42,6 @@ final class PaywallCheckboxView: UIView {
 private extension PaywallCheckboxView {
     func setup() {
         tintColor = .systemIndigo
-        layer.borderColor = tintColor.cgColor
         updateAppearance()
     }
     
@@ -49,10 +49,12 @@ private extension PaywallCheckboxView {
         if isOn {
             addCheckmark()
             layer.borderWidth = 0
+            layer.borderColor = tintColor.cgColor
             backgroundColor = tintColor
         } else {
             removeCheckmark()
             layer.borderWidth = 1
+            layer.borderColor = offBorderColor?.cgColor ?? tintColor.cgColor
             backgroundColor = .clear
         }
     }
