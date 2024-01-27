@@ -46,7 +46,7 @@ extension PaywallListSubscriptionCell {
         priceLabel.text = price
     }
     
-    func setWith(configuration: PaywallVC.ListOneTypePurchaseCellConfiguration,
+    func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,
                  isSelected: Bool) {
         // TODO: - Use different cell
         setBadgePosition(configuration.badgePosition)

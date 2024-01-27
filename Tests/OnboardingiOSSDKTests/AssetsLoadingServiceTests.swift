@@ -138,11 +138,11 @@ fileprivate final class MockAssetsStorage: AssetsStorageProtocol {
     }
     
     func getStoredAssetData(for key: String, assetType: OnboardingiOSSDK.StoredAssetType) -> Data? {
-        cache[key]
+        cache[assetType.pathForStoredAssetAtKey(key)]
     }
     
     func storeAssetData(_ data: Data, for key: String, assetType: OnboardingiOSSDK.StoredAssetType) {
-        cache[key] = data
+        cache[assetType.pathForStoredAssetAtKey(key)] = data
     }
     
     func clearStoredAssets() {

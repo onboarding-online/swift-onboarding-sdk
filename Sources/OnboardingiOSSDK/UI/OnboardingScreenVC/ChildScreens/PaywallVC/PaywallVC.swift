@@ -30,6 +30,7 @@ final class PaywallVC: BaseChildScreenGraphViewController {
     private var isBusy = true
     private var products: [StoreKitProduct] = []
     var productIds: [String] = [] // TODO: - Set product ids
+    var style: Style = .subscriptionsList
     var shouldCloseOnPurchaseCancel = false
 
     override func viewDidLoad() {
@@ -107,7 +108,7 @@ extension PaywallVC: UICollectionViewDataSource {
             cell.setWith(configuration: configuration, isSelected: isSelected)
             
             return cell
-        case .oneTypePurchase(let configuration):
+        case .oneTimePurchase(let configuration):
             let index = indexPath.row
             let isSelected = selectedIndex == index
             
@@ -128,7 +129,7 @@ extension PaywallVC: UICollectionViewDelegate {
         switch row {
         case .header(_), .separator, .loading:
             return
-        case .listSubscription, .oneTypePurchase:
+        case .listSubscription, .oneTimePurchase:
             let index = indexPath.row
             if selectedIndex != index {
                 var indexPathsToReload = [indexPath]
@@ -423,6 +424,10 @@ private extension PaywallVC {
 // MARK: - Open methods
 extension PaywallVC {
     
+    enum Style {
+        case subscriptionsList
+    }
+    
     enum SectionType {
         case header
         case items
@@ -432,7 +437,7 @@ extension PaywallVC {
     enum RowType {
         case header(HeaderCellConfiguration)
         case separator
-        case oneTypePurchase(ListOneTypePurchaseCellConfiguration)
+        case oneTimePurchase(ListOneTimePurchaseCellConfiguration)
         case listSubscription(ListSubscriptionCellConfiguration)
         case loading
         
@@ -442,7 +447,7 @@ extension PaywallVC {
                 return 0
             case .separator:
                 return 1
-            case .listSubscription, .oneTypePurchase:
+            case .listSubscription, .oneTimePurchase:
                 return UIScreen.isIphoneSE1 ? 60 : 77
             }
         }
@@ -460,7 +465,7 @@ extension PaywallVC {
         let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
     }
     
-    struct ListOneTypePurchaseCellConfiguration {
+    struct ListOneTimePurchaseCellConfiguration {
         let product: StoreKitProduct
         let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
     }
@@ -484,15 +489,18 @@ extension PaywallVC {
                 return [.loading]
             }
 
-            return products.map { product in
-                switch product.type {
-                case .oneTimePurchase:
-                    return .oneTypePurchase(.init(product: product,
-                                                  badgePosition: .left))
-                case .subscription(let description):
-                    return .listSubscription(.init(product: product,
-                                                   subscriptionDescription: description,
-                                                   badgePosition: .left))
+            switch style {
+            case .subscriptionsList:
+                return products.map { product in
+                    switch product.type {
+                    case .oneTimePurchase:
+                        return .oneTimePurchase(.init(product: product,
+                                                      badgePosition: .left))
+                    case .subscription(let description):
+                        return .listSubscription(.init(product: product,
+                                                       subscriptionDescription: description,
+                                                       badgePosition: .left))
+                    }
                 }
             }
         }
