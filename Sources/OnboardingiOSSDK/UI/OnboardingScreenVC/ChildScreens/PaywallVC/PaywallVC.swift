@@ -181,19 +181,23 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
     }
     
     func calculateHeaderSize(in sections: [SectionType]) -> CGFloat {
-        if isLoadingProducts {
-            return Constants.defaultHeaderHeight
-        }
         var contentSize: CGFloat = 0
         for section in sections {
             switch section {
             case .header, .separator:
                 contentSize += Constants.sectionsSpacing
             case .items:
-                let items = rowsFor(section: section)
-                if !items.isEmpty {
-                    let itemsHeight = items.reduce(0, { $0 + $1.height })
-                    let spacingHeight = CGFloat(items.count - 1) * Constants.listItemsSpacing
+                switch style {
+                case .subscriptionsList:
+                    let numberOfItems: Int
+                    if isLoadingProducts {
+                        numberOfItems = productIds.count
+                    } else {
+                        let items = rowsFor(section: section)
+                        numberOfItems = items.count
+                    }
+                    let itemsHeight: CGFloat = CGFloat(numberOfItems) * Constants.subscriptionListItemHeight
+                    let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing
                     contentSize += (itemsHeight + spacingHeight)
                 }
             }
@@ -451,7 +455,7 @@ extension PaywallVC {
             case .separator:
                 return 1
             case .listSubscription, .oneTimePurchase:
-                return UIScreen.isIphoneSE1 ? 60 : 77
+                return Constants.subscriptionListItemHeight
             }
         }
     }
@@ -515,6 +519,7 @@ extension PaywallVC {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
         static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
         static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
+        static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
     }
 }
 
