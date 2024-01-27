@@ -13,7 +13,7 @@ enum GradientDirection {
 
 class GradientView: UIView {
     
-    var gradientColors = [UIColor]()
+    var gradientColors = [UIColor]() { didSet { updateAppearence() } }
     var gradientDirection: GradientDirection = .topToBottom
     
     override init(frame: CGRect) {

@@ -25,22 +25,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
+                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
                         <rect key="frame" x="24" y="179" width="298" height="64"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcg-I0-OCG">
-                                <rect key="frame" x="0.0" y="0.0" width="298" height="27.666666666666668"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XBQ-Jz-Jxr">
-                                <rect key="frame" x="0.0" y="43.666666666666657" width="298" height="20.333333333333329"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.035294117647058823" green="0.035294117647058823" blue="0.035294117647058823" alpha="0.5" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                     </stackView>
                 </subviews>
             </view>
@@ -61,11 +47,10 @@
             </constraints>
             <size key="customSize" width="346" height="267"/>
             <connections>
+                <outlet property="contentStackView" destination="jjj-3w-9m3" id="Ao3-kW-5Iz"/>
                 <outlet property="gradientView" destination="Jze-sG-Veo" id="e6w-Lj-w5z"/>
                 <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
                 <outlet property="imageViewTopConstraint" destination="zYm-A4-zOD" id="TwS-0q-rA9"/>
-                <outlet property="subtitleLabel" destination="XBQ-Jz-Jxr" id="BLn-Mm-Mid"/>
-                <outlet property="titleLabel" destination="wcg-I0-OCG" id="vTj-4v-XtE"/>
                 <outlet property="titlesLeadingConstraint" destination="bf1-Dm-WLp" id="ggW-mC-eda"/>
             </connections>
             <point key="canvasLocation" x="271.75572519083971" y="-34.859154929577464"/>

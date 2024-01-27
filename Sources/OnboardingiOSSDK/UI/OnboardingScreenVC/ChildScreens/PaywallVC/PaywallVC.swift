@@ -489,8 +489,7 @@ extension PaywallVC {
     
     struct HeaderCellConfiguration {
         let imageURL: URL
-        let title: String
-        let subtitle: String
+        let style: PaywallHeaderCell.Style
     }
     
     struct ListSubscriptionCellConfiguration {
@@ -620,7 +619,12 @@ final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
 private extension PaywallVC.HeaderCellConfiguration {
     static func mock() -> PaywallVC.HeaderCellConfiguration {
         .init(imageURL: URL(string: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?size=626&ext=jpg&ga=GA1.1.1546980028.1703462400&semt=sph")!,
-              title: "Do you have a question? ",
-              subtitle: "Just ask it to our lawyer and get a quick and high-quality answer. ")
+//              style: .titleSubtitle(title: "Do you have a question? ",
+//                                    subtitle: "Just ask it to our lawyer and get a quick and high-quality answer. ")
+              style: .titleBulletsList(title: "Do you have a question? ",
+                                    bulletsList: ["Just ask it to our lawyer",
+                                                  "Just ask it to our",
+                                                  "Just ask it to"])
+        )
     }
 }
