@@ -427,7 +427,7 @@ private extension PaywallVC {
 // MARK: - Open methods
 extension PaywallVC {
     
-    enum Style {
+    public enum Style {
         case subscriptionsList
     }
     
