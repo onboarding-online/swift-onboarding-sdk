@@ -30,7 +30,7 @@ import StoreKit
     private var isBusy = true
     private var products: [StoreKitProduct] = []
     public var productIds: [String] = [] // TODO: - Set product ids
-    public var style: Style = .subscriptionsList
+    public var style: Style = .subscriptionsTiles
     var shouldCloseOnPurchaseCancel = false
     
     public var dismissalHandler: (() -> ())!
@@ -119,6 +119,14 @@ extension PaywallVC: UICollectionViewDataSource {
             cell.setWith(configuration: configuration, isSelected: isSelected)
             
             return cell
+        case .tileSubscription(let configuration):
+            let index = indexPath.row
+            let isSelected = selectedIndex == index
+            
+            let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
+            cell.setWith(configuration: configuration, isSelected: isSelected)
+            
+            return cell
         }
     }
 }
@@ -132,7 +140,7 @@ extension PaywallVC: UICollectionViewDelegate {
         switch row {
         case .header(_), .separator, .loading:
             return
-        case .listSubscription, .oneTimePurchase:
+        case .listSubscription, .oneTimePurchase, .tileSubscription:
             let index = indexPath.row
             if selectedIndex != index {
                 var indexPathsToReload = [indexPath]
@@ -174,6 +182,8 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         case .loading:
             let sectionsSpacing = CGFloat(sections.count - 1) * Constants.sectionsSpacing
             height = collectionView.bounds.height - Constants.defaultHeaderHeight - sectionsSpacing
+        case .tileSubscription:
+            return Constants.subscriptionTileItemSize
         default:
             height = row.height
         }
@@ -199,6 +209,8 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     let itemsHeight: CGFloat = CGFloat(numberOfItems) * Constants.subscriptionListItemHeight
                     let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing
                     contentSize += (itemsHeight + spacingHeight)
+                case .subscriptionsTiles:
+                    contentSize += Constants.subscriptionTileItemSize.height
                 }
             }
         }
@@ -224,7 +236,17 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             return .init(top: 0, left: 0,
                          bottom: Constants.sectionsSpacing, right: 0)
         case .items:
-            return .zero
+            switch style {
+            case .subscriptionsList:
+                return .zero
+            case .subscriptionsTiles:
+                let containerWidth = collectionView.bounds.width
+                let items = rowsFor(section: section)
+                let tilesWidth = CGFloat(items.count) * Constants.subscriptionTileItemSize.width
+                let tilesSpacing: CGFloat = 20
+                let sideSpace = containerWidth - tilesWidth - tilesSpacing
+                return .init(top: 0, left: sideSpace / 2, bottom: 0, right: sideSpace / 2)
+            }
         }
     }
     
@@ -406,7 +428,8 @@ private extension PaywallVC {
         [PaywallHeaderCell.self,
          PaywallListSubscriptionCell.self,
          PaywallSeparatorCell.self,
-         PaywallLoadingCell.self].forEach { cellType in
+         PaywallLoadingCell.self,
+         PaywallTileSubscriptionCell.self].forEach { cellType in
             collectionView.registerCellNibOfType(cellType)
         }
         
@@ -433,6 +456,7 @@ extension PaywallVC {
     
     public enum Style {
         case subscriptionsList
+        case subscriptionsTiles
     }
     
     enum SectionType {
@@ -446,6 +470,7 @@ extension PaywallVC {
         case separator
         case oneTimePurchase(ListOneTimePurchaseCellConfiguration)
         case listSubscription(ListSubscriptionCellConfiguration)
+        case tileSubscription(ListSubscriptionCellConfiguration)
         case loading
         
         var height: CGFloat {
@@ -456,6 +481,8 @@ extension PaywallVC {
                 return 1
             case .listSubscription, .oneTimePurchase:
                 return Constants.subscriptionListItemHeight
+            case .tileSubscription:
+                return Constants.subscriptionTileItemSize.height
             }
         }
     }
@@ -509,6 +536,14 @@ extension PaywallVC {
                                                        badgePosition: .left))
                     }
                 }
+            case .subscriptionsTiles:
+                return products.compactMap { product in
+                    guard case .subscription(let description) = product.type else { return nil }
+                    
+                    return .tileSubscription(.init(product: product,
+                                                   subscriptionDescription: description,
+                                                   badgePosition: .left))
+                }
             }
         }
     }
@@ -520,6 +555,9 @@ extension PaywallVC {
         static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
         static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
         static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
+        static let subscriptionTileItemSize: CGSize = {
+            UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 160)
+        }()
     }
 }
 
