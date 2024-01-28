@@ -8,7 +8,7 @@
 import UIKit
 import ScreensGraph
 
-class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseChildScreenGraphViewController {
+class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenGraphViewController {
     
     static func instantiate(screenData: ScreenTableSingleSelection) -> ScreenOneItemPerRowSingleSelectionCollectionVC {
         let tableSingleSelectionVC = ScreenOneItemPerRowSingleSelectionCollectionVC.storyBoardInstance()
@@ -39,6 +39,7 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseChildScreenGraphViewCo
         setupInitialCellConfig()
         setup()
         setupCollectionView()
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)
     }
     
     override func viewWillAppear(_ animated: Bool) {

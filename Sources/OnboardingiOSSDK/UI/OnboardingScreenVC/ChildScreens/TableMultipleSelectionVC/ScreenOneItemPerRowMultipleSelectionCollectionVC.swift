@@ -9,7 +9,7 @@ import UIKit
 import ScreensGraph
 
 
-class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseChildScreenGraphViewController {
+class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScreenGraphViewController {
     
     static func instantiate(screenData: ScreenTableMultipleSelection) -> ScreenOneItemPerRowMultipleSelectionCollectionVC {
         let tableMultipleSelectionVC = ScreenOneItemPerRowMultipleSelectionCollectionVC.storyBoardInstance()
@@ -23,6 +23,7 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseChildScreenGraphView
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
     
+
     private let numberOfCellsInRow: CGFloat = 1
     private var contentAlignment: CollectionContentVerticalAlignment = .center
     
@@ -38,8 +39,9 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseChildScreenGraphView
         setup()
         setupCollectionView()
         
-        let box = screenData.list.styles
-        cellConfigurator.setupItemsConstraintsWith(box: box)
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)
+        
+        cellConfigurator.setupItemsConstraintsWith(box: screenData.list.styles)
         cellConfigurator.setupImage(settings: screenData.list.items.first?.image.styles)
     }
     

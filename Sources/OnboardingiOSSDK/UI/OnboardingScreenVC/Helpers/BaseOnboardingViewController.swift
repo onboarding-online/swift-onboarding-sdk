@@ -15,6 +15,46 @@ public class BaseChildScreenGraphViewController: BaseOnboardingViewController, O
     var isEmbedded: Bool { true }
 }
 
+public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphViewController {
+
+    @IBOutlet weak var collectionLeftPadding: NSLayoutConstraint!
+    @IBOutlet weak var collectionRightPadding: NSLayoutConstraint!
+
+    @IBOutlet weak var collectionTopPadding: NSLayoutConstraint!
+    @IBOutlet weak var collectionBottomPadding: NSLayoutConstraint!
+    
+    
+    func setupCollectionConstraintsWith(box: BoxProtocol?) {
+        guard let box = box else { return }
+        
+        if let paddingLeft =  box.paddingLeft?.cgFloatValue {
+            self.collectionLeftPadding.constant = paddingLeft
+        } else {
+            self.collectionLeftPadding.constant = 0.0
+        }
+        
+        if let paddingRight =  box.paddingRight?.cgFloatValue {
+            self.collectionRightPadding.constant = paddingRight
+        } else {
+            self.collectionRightPadding.constant = 0.0
+        }
+
+        if let paddingTop =  box.paddingTop?.cgFloatValue {
+            self.collectionTopPadding.constant = paddingTop
+        } else {
+            self.collectionTopPadding.constant = 0.0
+        }
+
+        if let paddingBottom =  box.paddingBottom?.cgFloatValue {
+            self.collectionBottomPadding.constant = paddingBottom
+        } else {
+            self.collectionBottomPadding.constant = 0.0
+        }
+    }
+    
+}
+
+
 public class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol,  UIImageLoader  {
     
     var loadingIndicator: LoadingIndicatorView?
