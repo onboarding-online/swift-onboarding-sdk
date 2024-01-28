@@ -10,11 +10,52 @@ class BaseScreenGraphViewController: BaseOnboardingViewController, OnboardingScr
     weak var delegate: OnboardingScreenDelegate?
 }
 
-class BaseChildScreenGraphViewController: BaseOnboardingViewController, OnboardingBodyChildScreenProtocol {
+public class BaseChildScreenGraphViewController: BaseOnboardingViewController, OnboardingBodyChildScreenProtocol {
     weak var delegate: OnboardingChildScreenDelegate?
+    var isEmbedded: Bool { true }
 }
 
-class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol,  UIImageLoader  {
+public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphViewController {
+
+    @IBOutlet weak var collectionLeftPadding: NSLayoutConstraint!
+    @IBOutlet weak var collectionRightPadding: NSLayoutConstraint!
+
+    @IBOutlet weak var collectionTopPadding: NSLayoutConstraint!
+    @IBOutlet weak var collectionBottomPadding: NSLayoutConstraint!
+    
+    
+    func setupCollectionConstraintsWith(box: BoxProtocol?) {
+        guard let box = box else { return }
+        
+        if let paddingLeft =  box.paddingLeft?.cgFloatValue {
+            self.collectionLeftPadding.constant = paddingLeft
+        } else {
+            self.collectionLeftPadding.constant = 0.0
+        }
+        
+        if let paddingRight =  box.paddingRight?.cgFloatValue {
+            self.collectionRightPadding.constant = paddingRight
+        } else {
+            self.collectionRightPadding.constant = 0.0
+        }
+
+        if let paddingTop =  box.paddingTop?.cgFloatValue {
+            self.collectionTopPadding.constant = paddingTop
+        } else {
+            self.collectionTopPadding.constant = 0.0
+        }
+
+        if let paddingBottom =  box.paddingBottom?.cgFloatValue {
+            self.collectionBottomPadding.constant = paddingBottom
+        } else {
+            self.collectionBottomPadding.constant = 0.0
+        }
+    }
+    
+}
+
+
+public class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol,  UIImageLoader  {
     
     var loadingIndicator: LoadingIndicatorView?
         
@@ -24,7 +65,7 @@ class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol
     var animationEnabled = false
 
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         setupNavBar()
@@ -34,11 +75,11 @@ class BaseOnboardingViewController: UIViewController, BaseViewControllerProtocol
         NotificationCenter.default.removeObserver(self)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if animationEnabled {
