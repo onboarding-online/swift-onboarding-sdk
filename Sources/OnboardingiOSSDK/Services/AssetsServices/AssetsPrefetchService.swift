@@ -24,7 +24,7 @@ final class AssetsPrefetchService {
     private let assetsLoader: AssetsLoader
         
     init(screenGraph: ScreensGraph,
-         assetsLoadingService: AssetsLoadingServiceProtocol = AssetsLoadingService()) {
+         assetsLoadingService: AssetsLoadingServiceProtocol = AssetsLoadingService.shared) {
         self.screenGraph = screenGraph
         self.assetsLoader = AssetsLoader(assetsLoadingService: assetsLoadingService)
     }
@@ -100,6 +100,10 @@ extension AssetsPrefetchService {
     
     func isScreenAssetsPrefetchFailed(screenId: String) -> Bool {
         failedScreenIds.contains(screenId)
+    }
+    
+    func clear() {
+        assetsLoader.clear()
     }
 }
 
@@ -379,6 +383,10 @@ private extension AssetsPrefetchService {
             if await assetsLoadingService.loadData(from: url, assetType: .video) == nil {
                 throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
+        }
+        
+        func clear() {
+            assetsLoadingService.clear()
         }
     }
     

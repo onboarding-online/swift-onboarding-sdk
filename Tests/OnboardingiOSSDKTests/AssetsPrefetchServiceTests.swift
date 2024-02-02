@@ -114,7 +114,7 @@ private final class MockAssetsLoadingService: AssetsLoadingServiceProtocol {
         return nil
     }
     
-    func clearStoredAssets() {
+    func clear() {
         
     }
     

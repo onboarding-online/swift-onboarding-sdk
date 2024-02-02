@@ -21,7 +21,7 @@ protocol AssetsLoadingServiceProtocol {
     func loadImage(from url: String) async -> UIImage?
     func loadData(from url: String, assetType: StoredAssetType) async -> Data?
     func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
-    func clearStoredAssets()
+    func clear()
 }
 
 // MARK: - ImageLoadingService
@@ -147,8 +147,9 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         storage.assetURLIfExist(for: url, assetType: assetType)
     }
     
-    func clearStoredAssets() {
+    func clear() {
         storage.clearStoredAssets()
+        cacheStorage.clearCache()
     }
 }
 

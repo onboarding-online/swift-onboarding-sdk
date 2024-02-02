@@ -112,10 +112,6 @@ extension OnboardingService {
         self.launchWithAnimation = launchWithAnimation
         showLoadingAssetsScreen()
     }
-
-    public func clearStoredAssets() {
-        AssetsLoadingService.shared.clearStoredAssets()
-    }
 }
 
 // MARK: - OnboardingScreenDelegate
@@ -426,6 +422,7 @@ private extension OnboardingService {
         self.screenGraph = nil
         self.navigationController = nil
         self.appearance = nil
+        self.prefetchService?.clear()
         self.prefetchService = nil
         self.onboardingUserData = [:]
         self.customLoadingViewController = nil

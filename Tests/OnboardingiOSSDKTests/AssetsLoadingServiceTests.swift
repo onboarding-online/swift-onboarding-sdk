@@ -21,12 +21,12 @@ final class AssetsLoadingServiceTests: XCTestCase {
         storage = MockAssetsStorage()
         cacheStorage = MockImagesCacheStorage()
         assetsLoadingService = AssetsLoadingService(loader: loader, storage: storage, cacheStorage: cacheStorage)
-        assetsLoadingService?.clearStoredAssets()
+        assetsLoadingService?.clear()
     }
     
     override func tearDown() async throws {
         loader.imageToReturn = nil
-        assetsLoadingService?.clearStoredAssets()
+        assetsLoadingService?.clear()
     }
     
     func testNormalLoading() async throws {
