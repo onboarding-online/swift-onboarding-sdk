@@ -82,7 +82,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         
         return nil
     }
-  
+    
     func loadData(from url: String,
                   assetType: StoredAssetType) async -> Data? {
 
@@ -184,6 +184,13 @@ fileprivate extension AssetsLoadingService {
             }
         }
         return nil
+    }
+    
+    func createImage(from imageData: Data) async -> UIImage? {
+        if let gif = await GIFImageCreator.shared.createGIFImageWithData(imageData) {
+            return gif
+        }
+        return UIImage(data: imageData)
     }
 }
 
