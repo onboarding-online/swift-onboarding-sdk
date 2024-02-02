@@ -21,10 +21,12 @@ final class AssetsPrefetchService {
     private var failedScreenIds: Set<String> = []
     private var didStartPrefetching = false
     private let serialQueue = DispatchQueue(label: "com.onboarding.online.assets.prefetch.serial")
-    private let assetsLoader = AssetsLoader()
+    private let assetsLoader: AssetsLoader
         
-    init(screenGraph: ScreensGraph) {
+    init(screenGraph: ScreensGraph,
+         assetsLoadingService: AssetsLoadingServiceProtocol = AssetsLoadingService()) {
         self.screenGraph = screenGraph
+        self.assetsLoader = AssetsLoader(assetsLoadingService: assetsLoadingService)
     }
     
 }
@@ -69,8 +71,8 @@ extension AssetsPrefetchService {
             
             if let timeout = timeout {
                 let task = DispatchWorkItem { [weak self] in
-                    self?.removeWaiterWith(id: callbackHolder.id, from: screenId)
                     self?.notifyWaitersFor(screenId: screenId, result: .success(Void()))
+                    self?.removeWaiterWith(id: callbackHolder.id, from: screenId)
                 }
                 log(message: "Will set waiter timeout \(screenId)")
                 serialQueue.sync {
@@ -359,10 +361,12 @@ private extension AssetsPrefetchService {
 // MARK: - Private methods
 private extension AssetsPrefetchService {
     struct AssetsLoader {
+        let assetsLoadingService: AssetsLoadingServiceProtocol
+        
         func loadImage(assetUrl: AssetUrl) async throws {
             let url = assetUrl.origin
             
-            if await AssetsLoadingService.shared.loadImage(from: url) == nil {
+            if await assetsLoadingService.loadImage(from: url) == nil {
                 throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
         }
@@ -372,7 +376,7 @@ private extension AssetsPrefetchService {
           
 //            AssetsLoadingService.shared.loadData(from: url,
 //                                                 assetType: .videoThumbnail) { _ in }
-            if await AssetsLoadingService.shared.loadData(from: url, assetType: .video) == nil {
+            if await assetsLoadingService.loadData(from: url, assetType: .video) == nil {
                 throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
         }
