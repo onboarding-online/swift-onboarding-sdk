@@ -155,40 +155,11 @@ private extension VideoPreparationService {
     func preparePlayerFor(screenId: String, with preparationDetails: PlayerPreparationDetails) {
         updateStatusOf(screenId: screenId, to: .preparing)
         let video = preparationDetails.video
-        
-        // TODO: - Move to assets service 
-        if let name = video.assetUrlByLocal()?.assetName {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                return
-            }
-        }
-        
-        guard let stringURL = video.assetUrlByLocal()?.assetUrl?.origin else {
-            updateStatusOf(screenId: screenId, to: .failed)
-            return
-        }
-        
-        if let name = stringURL.resourceNameWithoutExtension() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                return
-            }
-        }
-        
-        if let name = stringURL.resourceName() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
-                self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                return
-            }
-        }
-        
         Task { @MainActor in
-            let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
-            if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
-                self.setPlayVideoBackgroundFor(screenId: screenId, with: storedURL)
-            } else if let url = URL(string: stringURL) {
-                self.setPlayVideoBackgroundFor(screenId: screenId, with: url)
+            if let videoURL = await video.urlToAsset() {
+                self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
+            } else {
+                updateStatusOf(screenId: screenId, to: .failed)
             }
         }
     }

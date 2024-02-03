@@ -443,17 +443,17 @@ private enum AssetPrefetchType {
     case video(_ assetUrl: AssetUrl)
     
     static func from(image: Image) -> AssetPrefetchType? {
-        guard let assetUrl = image.assetUrlByLocal()?.assetUrl else { return nil }
+        guard let assetUrl = image.assetUrlByLocale()?.assetUrl else { return nil }
         return .image(assetUrl)
     }
     
     static func from(baseImage: BaseImage) -> AssetPrefetchType? {
-        guard let assetUrl = baseImage.assetUrlByLocal()?.assetUrl else { return nil }
+        guard let assetUrl = baseImage.assetUrlByLocale()?.assetUrl else { return nil }
         return .image(assetUrl)
     }
     
     static func from(baseVideo: BaseVideo) -> AssetPrefetchType? {
-        guard let assetUrl = baseVideo.assetUrlByLocal()?.assetUrl else { return nil }
+        guard let assetUrl = baseVideo.assetUrlByLocale()?.assetUrl else { return nil }
         return .video(assetUrl)
     }
 }

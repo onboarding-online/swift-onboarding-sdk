@@ -90,10 +90,6 @@ private final class MockAssetsLoadingService: AssetsLoadingServiceProtocol {
     var responseDelay: TimeInterval?
     var shouldFail = false
     
-    func loadImageFromURL(_ url: URL, intoView imageView: UIImageView, placeholderImageName: String?) {
-        
-    }
-    
     func loadImage(from url: String) async -> UIImage? {
         await waitForResponseDelay()
         if shouldFail {

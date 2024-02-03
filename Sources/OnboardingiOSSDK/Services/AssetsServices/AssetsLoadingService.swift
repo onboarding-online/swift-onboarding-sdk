@@ -17,7 +17,6 @@ typealias AssetDataLoadingResultCallback = (AssetDataLoadingResult) -> ()
 
 // MARK: - ImageLoadingServiceProtocol
 protocol AssetsLoadingServiceProtocol {
-    func loadImageFromURL(_ url: URL, intoView imageView: UIImageView, placeholderImageName: String?)
     func loadImage(from url: String) async -> UIImage?
     func loadData(from url: String, assetType: StoredAssetType) async -> Data?
     func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
@@ -47,26 +46,6 @@ final class AssetsLoadingService {
 
 // MARK: - ImageLoadingServiceProtocol
 extension AssetsLoadingService: AssetsLoadingServiceProtocol {
-    func loadImageFromURL(_ url: URL,
-                          intoView imageView: UIImageView,
-                          placeholderImageName: String?) {
-        
-        Task { @MainActor in
-            if let placeholderImageName = placeholderImageName {
-                imageView.image = UIImage(named: placeholderImageName)
-            }
-            let urlHash = url.absoluteString.hash
-            imageView.tag = urlHash
-            
-            let image = await loadImage(from: url.absoluteString)
-            if imageView.tag == urlHash {
-                if imageView.image != image {
-                    imageView.setImage(image, animated: true)
-                }
-            }
-        }
-    }
-  
     func loadImage(from url: String) async -> UIImage? {
         let key = url
         if let cachedImage = cacheStorage.getCachedImage(for: key) {

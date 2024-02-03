@@ -30,9 +30,9 @@ final class PaywallHeaderCell: UICollectionViewCell {
 extension PaywallHeaderCell {
     func setWith(configuration: PaywallVC.HeaderCellConfiguration) {
         setWithStyle(configuration.style)
-        AssetsLoadingService.shared.loadImageFromURL(configuration.imageURL,
-                                                     intoView: imageView,
-                                                     placeholderImageName: nil)
+        Task { @MainActor in
+            imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
+        }
     }
     
     func setScrollOffset(_ offset: CGPoint) {

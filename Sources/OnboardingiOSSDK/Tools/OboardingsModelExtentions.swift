@@ -120,24 +120,79 @@ final class LocaleHelper {
     }
 }
 
-extension BaseVideo {
-    
-    func assetUrlByLocal() -> Asset? {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
-        
-        return valueByLocale
-    }
-    
+protocol OnboardingLocalAssetProvider {
+    var l10n: [String: Asset] { get } /* Dictionary of localized Asset */
+    func assetUrlByLocale() -> Asset?
 }
 
-extension Image {
-    
-    func assetUrlByLocal() -> Asset? {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
+extension OnboardingLocalAssetProvider {
+    func assetUrlByLocale() -> Asset? {
+        let defaultLanguage = OnboardingService.shared.screenGraph?.defaultLanguage.rawValue
+        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n,
+                                                          defaultLanguage: defaultLanguage)
         
         return valueByLocale
     }
-    
+}
+
+extension BaseVideo: OnboardingLocalAssetProvider { 
+    func urlToAsset() async -> URL? {
+        let urlByLocale = assetUrlByLocale()
+        if let name = urlByLocale?.assetName {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+                return videoURL
+            }
+        }
+        
+        guard let stringURL = urlByLocale?.assetUrl?.origin else {
+            return nil
+        }
+        
+        if let name = stringURL.resourceNameWithoutExtension() {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+                return videoURL
+            }
+        }
+        
+        if let name = stringURL.resourceName() {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
+                return videoURL
+            }
+        }
+        
+        let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
+        if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
+            return storedURL
+        } else if let url = URL(string: stringURL) {
+            return url
+        }
+        return nil
+    }
+}
+
+protocol OnboardingLocalImageAssetProvider: OnboardingLocalAssetProvider { }
+
+extension OnboardingLocalImageAssetProvider {
+    func loadImage() async -> UIImage? {
+        let urlByLocale = assetUrlByLocale()
+
+        if let assetName = urlByLocale?.assetName,
+            let image = UIImage.init(named: assetName)  {
+            return image
+        } else if let url = urlByLocale?.assetUrl?.origin {
+            // Check local resources first
+            if let imageString = url.resourceName(),
+               let image = UIImage.init(named: imageString) {
+                return image
+            }
+            
+            return await AssetsLoadingService.shared.loadImage(from: url)
+        }
+        return nil
+    }
+}
+
+extension Image: OnboardingLocalImageAssetProvider {
     func imageContentMode() -> UIView.ContentMode? {
         if let scaleMode = styles.scaleMode {
             switch scaleMode {
@@ -165,15 +220,7 @@ extension Image {
     
 }
 
-extension BaseImage {
-    
-    func assetUrlByLocal() -> Asset? {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
-        
-        return valueByLocale
-    }
-    
-}
+extension BaseImage: OnboardingLocalImageAssetProvider { }
 
 extension BaseText {
     

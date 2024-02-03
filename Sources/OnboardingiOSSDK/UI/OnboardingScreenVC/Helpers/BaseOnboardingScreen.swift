@@ -40,23 +40,9 @@ class BaseOnboardingScreen: UIViewController {
 extension BaseOnboardingScreen {
     
     func updateBackground(image: BaseImage?) {
-        guard let image = image else { return  }
-
-        if let imageString = image.assetUrlByLocal()?.assetName, let image = UIImage.init(named: imageString)  {
-            setBackgroundImage(image)
-            return
-        }
-        
-        guard let stringURL = image.assetUrlByLocal()?.assetUrl?.origin else { return  }
-
-        if let imageString = stringURL.resourceName(), 
-            let image = UIImage.init(named: imageString)  {
-            setBackgroundImage(image)
-        } else {
-            Task { @MainActor in
-                if let image = await AssetsLoadingService.shared.loadImage(from: stringURL) {
-                    setBackgroundImage(image)
-                }
+        Task { @MainActor in
+            if let image = await image?.loadImage() {
+                setBackgroundImage(image)
             }
         }
     }
