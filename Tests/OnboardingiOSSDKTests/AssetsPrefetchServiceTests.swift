@@ -20,19 +20,10 @@ final class AssetsPrefetchServiceTests: XCTestCase {
     override func setUp() async throws {
         assetsLoadingService = MockAssetsLoadingService()
         AssetsLoadingService.shared = assetsLoadingService
-        screenGraph = try loadScreenGraph()
+        screenGraph = try TestsFilesHolder.shared.loadScreenGraph()
         assetsPrefetchService = AssetsPrefetchService(screenGraph: screenGraph)
     }
     
-    private func loadScreenGraph() throws -> ScreensGraph {
-        let jsonName = "onboarding-tests.json"
-        let localPath = TestsFilesHolder.shared.url(for: jsonName)!
-        let data = try Data(contentsOf: localPath)
-        let decoder = JSONDecoder()
-        let screenGraph = try decoder.decode(ScreensGraph.self, from: data)
-        return screenGraph
-    }
-   
     func testAllAssetsFetched() async throws {
         try await assetsPrefetchService.prefetchAllAssets()
         for (id, _) in screenGraph.screens {
@@ -78,44 +69,4 @@ final class AssetsPrefetchServiceTests: XCTestCase {
         try await assetsPrefetchService.onScreenReady(screenId: screenIdWithAssets, timeout: 0.1)
     }
     
-}
-
-private final class MockAssetsLoadingService: AssetsLoadingServiceProtocol {
-    
-    var responseDelay: TimeInterval?
-    var shouldFail = false
-    
-    func loadImage(from url: String) async -> UIImage? {
-        await waitForResponseDelay()
-        if shouldFail {
-            return nil
-        }
-        return .init()
-    }
-    
-    func loadData(from url: String, assetType: OnboardingiOSSDK.StoredAssetType) async -> Data? {
-        await waitForResponseDelay()
-        if shouldFail {
-            return nil
-        }
-        return Data()
-    }
-    
-    func urlToStoredData(from url: String, assetType: OnboardingiOSSDK.StoredAssetType) -> URL? {
-        return nil
-    }
-    
-    func clear() {
-        
-    }
-    
-    private func waitForResponseDelay() async {
-        await waitFor(responseDelay)
-    }
-    
-    private func waitFor(_ seconds: TimeInterval?) async {
-        guard let seconds else { return }
-        
-        await Task.sleep(seconds: seconds)
-    }
 }

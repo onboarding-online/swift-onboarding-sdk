@@ -14,7 +14,7 @@ public final class OnboardingService {
     
     public static let shared = OnboardingService()
 
-    private let windowManager = OnboardingWindowManager.shared
+    private let windowManager: OnboardingWindowManagerProtocol 
     public var customFlow: CustomScreenCallback? = nil
     
     public var permissionRequestCallback: PermissionRequestCallback? = nil
@@ -40,7 +40,8 @@ public final class OnboardingService {
     private var onboardingUserData: OnboardingData = [:]
     private var onboardingFinishedCallback: OnboardingFinishResult?
     
-    private init() { 
+    init(windowManager: OnboardingWindowManagerProtocol = OnboardingWindowManager.shared) {
+        self.windowManager = windowManager
         BackgroundTasksService.shared.startTrackAppState()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
@@ -50,7 +51,7 @@ public final class OnboardingService {
 extension OnboardingService {
     
     public func startOnboarding(configuration: RunConfiguration,
-                                finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+                                finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
         startOnboarding(configuration: configuration,
                         prefetchService: nil,
                         finishedCallback: finishedCallback)
@@ -58,7 +59,7 @@ extension OnboardingService {
     
     func startOnboarding(configuration: RunConfiguration,
                          prefetchService: AssetsPrefetchService?,
-                         finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+                         finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
         let screenGraph = configuration.screenGraph
         guard screenGraph.screens[screenGraph.launchScreenId] != nil else { return }
         
@@ -335,10 +336,10 @@ private extension OnboardingService {
             
             if launchWithAnimation {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                    self?.windowManager.setNewRootViewController(navigationController, in: window, animated: true)
+                    self?.windowManager.setNewRootViewController(navigationController, in: window, animated: true, completion: nil)
                 }
             } else {
-                windowManager.setNewRootViewController(navigationController, in: window, animated: false)
+                windowManager.setNewRootViewController(navigationController, in: window, animated: false, completion: nil)
             }
         }
         
@@ -401,7 +402,7 @@ private extension OnboardingService {
 
         func finishIn(window: UIWindow) {
             guard let initialRootViewController = self.initialRootViewController else { return }
-            windowManager.setNewRootViewController(initialRootViewController, in: window)
+            windowManager.setNewRootViewController(initialRootViewController, in: window, animated: true, completion: nil)
         }
         
         switch appearance {

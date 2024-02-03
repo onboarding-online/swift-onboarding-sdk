@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ScreensGraph
 
 final class TestsFilesHolder {
     
@@ -30,6 +31,15 @@ final class TestsFilesHolder {
     
     func url(for fileName: String) -> URL? {
         return cache[fileName]
+    }
+    
+    func loadScreenGraph() throws -> ScreensGraph {
+        let jsonName = "onboarding-tests.json"
+        let localPath = url(for: jsonName)!
+        let data = try Data(contentsOf: localPath)
+        let decoder = JSONDecoder()
+        let screenGraph = try decoder.decode(ScreensGraph.self, from: data)
+        return screenGraph
     }
     
     private static func urlForRestServicesTestsDir() -> URL {
