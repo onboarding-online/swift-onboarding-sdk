@@ -69,9 +69,9 @@ final class OnboardingServiceTests: XCTestCase {
                                                                appearance: .default,
                                                                launchWithAnimation: false),
                                           finishedCallback: { _ in })
-        XCTAssertTrue(getRootViewController() is ScreenLoadingAssetsVC)
+        XCTAssertTrue(windowManager.getRootViewController() is ScreenLoadingAssetsVC)
         await Task.sleep(seconds: 0.3)
-        XCTAssertFalse(getRootViewController() is ScreenLoadingAssetsVC)
+        XCTAssertFalse(windowManager.getRootViewController() is ScreenLoadingAssetsVC)
     }
     
     @MainActor
@@ -83,17 +83,52 @@ final class OnboardingServiceTests: XCTestCase {
                                                                appearance: .default,
                                                                launchWithAnimation: false),
                                           finishedCallback: { _ in })
-        XCTAssertEqual(getRootViewController(), customLoadingVC)
+        XCTAssertEqual(windowManager.getRootViewController(), customLoadingVC)
         await Task.sleep(seconds: 0.3)
-        XCTAssertNotEqual(getRootViewController(), customLoadingVC)
+        XCTAssertNotEqual(windowManager.getRootViewController(), customLoadingVC)
     }
     
+    @MainActor
+    func testDefaultLoadingScreenAppearsWhenPresented() async {
+        let window = UIWindow()
+        window.makeKeyAndVisible()
+        let vc = UIViewController()
+        window.rootViewController = vc
+
+        onboardingService.assetsPrefetchMode = .waitForAllDone
+        onboardingService.startOnboarding(configuration: .init(screenGraph: screenGraph,
+                                                               appearance: .presentIn(vc),
+                                                               launchWithAnimation: false),
+                                          finishedCallback: { _ in })
+        XCTAssertTrue(getRootOnboardingViewControllerIn(viewController: vc) is ScreenLoadingAssetsVC)
+        await Task.sleep(seconds: 0.3)
+        XCTAssertFalse(getRootOnboardingViewControllerIn(viewController: vc) is ScreenLoadingAssetsVC)
+    }
+    
+    @MainActor
+    func testCustomLoadingScreenAppearsWhenPresented() async {
+        let window = UIWindow()
+        window.makeKeyAndVisible()
+        let vc = UIViewController()
+        window.rootViewController = vc
+
+        let customLoadingVC = UIViewController()
+        onboardingService.assetsPrefetchMode = .waitForAllDone
+        onboardingService.customLoadingViewController = customLoadingVC
+        onboardingService.startOnboarding(configuration: .init(screenGraph: screenGraph,
+                                                               appearance: .presentIn(vc),
+                                                               launchWithAnimation: false),
+                                          finishedCallback: { _ in })
+        XCTAssertEqual(getRootOnboardingViewControllerIn(viewController: vc), customLoadingVC)
+        await Task.sleep(seconds: 0.3)
+        XCTAssertNotEqual(getRootOnboardingViewControllerIn(viewController: vc), customLoadingVC)
+    }
 }
 
 // MARK: - Private methods
 private extension OnboardingServiceTests {
-    func getRootViewController() -> UIViewController? {
-        guard let nav = windowManager.window.rootViewController as? OnboardingNavigationController else {
+    func getRootOnboardingViewControllerIn(viewController: UIViewController) -> UIViewController? {
+        guard let nav = viewController.presentedViewController as? OnboardingNavigationController else {
             fatalError("Root view controller is nil")
         }
         
@@ -121,5 +156,13 @@ final class MockOnboardingWindowManager: OnboardingWindowManagerProtocol {
     
     func setNewRootViewController(_ viewController: UIViewController, in window: UIWindow, animated: Bool, completion: (() -> ())?) {
         window.rootViewController = viewController
+    }
+    
+    func getRootViewController() -> UIViewController? {
+        guard let nav = window.rootViewController as? OnboardingNavigationController else {
+            fatalError("Root view controller is nil")
+        }
+        
+        return nav.viewControllers.first
     }
 }
