@@ -180,12 +180,12 @@ extension OnboardingLocalImageAssetProvider {
         let urlByLocale = assetUrlByLocale()
 
         if let assetName = urlByLocale?.assetName,
-            let image = UIImage.init(named: assetName)  {
+            let image = UIImage.init(named: assetName) {
             return image
         } else if let url = urlByLocale?.assetUrl?.origin {
             // Check local resources first
-            if let imageString = url.resourceName(),
-               let image = UIImage.init(named: imageString) {
+            if let imageName = url.resourceName(),
+               let image = await UIImage.createWith(name: imageName) {
                 return image
             }
             
@@ -220,7 +220,6 @@ extension Image: OnboardingLocalImageAssetProvider {
         }
         return nil
     }
-    
 }
 
 extension BaseImage: OnboardingLocalImageAssetProvider { }

@@ -136,10 +136,7 @@ fileprivate extension AssetsLoadingService {
     }
     
     func createImage(from imageData: Data) async -> UIImage? {
-        if let gif = await GIFImageCreator.shared.createGIFImageWithData(imageData) {
-            return gif
-        }
-        return UIImage(data: imageData)
+        await UIImage.createFrom(imageData: imageData)
     }
 }
 
