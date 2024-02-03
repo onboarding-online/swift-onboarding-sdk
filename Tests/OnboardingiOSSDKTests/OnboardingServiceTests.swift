@@ -49,10 +49,7 @@ final class OnboardingServiceTests: XCTestCase {
     
     @MainActor
     func testPresentInVCAppearanceMode() {
-        let window = UIWindow()
-        window.makeKeyAndVisible()
-        let vc = UIViewController()
-        window.rootViewController = vc
+        let vc = prepareViewControllerAsAppearanceForOnboarding()
         XCTAssertNil(windowManager.window.rootViewController)
         onboardingService.startOnboarding(configuration: .init(screenGraph: screenGraph,
                                                                appearance: .presentIn(vc),
@@ -90,11 +87,7 @@ final class OnboardingServiceTests: XCTestCase {
     
     @MainActor
     func testDefaultLoadingScreenAppearsWhenPresented() async {
-        let window = UIWindow()
-        window.makeKeyAndVisible()
-        let vc = UIViewController()
-        window.rootViewController = vc
-
+        let vc = prepareViewControllerAsAppearanceForOnboarding()
         onboardingService.assetsPrefetchMode = .waitForAllDone
         onboardingService.startOnboarding(configuration: .init(screenGraph: screenGraph,
                                                                appearance: .presentIn(vc),
@@ -107,11 +100,7 @@ final class OnboardingServiceTests: XCTestCase {
     
     @MainActor
     func testCustomLoadingScreenAppearsWhenPresented() async {
-        let window = UIWindow()
-        window.makeKeyAndVisible()
-        let vc = UIViewController()
-        window.rootViewController = vc
-
+        let vc = prepareViewControllerAsAppearanceForOnboarding()
         let customLoadingVC = UIViewController()
         onboardingService.assetsPrefetchMode = .waitForAllDone
         onboardingService.customLoadingViewController = customLoadingVC
@@ -127,6 +116,14 @@ final class OnboardingServiceTests: XCTestCase {
 
 // MARK: - Private methods
 private extension OnboardingServiceTests {
+    func prepareViewControllerAsAppearanceForOnboarding() -> UIViewController {
+        let window = UIWindow()
+        window.makeKeyAndVisible()
+        let vc = UIViewController()
+        window.rootViewController = vc
+        return vc
+    }
+    
     func getRootOnboardingViewControllerIn(viewController: UIViewController) -> UIViewController? {
         guard let nav = viewController.presentedViewController as? OnboardingNavigationController else {
             fatalError("Root view controller is nil")
