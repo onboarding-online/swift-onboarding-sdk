@@ -75,7 +75,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         }
         
         if let imageData = await loadData(from: url, assetType: .image),
-           let image = UIImage(data: imageData) {
+           let image = await createImage(from: imageData) {
             self.cacheStorage.cache(image: image, forKey: url)
             return image
         }

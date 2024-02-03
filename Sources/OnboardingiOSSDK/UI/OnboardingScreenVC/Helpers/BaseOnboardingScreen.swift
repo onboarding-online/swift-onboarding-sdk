@@ -49,18 +49,13 @@ extension BaseOnboardingScreen {
         
         guard let stringURL = image.assetUrlByLocal()?.assetUrl?.origin else { return  }
 
-        if let imageString = stringURL.resourceName(), let image = UIImage.init(named: imageString)  {
+        if let imageString = stringURL.resourceName(), 
+            let image = UIImage.init(named: imageString)  {
             setBackgroundImage(image)
         } else {
-            if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .image),
-               let data = try? Data(contentsOf: storedURL),
-               let image = UIImage(data: data) {
-                setBackgroundImage(image)
-            } else {
-                Task { @MainActor in
-                    if let image = await AssetsLoadingService.shared.loadImage(from: stringURL) {
-                        self.setBackgroundImage(image)
-                    }
+            Task { @MainActor in
+                if let image = await AssetsLoadingService.shared.loadImage(from: stringURL) {
+                    setBackgroundImage(image)
                 }
             }
         }
