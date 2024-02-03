@@ -155,11 +155,15 @@ private extension AssetsPrefetchService {
         do {
             try await prefetchAssetsFor(screenStruct: screen._struct)
             log(message: "Did prefetch assets for \(screen.id)")
-            preloadedScreenIds.insert(screen.id)
+            serialQueue.sync {
+                _ = preloadedScreenIds.insert(screen.id)
+            }
             notifyWaitersFor(screenId: screen.id, result: .success(Void()))
         } catch {
             log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
-            failedScreenIds.insert(screen.id)
+            serialQueue.sync {
+                _ = failedScreenIds.insert(screen.id)
+            }
             notifyWaitersFor(screenId: screen.id, result: .failure(.prefetchFailed))
             throw error
         }
