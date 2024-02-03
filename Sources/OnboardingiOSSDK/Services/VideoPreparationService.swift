@@ -156,7 +156,7 @@ private extension VideoPreparationService {
         updateStatusOf(screenId: screenId, to: .preparing)
         let video = preparationDetails.video
         Task { @MainActor in
-            if let videoURL = await video.urlToAsset() {
+            if let videoURL = await video.urlToVideoAsset() {
                 self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
             } else {
                 updateStatusOf(screenId: screenId, to: .failed)

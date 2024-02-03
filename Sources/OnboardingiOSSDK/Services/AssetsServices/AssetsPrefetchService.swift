@@ -21,12 +21,9 @@ final class AssetsPrefetchService {
     private var failedScreenIds: Set<String> = []
     private var didStartPrefetching = false
     private let serialQueue = DispatchQueue(label: "com.onboarding.online.assets.prefetch.serial")
-    private let assetsLoader: AssetsLoader
         
-    init(screenGraph: ScreensGraph,
-         assetsLoadingService: AssetsLoadingServiceProtocol = AssetsLoadingService.shared) {
+    init(screenGraph: ScreensGraph) {
         self.screenGraph = screenGraph
-        self.assetsLoader = AssetsLoader(assetsLoadingService: assetsLoadingService)
     }
     
 }
@@ -103,7 +100,7 @@ extension AssetsPrefetchService {
     }
     
     func clear() {
-        assetsLoader.clear()
+        AssetsLoadingService.shared.clear()
     }
 }
 
@@ -328,10 +325,14 @@ private extension AssetsPrefetchService {
 private extension AssetsPrefetchService {
     func load(asset: AssetPrefetchType) async throws  {
         switch asset {
-        case .image(let assetUrl):
-            try await assetsLoader.loadImage(assetUrl: assetUrl)
-        case .video(let assetUrl):
-            try await assetsLoader.loadVideo(assetUrl: assetUrl)
+        case .image(let assetProvider):
+            if await assetProvider.loadImage() == nil {
+                throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
+            }
+        case .video(let assetProvider):
+            if await assetProvider.urlToVideoAsset() == nil {
+                throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
+            }
         }
     }
     
@@ -368,32 +369,6 @@ private extension AssetsPrefetchService {
 
 // MARK: - Private methods
 private extension AssetsPrefetchService {
-    struct AssetsLoader {
-        let assetsLoadingService: AssetsLoadingServiceProtocol
-        
-        func loadImage(assetUrl: AssetUrl) async throws {
-            let url = assetUrl.origin
-            
-            if await assetsLoadingService.loadImage(from: url) == nil {
-                throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
-            }
-        }
-        
-        func loadVideo(assetUrl: AssetUrl) async throws {
-            let url = assetUrl.origin
-          
-//            AssetsLoadingService.shared.loadData(from: url,
-//                                                 assetType: .videoThumbnail) { _ in }
-            if await assetsLoadingService.loadData(from: url, assetType: .video) == nil {
-                throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
-            }
-        }
-        
-        func clear() {
-            assetsLoadingService.clear()
-        }
-    }
-    
     final class ResultCallbackHolder {
         let id: UUID = UUID()
         private var callback: AssetsPrefetchResultCallback?
@@ -439,21 +414,21 @@ enum AssetsPrefetchError: LocalizedError {
 }
 
 private enum AssetPrefetchType {
-    case image(_ assetUrl: AssetUrl)
-    case video(_ assetUrl: AssetUrl)
+    case image(_ assetProvider: OnboardingLocalImageAssetProvider)
+    case video(_ assetProvider: OnboardingLocalVideoAssetProvider)
     
     static func from(image: Image) -> AssetPrefetchType? {
-        guard let assetUrl = image.assetUrlByLocale()?.assetUrl else { return nil }
-        return .image(assetUrl)
+        guard image.assetUrlByLocale() != nil else { return nil }
+        return .image(image)
     }
     
     static func from(baseImage: BaseImage) -> AssetPrefetchType? {
-        guard let assetUrl = baseImage.assetUrlByLocale()?.assetUrl else { return nil }
-        return .image(assetUrl)
+        guard baseImage.assetUrlByLocale() != nil else { return nil }
+        return .image(baseImage)
     }
     
     static func from(baseVideo: BaseVideo) -> AssetPrefetchType? {
-        guard let assetUrl = baseVideo.assetUrlByLocale()?.assetUrl else { return nil }
-        return .video(assetUrl)
+        guard baseVideo.assetUrlByLocale() != nil else { return nil }
+        return .video(baseVideo)
     }
 }

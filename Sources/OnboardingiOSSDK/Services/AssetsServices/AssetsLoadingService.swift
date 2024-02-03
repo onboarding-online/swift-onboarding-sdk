@@ -26,7 +26,7 @@ protocol AssetsLoadingServiceProtocol {
 // MARK: - ImageLoadingService
 final class AssetsLoadingService {
     
-    public static let shared: AssetsLoadingServiceProtocol = AssetsLoadingService()
+    static var shared: AssetsLoadingServiceProtocol = AssetsLoadingService()
     
     private let serialQueue =  DispatchQueue(label: "OnboardingAssetsServiceQueue")
     private let loader: AssetDataLoader
@@ -64,18 +64,6 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
     
     func loadData(from url: String,
                   assetType: StoredAssetType) async -> Data? {
-
-        // Check if file is from assets
-        switch assetType {
-        case .image, .video:
-            if let data = getPreparedAssetData(from: url,
-                                               assetType: assetType) {
-                return data
-            }
-        case .videoThumbnail:
-            return nil
-        }
-        
         let key = url
         
         // Check if process already in progress
@@ -145,25 +133,6 @@ fileprivate extension AssetsLoadingService {
                 }
             }
         }
-    }
-    
-    func getPreparedAssetData(from url: String,
-                              assetType: StoredAssetType) -> Data? {
-        switch assetType {
-        case .image:
-            if let imageThatAddedManuallyInProject = url.resourceName(),
-               let image = UIImage.init(named: imageThatAddedManuallyInProject){
-                return image.jpegData(compressionQuality: 1)
-            }
-        case .videoThumbnail:
-            return nil
-        case .video:
-            if let name = url.resourceNameWithoutExtension(),
-               let url = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                return try? Data(contentsOf: url)
-            }
-        }
-        return nil
     }
     
     func createImage(from imageData: Data) async -> UIImage? {

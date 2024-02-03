@@ -12,7 +12,6 @@ import ScreensGraph
 
 final class AssetsPrefetchServiceTests: XCTestCase {
     
-    
     private var screenGraph: ScreensGraph!
     private var assetsLoadingService: MockAssetsLoadingService!
     private var assetsPrefetchService: AssetsPrefetchService!
@@ -20,9 +19,9 @@ final class AssetsPrefetchServiceTests: XCTestCase {
     
     override func setUp() async throws {
         assetsLoadingService = MockAssetsLoadingService()
+        AssetsLoadingService.shared = assetsLoadingService
         screenGraph = try loadScreenGraph()
-        assetsPrefetchService = AssetsPrefetchService(screenGraph: screenGraph,
-                                                      assetsLoadingService: assetsLoadingService)
+        assetsPrefetchService = AssetsPrefetchService(screenGraph: screenGraph)
     }
     
     private func loadScreenGraph() throws -> ScreensGraph {
@@ -40,10 +39,6 @@ final class AssetsPrefetchServiceTests: XCTestCase {
             XCTAssertTrue(assetsPrefetchService.isScreenAssetsPrefetched(screenId: id))
             XCTAssertFalse(assetsPrefetchService.isScreenAssetsPrefetchFailed(screenId: id))
         }
-//        assetsPrefetchService.startLazyPrefetching()
-//        assetsPrefetchService.isScreenAssetsPrefetched
-//        assetsPrefetchService.isScreenAssetsPrefetchFailed
-//        assetsPrefetchService.onScreenReady
     }
     
     func testAllAssetsFailed() async throws {
