@@ -62,6 +62,43 @@ final class OnboardingServiceTests: XCTestCase {
         XCTAssertNotNil(vc.presentedViewController)
     }
     
+    @MainActor
+    func testDefaultLoadingScreenAppears() async {
+        onboardingService.assetsPrefetchMode = .waitForAllDone
+        onboardingService.startOnboarding(configuration: .init(screenGraph: screenGraph,
+                                                               appearance: .default,
+                                                               launchWithAnimation: false),
+                                          finishedCallback: { _ in })
+        XCTAssertTrue(getRootViewController() is ScreenLoadingAssetsVC)
+        await Task.sleep(seconds: 0.3)
+        XCTAssertFalse(getRootViewController() is ScreenLoadingAssetsVC)
+    }
+    
+    @MainActor
+    func testCustomLoadingScreenAppears() async {
+        let customLoadingVC = UIViewController()
+        onboardingService.assetsPrefetchMode = .waitForAllDone
+        onboardingService.customLoadingViewController = customLoadingVC
+        onboardingService.startOnboarding(configuration: .init(screenGraph: screenGraph,
+                                                               appearance: .default,
+                                                               launchWithAnimation: false),
+                                          finishedCallback: { _ in })
+        XCTAssertEqual(getRootViewController(), customLoadingVC)
+        await Task.sleep(seconds: 0.3)
+        XCTAssertNotEqual(getRootViewController(), customLoadingVC)
+    }
+    
+}
+
+// MARK: - Private methods
+private extension OnboardingServiceTests {
+    func getRootViewController() -> UIViewController? {
+        guard let nav = windowManager.window.rootViewController as? OnboardingNavigationController else {
+            fatalError("Root view controller is nil")
+        }
+        
+        return nav.viewControllers.first
+    }
 }
 
 final class MockOnboardingWindowManager: OnboardingWindowManagerProtocol {

@@ -27,7 +27,7 @@ public final class OnboardingService {
 
     public var screenGraph: ScreensGraph?
     public var paymentService: OnboardingPaymentServiceProtocol?
-    public  var appearance: AppearanceStyle?
+    public var appearance: AppearanceStyle?
 
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?
@@ -61,9 +61,13 @@ extension OnboardingService {
                          prefetchService: AssetsPrefetchService?,
                          finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
         let screenGraph = configuration.screenGraph
-        guard screenGraph.screens[screenGraph.launchScreenId] != nil else { return }
-        
         self.onboardingFinishedCallback = finishedCallback
+        
+        guard screenGraph.screens[screenGraph.launchScreenId] != nil else {
+            finishOnboarding()
+            return
+        }
+        
         self.screenGraph = screenGraph
         videoPreparationService = VideoPreparationService(screenGraph: screenGraph)
         self.appearance = configuration.appearance
@@ -78,9 +82,7 @@ extension OnboardingService {
             
             switch assetsPrefetchMode {
             case .waitForAllDone:
-                if !screenGraph.launchScreenId.isEmpty {
-                    showLoadingAssetsScreen()
-                }
+                showLoadingAssetsScreen()
                 Task { @MainActor in
                     try? await prefetchService.prefetchAllAssets()
                     showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
@@ -324,7 +326,6 @@ private extension OnboardingService {
     
     func setInitialOnboardingController(_ controller: UIViewController) {
         guard let appearance = self.appearance else { return }
-        
         
         func setInitialIn(window: UIWindow) {
             let navigationController = wrapViewControllerInNavigation(controller)
