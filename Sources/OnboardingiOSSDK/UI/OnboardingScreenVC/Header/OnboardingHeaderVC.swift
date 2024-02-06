@@ -56,7 +56,7 @@ private extension OnboardingHeaderVC {
     
     func setupBackButton() {
         if let back  = navigationBar.back {
-            backButton.apply(button: back)
+            backButton.apply(button: back, isBackButton: true)
             
             if back.isDefaultBackIcon() {
                 backButtonWidthConstraint.constant = 16.0

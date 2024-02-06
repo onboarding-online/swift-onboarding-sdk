@@ -519,7 +519,7 @@ extension VerticalAlignment {
 
 extension UIButton: UIImageLoader {
    
-    func apply(button: Button?) {
+    func apply(button: Button?, isBackButton: Bool = false) {
         guard let button = button else {
             self.isHidden = true
             return
@@ -533,7 +533,7 @@ extension UIButton: UIImageLoader {
         case .typeBaseText(let value):
             text = value.textByLocale()
             
-            if text.isEmpty, var emptyTextImage = UIImage(systemName: "chevron.left") {
+            if text.isEmpty, var emptyTextImage = UIImage(systemName: "chevron.left"), isBackButton {
                
                 emptyTextImage = emptyTextImage.withRenderingMode(.alwaysTemplate)
                 self.tintColor = value.styles.color?.hexStringToColor
