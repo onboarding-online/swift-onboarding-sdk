@@ -519,7 +519,7 @@ extension VerticalAlignment {
 
 extension UIButton: UIImageLoader {
    
-    func apply(button: Button?) {
+    func apply(button: Button?, isBackButton: Bool = false) {
         guard let button = button else {
             self.isHidden = true
             return
@@ -533,16 +533,25 @@ extension UIButton: UIImageLoader {
         case .typeBaseText(let value):
             text = value.textByLocale()
             
-            if !(button.styles.fullWidth ?? true) {
-                text = "        \(text)        "
+            if text.isEmpty, var emptyTextImage = UIImage(systemName: "chevron.left"), isBackButton {
+               
+                emptyTextImage = emptyTextImage.withRenderingMode(.alwaysTemplate)
+                self.tintColor = value.styles.color?.hexStringToColor
+                imageView?.contentMode = .scaleAspectFit
+                self.setBackgroundImage(emptyTextImage, for: .normal)
+            } else {
+                if !(button.styles.fullWidth ?? true) {
+                    text = "        \(text)        "
+                }
+                
+                self.titleLabel?.font = value.styles.getFontSettings()
+                self.setTitle(text, for: .normal)
+                
+                if let color = value.styles.color?.hexStringToColor {
+                    self.setTitleColor(color, for: .normal)
+                }
             }
-            
-            self.titleLabel?.font = value.styles.getFontSettings()
-            self.setTitle(text, for: .normal)
-            
-            if let color = value.styles.color?.hexStringToColor {
-                self.setTitleColor(color, for: .normal)
-            }
+
             
             self.backgroundColor = button.styles.backgroundColor?.hexStringToColor
         }
@@ -553,6 +562,25 @@ extension UIButton: UIImageLoader {
     }
     
 }
+
+extension Button {
+    
+    func isDefaultBackIcon() -> Bool {
+        switch self.content {
+        case .typeBaseImage(_):
+            return true
+        case .typeBaseText(let value):
+            let text = value.textByLocale()
+            
+            if text.isEmpty {
+                return true
+            }
+        }
+        return false
+    }
+}
+
+
 
 extension ButtonBlock {
     
