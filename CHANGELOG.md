@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.0.2...v1.0.3) (2024-02-06)
+
+
+### Current Version Changes
+
+* allow to apply list paddings from web settings ([931f458](https://github.com/onboarding-online/swift-onboarding-sdk/commit/931f458149e697edfff3f4925c8df62244045208))
+
 ### [1.0.2](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.0.1...v1.0.2) (2024-01-08)
 
 
