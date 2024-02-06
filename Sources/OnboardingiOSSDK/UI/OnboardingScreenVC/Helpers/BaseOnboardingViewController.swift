@@ -39,17 +39,17 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
             self.collectionRightPadding.constant = 0.0
         }
 
-        if let paddingTop =  box.paddingTop?.cgFloatValue {
-            self.collectionTopPadding.constant = paddingTop
-        } else {
-            self.collectionTopPadding.constant = 0.0
-        }
-
-        if let paddingBottom =  box.paddingBottom?.cgFloatValue {
-            self.collectionBottomPadding.constant = paddingBottom
-        } else {
-            self.collectionBottomPadding.constant = 0.0
-        }
+//        if let paddingTop =  box.paddingTop?.cgFloatValue {
+//            self.collectionTopPadding.constant = paddingTop
+//        } else {
+//            self.collectionTopPadding.constant = 0.0
+//        }
+//
+//        if let paddingBottom =  box.paddingBottom?.cgFloatValue {
+//            self.collectionBottomPadding.constant = paddingBottom
+//        } else {
+//            self.collectionBottomPadding.constant = 0.0
+//        }
     }
     
 }
