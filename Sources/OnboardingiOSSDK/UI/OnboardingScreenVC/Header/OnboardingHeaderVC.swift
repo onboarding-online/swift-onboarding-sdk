@@ -14,6 +14,12 @@ class OnboardingHeaderVC: UIViewController {
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
     
+    @IBOutlet var backButtonWidthConstraint: NSLayoutConstraint!
+    @IBOutlet var backButtonHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet var backButtonContainerWidthConstraint: NSLayoutConstraint!
+    @IBOutlet var backButtonContainerHeightConstraint: NSLayoutConstraint!
+
     public var rightBarButtonAction: ((Action) -> ())? = nil
     public var backButtonAction: (() -> ())? = nil
     
@@ -29,12 +35,13 @@ class OnboardingHeaderVC: UIViewController {
         super.viewDidLoad()
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         setupNavBar()
     }
-
+    
 }
 
 private extension OnboardingHeaderVC {
@@ -50,6 +57,16 @@ private extension OnboardingHeaderVC {
     func setupBackButton() {
         if let back  = navigationBar.back {
             backButton.apply(button: back)
+            
+            if back.isDefaultBackIcon() {
+                backButtonWidthConstraint.constant = 16.0
+                backButtonHeightConstraint.constant = 24.0
+                
+                if let width =  back.styles.width, let height =  back.styles.width {
+                    backButtonWidthConstraint.constant = width
+                    backButtonHeightConstraint.constant = height
+                }
+            }
         } else {
             backButton.isHidden = true
         }
