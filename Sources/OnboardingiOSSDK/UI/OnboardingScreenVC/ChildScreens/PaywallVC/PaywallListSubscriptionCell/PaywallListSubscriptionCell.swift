@@ -19,6 +19,8 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     
     @IBOutlet private weak var savedMoneyView: SavedMoneyView!
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
+    
+    private var item: ItemTypeSubscription! = nil
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,25 +37,25 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 // MARK: - Open methods
 extension PaywallListSubscriptionCell {
     
-    func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
-                 isSelected: Bool) {
-        setBadgePosition(configuration.badgePosition)
-        setSelected(isSelected)
-        
-        let subscriptionDescription = configuration.subscriptionDescription
-        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
-        let price = subscriptionDescription.localizedPrice
-        
-        durationLabel.text = periodUnitName
-        priceLabel.text = price
-    }
+//    func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
+//                 isSelected: Bool) {
+//        setBadgePosition(configuration.badgePosition)
+//        setSelected(isSelected)
+//
+//        let subscriptionDescription = configuration.subscriptionDescription
+//        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
+//        let price = subscriptionDescription.localizedPrice
+//
+//        durationLabel.text = periodUnitName
+//        priceLabel.text = price
+//    }
     
     func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
                     isSelected: Bool,
-                    subscriptionItem: ItemTypeSubscription) {
-        
+                    subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList) {
+        self.item = subscriptionItem
         setBadgePosition(configuration.badgePosition)
-        setSelected(isSelected)
+        setSelected(isSelected, listWithStyles: listWithStyles)
         
         let subscriptionDescription = configuration.subscriptionDescription
         let periodUnitName = subscriptionDescription.periodLocalizedUnitName
@@ -61,7 +63,7 @@ extension PaywallListSubscriptionCell {
                 
         durationLabel.apply(text: subscriptionItem.period)
         priceLabel.apply(text: subscriptionItem.price)
-
+        pricePerMonthLabel.apply(text: subscriptionItem.description)
 //      replace <price/>, <duration/> -- price, periodUnitName
         
         durationLabel.text =  durationLabel.text ?? "" + periodUnitName
@@ -73,24 +75,46 @@ extension PaywallListSubscriptionCell {
     func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,
                  isSelected: Bool) {
         // TODO: - Use different cell
-        setBadgePosition(configuration.badgePosition)
-        setSelected(isSelected)
+//        setBadgePosition(configuration.badgePosition)
+//        setSelected(isSelected)
     }
 }
 
 // MARK: - Private methods
 private extension PaywallListSubscriptionCell {
-    func setSelected(_ isSelected: Bool) {
+    
+    func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
         checkbox.isOn = isSelected
-        contentContainerView.layer.borderWidth = isSelected ? 1 : 0
-        contentContainerView.backgroundColor = isSelected ? .white : .black.withAlphaComponent(0.05)
+//        contentContainerView.layer.borderWidth = isSelected ? 1 : 0
+//        contentContainerView.backgroundColor = isSelected ? .white : .black.withAlphaComponent(0.05)
         
         if isSelected {
-            contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
+            setSelected(selectedBlock: listWithStyles.selectedBlock)
         } else {
-            contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
+            setDefault(style: listWithStyles.styles)
         }
     }
+    
+    func setDefault(style: SubscriptionListBlock) {
+        contentContainerView.layer.borderWidth = style.borderWidth ?? 0
+        contentContainerView.layer.borderColor = style.borderColor?.hexStringToColor.cgColor
+
+        contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
+        
+
+        contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
+    }
+    
+    func setSelected(selectedBlock: SelectedSubscriptionListItemBlock) {
+        contentContainerView.layer.borderWidth = selectedBlock.styles.borderWidth ?? 0
+        contentContainerView.layer.borderColor = selectedBlock.styles.borderColor?.hexStringToColor.cgColor
+   
+        contentContainerView.backgroundColor = selectedBlock.styles.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
+        
+        contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
+    }
+    
+    
     
     func setBadgePosition(_ position: SavedMoneyBadgePosition) {
         savedMoneyView.isHidden = position == .none

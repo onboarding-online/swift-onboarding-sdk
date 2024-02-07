@@ -103,7 +103,7 @@ extension PaywallVC: UICollectionViewDataSource {
             
             let item = screenData.subscriptions.items[index]
 
-            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item)
+            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions)
             
 //            cell.setWith(configuration: configuration, isSelected: isSelected)
             return cell
