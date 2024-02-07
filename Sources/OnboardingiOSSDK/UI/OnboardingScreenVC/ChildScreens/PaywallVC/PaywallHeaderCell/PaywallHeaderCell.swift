@@ -44,10 +44,7 @@ extension PaywallHeaderCell {
         screenData = paywallData
         setWithStyle(configuration.style)
         Task { @MainActor in
-            if let url =  screenData.image?.assetUrlByLocale()?.assetUrl?.origin {
-                imageView.image = await AssetsLoadingService.shared.loadImage(from: url)
-            }
-//            imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
+                imageView.image = await screenData.image?.loadImage()
         }
     }
     

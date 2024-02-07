@@ -49,9 +49,9 @@ import StoreKit
      public override func viewDidLoad() {
         super.viewDidLoad()
 
+        productIds = screenData.subscriptions.items.map({$0.subscriptionId})
+
         setup()
-         
-         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
     }
      
      func setup() {
@@ -180,14 +180,18 @@ extension PaywallVC: PaywallBottomViewDelegate {
         delegate?.onboardingChildScreenUpdate(value: nil,
                                               description: "Privacy Policy",
                                               logAnalytics: true)
-        showSafariWith(url: ppURL)
+        if let url = URL.init(string: url) {
+            showSafariWith(url: url)
+        }
     }
     
     func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
         delegate?.onboardingChildScreenUpdate(value: nil,
                                               description: "Terms and conditions",
                                               logAnalytics: true)
-        showSafariWith(url: tacURL)
+        if let url = URL.init(string: url) {
+            showSafariWith(url: tacURL)
+        }
     }
     
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {

@@ -137,6 +137,7 @@ extension OnboardingLocalAssetProvider {
 protocol OnboardingLocalVideoAssetProvider: OnboardingLocalAssetProvider { }
 
 extension OnboardingLocalVideoAssetProvider {
+    
     func urlToVideoAsset() async -> URL? {
         let urlByLocale = assetUrlByLocale()
         if let name = urlByLocale?.assetName {
@@ -176,6 +177,7 @@ extension BaseVideo: OnboardingLocalVideoAssetProvider { }
 protocol OnboardingLocalImageAssetProvider: OnboardingLocalAssetProvider { }
 
 extension OnboardingLocalImageAssetProvider {
+   
     func loadImage() async -> UIImage? {
         let urlByLocale = assetUrlByLocale()
 
