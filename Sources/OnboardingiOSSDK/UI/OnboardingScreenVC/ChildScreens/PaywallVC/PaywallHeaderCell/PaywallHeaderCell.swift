@@ -44,8 +44,10 @@ extension PaywallHeaderCell {
         screenData = paywallData
         setWithStyle(configuration.style)
         Task { @MainActor in
-//            screenData.image?.loadImage
-            imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
+            if let url =  screenData.image?.assetUrlByLocale()?.assetUrl?.origin {
+                imageView.image = await AssetsLoadingService.shared.loadImage(from: url)
+            }
+//            imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
         }
     }
     
@@ -110,15 +112,15 @@ private extension PaywallHeaderCell {
 //                let label = buildLabel()
 //                label.textColor = .black.withAlphaComponent(0.5)
 //                label.text = item
-//                
+//
 //                let checkmark = buildBulletCheckmark()
-//                
+//
 //                let hStack = UIStackView(arrangedSubviews: [checkmark, label])
 //                hStack.axis = .horizontal
 //                hStack.spacing = 20
-//                
+//
 //                contentStackView.addArrangedSubview(hStack)
-//                
+//
 //                gradientColors.insert(.clear, at: 0)
 //                gradientColors.append(.white)
 //            }

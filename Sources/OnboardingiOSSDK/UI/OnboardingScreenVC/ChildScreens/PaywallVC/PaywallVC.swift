@@ -80,11 +80,14 @@ extension PaywallVC: UICollectionViewDataSource {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
         
+
+        
         switch row {
         case .header(let configuration):
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
-            cell.setWith(configuration: configuration)
-
+//            cell.setWith(configuration: configuration)
+            cell.setWith(configuration: configuration, paywallData: screenData)
+            
             return cell
         case .separator:
             let cell = collectionView.dequeueCellOfType(PaywallSeparatorCell.self, at: indexPath)
@@ -97,8 +100,12 @@ extension PaywallVC: UICollectionViewDataSource {
             let isSelected = selectedIndex == index
             
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            cell.setWith(configuration: configuration, isSelected: isSelected)
             
+            let item = screenData.subscriptions.items[index]
+
+            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item)
+            
+//            cell.setWith(configuration: configuration, isSelected: isSelected)
             return cell
         case .oneTimePurchase(let configuration):
             let index = indexPath.row

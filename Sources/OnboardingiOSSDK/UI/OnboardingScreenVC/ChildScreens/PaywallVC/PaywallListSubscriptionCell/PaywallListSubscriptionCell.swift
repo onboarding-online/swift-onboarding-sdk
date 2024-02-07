@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ScreensGraph
 
 final class PaywallListSubscriptionCell: UICollectionViewCell {
 
@@ -46,6 +47,28 @@ extension PaywallListSubscriptionCell {
         durationLabel.text = periodUnitName
         priceLabel.text = price
     }
+    
+    func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
+                    isSelected: Bool,
+                    subscriptionItem: ItemTypeSubscription) {
+        
+        setBadgePosition(configuration.badgePosition)
+        setSelected(isSelected)
+        
+        let subscriptionDescription = configuration.subscriptionDescription
+        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
+        let price = subscriptionDescription.localizedPrice
+                
+        durationLabel.apply(text: subscriptionItem.period)
+        priceLabel.apply(text: subscriptionItem.price)
+
+//      replace <price/>, <duration/> -- price, periodUnitName
+        
+        durationLabel.text =  durationLabel.text ?? "" + periodUnitName
+        priceLabel.text = priceLabel.text ?? "" + price
+    }
+    
+    
     
     func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,
                  isSelected: Bool) {
