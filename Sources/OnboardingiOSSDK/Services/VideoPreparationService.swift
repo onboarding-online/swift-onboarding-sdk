@@ -51,7 +51,7 @@ extension VideoPreparationService {
     }
     
     func prepareForNextScreen(_ screenId: String?) {
-        guard let screenId else { return }
+//        guard let screenId else { return }
     
 //        prepareVideoForScreens(after: screenId)
     }
@@ -99,7 +99,6 @@ private extension VideoPreparationService {
     }
     
     func findAllEdges() {
-        let time = Date()
         for (screenId, screen) in screenGraph.screens {
             if let edges = try? screen.findAllEdges() {
                 screenIdToEdgesDict[screenId] = edges
@@ -156,40 +155,11 @@ private extension VideoPreparationService {
     func preparePlayerFor(screenId: String, with preparationDetails: PlayerPreparationDetails) {
         updateStatusOf(screenId: screenId, to: .preparing)
         let video = preparationDetails.video
-        
-        if let name = video.assetUrlByLocal()?.assetName {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                return
-            }
-        }
-        
-        guard let stringURL = video.assetUrlByLocal()?.assetUrl?.origin else {
-            updateStatusOf(screenId: screenId, to: .failed)
-            return
-        }
-        
-        if let name = stringURL.resourceNameWithoutExtension() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+        Task { @MainActor in
+            if let videoURL = await video.urlToVideoAsset() {
                 self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                return
-            }
-        }
-        
-        AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video) { result in
-            DispatchQueue.main.async {
-                if let name = stringURL.resourceName() {
-                    if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
-                        self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-                        return
-                    }
-                }
-                
-                if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
-                    self.setPlayVideoBackgroundFor(screenId: screenId, with: storedURL)
-                } else if let url = URL(string: stringURL) {
-                    self.setPlayVideoBackgroundFor(screenId: screenId, with: url)
-                }
+            } else {
+                updateStatusOf(screenId: screenId, to: .failed)
             }
         }
     }

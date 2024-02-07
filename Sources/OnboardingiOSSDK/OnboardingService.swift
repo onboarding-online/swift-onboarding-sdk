@@ -14,7 +14,7 @@ public final class OnboardingService {
     
     public static let shared = OnboardingService()
 
-    private let windowManager = OnboardingWindowManager.shared
+    private let windowManager: OnboardingWindowManagerProtocol 
     public var customFlow: CustomScreenCallback? = nil
     
     public var permissionRequestCallback: PermissionRequestCallback? = nil
@@ -26,11 +26,12 @@ public final class OnboardingService {
     public var assetsPrefetchMode: AssetsPrefetchMode = .waitForScreenToLoad(timeout: 0.5)
 
     public var screenGraph: ScreensGraph?
+    public var paymentService: OnboardingPaymentServiceProtocol?
+    public var appearance: AppearanceStyle?
 
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?
     private var navigationController: OnboardingNavigationController?
-    public  var appearance: AppearanceStyle?
     private var launchWithAnimation: Bool = false
     private var prefetchService: AssetsPrefetchService?
     private var videoPreparationService: VideoPreparationService?
@@ -39,7 +40,8 @@ public final class OnboardingService {
     private var onboardingUserData: OnboardingData = [:]
     private var onboardingFinishedCallback: OnboardingFinishResult?
     
-    private init() { 
+    init(windowManager: OnboardingWindowManagerProtocol = OnboardingWindowManager.shared) {
+        self.windowManager = windowManager
         BackgroundTasksService.shared.startTrackAppState()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
@@ -49,7 +51,7 @@ public final class OnboardingService {
 extension OnboardingService {
     
     public func startOnboarding(configuration: RunConfiguration,
-                                finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+                                finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
         startOnboarding(configuration: configuration,
                         prefetchService: nil,
                         finishedCallback: finishedCallback)
@@ -57,11 +59,15 @@ extension OnboardingService {
     
     func startOnboarding(configuration: RunConfiguration,
                          prefetchService: AssetsPrefetchService?,
-                         finishedCallback: @escaping  GenericResultCallback<OnboardingData>) {
+                         finishedCallback: @escaping GenericResultCallback<OnboardingData>) {
         let screenGraph = configuration.screenGraph
-        guard screenGraph.screens[screenGraph.launchScreenId] != nil else { return }
-        
         self.onboardingFinishedCallback = finishedCallback
+        
+        guard screenGraph.screens[screenGraph.launchScreenId] != nil else {
+            finishOnboarding()
+            return
+        }
+        
         self.screenGraph = screenGraph
         videoPreparationService = VideoPreparationService(screenGraph: screenGraph)
         self.appearance = configuration.appearance
@@ -76,11 +82,10 @@ extension OnboardingService {
             
             switch assetsPrefetchMode {
             case .waitForAllDone:
-                if !screenGraph.launchScreenId.isEmpty {
-                    showLoadingAssetsScreen()
-                }
-                prefetchService.prefetchAllAssets { [weak self] _ in
-                    self?.showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
+                showLoadingAssetsScreen()
+                Task { @MainActor in
+                    try? await prefetchService.prefetchAllAssets()
+                    showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
                 }
             case .waitForFirstDone:
                 prefetchService.startLazyPrefetching()
@@ -110,7 +115,6 @@ extension OnboardingService {
         self.launchWithAnimation = launchWithAnimation
         showLoadingAssetsScreen()
     }
-
 }
 
 // MARK: - OnboardingScreenDelegate
@@ -278,11 +282,10 @@ private extension OnboardingService {
         if screenId == screenGraph?.launchScreenId {
             showLoadingAssetsScreen()
         }
-        prefetchService?.onScreenReady(screenId: screenId,
-                                       timeout: timeout) { [weak self] _ in
-            DispatchQueue.main.async { [weak self] in
-                self?.showOnboardingFlowViewController(nextScreenId: screenId, transitionKind: transitionKind)
-            }
+        Task { @MainActor in
+            try? await prefetchService?.onScreenReady(screenId: screenId,
+                                                      timeout: timeout)
+            showOnboardingFlowViewController(nextScreenId: screenId, transitionKind: transitionKind)
         }
     }
     
@@ -324,7 +327,6 @@ private extension OnboardingService {
     func setInitialOnboardingController(_ controller: UIViewController) {
         guard let appearance = self.appearance else { return }
         
-        
         func setInitialIn(window: UIWindow) {
             let navigationController = wrapViewControllerInNavigation(controller)
             self.navigationController = navigationController
@@ -335,10 +337,10 @@ private extension OnboardingService {
             
             if launchWithAnimation {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                    self?.windowManager.setNewRootViewController(navigationController, in: window, animated: true)
+                    self?.windowManager.setNewRootViewController(navigationController, in: window, animated: true, completion: nil)
                 }
             } else {
-                windowManager.setNewRootViewController(navigationController, in: window, animated: false)
+                windowManager.setNewRootViewController(navigationController, in: window, animated: false, completion: nil)
             }
         }
         
@@ -401,7 +403,7 @@ private extension OnboardingService {
 
         func finishIn(window: UIWindow) {
             guard let initialRootViewController = self.initialRootViewController else { return }
-            windowManager.setNewRootViewController(initialRootViewController, in: window)
+            windowManager.setNewRootViewController(initialRootViewController, in: window, animated: true, completion: nil)
         }
         
         switch appearance {
@@ -422,6 +424,7 @@ private extension OnboardingService {
         self.screenGraph = nil
         self.navigationController = nil
         self.appearance = nil
+        self.prefetchService?.clear()
         self.prefetchService = nil
         self.onboardingUserData = [:]
         self.customLoadingViewController = nil

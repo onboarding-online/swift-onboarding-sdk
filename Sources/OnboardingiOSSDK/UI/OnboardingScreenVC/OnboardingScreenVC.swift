@@ -140,7 +140,7 @@ private extension OnboardingScreenVC {
     
     func setupScreenConfigAndScreenBodyContainer() {
         if let childScreen = onboardingViewControllerFor(screen: screen) {
-            addChildViewController(childScreen, andEmbedToView: childContainerView)
+            addChildViewController(childScreen, andEmbedToView: childScreen.isEmbedded ? childContainerView : view)
             self.childScreen = childScreen
         }
     }
@@ -274,7 +274,7 @@ fileprivate extension OnboardingScreenVC {
 fileprivate extension OnboardingScreenVC {
     
     func setupTimer() {
-        if var timerDuration = screenData?.timer?.duration.doubleValue {
+        if let timerDuration = screenData?.timer?.duration.doubleValue {
 //            if timerDuration == 999.0 {
 //                timerDuration = 9.2
 //            }

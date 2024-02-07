@@ -55,10 +55,11 @@ private extension OnboardingNavigationController {
 //                }
 //            })
         case .changed:
-            guard let panGesture = gesture as? UIPanGestureRecognizer else { return }
-            
-            let translation = panGesture.translation(in: view)
-            let progress = abs(translation.x / view.bounds.width)
+            return 
+//            guard let panGesture = gesture as? UIPanGestureRecognizer else { return }
+//            
+//            let translation = panGesture.translation(in: view)
+//            let progress = abs(translation.x / view.bounds.width)
         default:
             return
         }

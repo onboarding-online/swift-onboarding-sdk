@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PaywallVC" customModule="OnboardingiOSSDK">
+            <connections>
+                <outlet property="activityIndicator" destination="AhR-je-0Lz" id="ooX-6j-IOV"/>
+                <outlet property="bottomView" destination="W64-mO-hfO" id="yYf-0B-DiB"/>
+                <outlet property="collectionView" destination="znm-pk-GdZ" id="nhD-iE-CsL"/>
+                <outlet property="gradientView" destination="aik-Mc-8uZ" id="Lol-MJ-kX7"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="678"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y0e-4e-Mzq">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                    <cells/>
+                </collectionView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="BUv-x5-exQ">
+                    <rect key="frame" x="0.0" y="666" width="393" height="152"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aik-Mc-8uZ" customClass="GradientView" customModule="OnboardingiOSSDK">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="24"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="24" id="YSG-mc-Hw9"/>
+                            </constraints>
+                        </view>
+                        <view contentMode="scaleToFill" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="128" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
+                            <rect key="frame" x="0.0" y="24" width="393" height="128"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                    </subviews>
+                </stackView>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="AhR-je-0Lz">
+                    <rect key="frame" x="178" y="407.66666666666669" width="37" height="37"/>
+                </activityIndicatorView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="znm-pk-GdZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="4Pr-j2-hP0"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="-12" id="Cjy-w8-G4J"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="GaN-z7-99S"/>
+                <constraint firstItem="znm-pk-GdZ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="JDq-Np-HSu"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Mfv-JL-kyM"/>
+                <constraint firstItem="AhR-je-0Lz" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Nl5-fF-wOR"/>
+                <constraint firstItem="AhR-je-0Lz" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="aKB-Gw-uGh"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cMD-Ky-5vG"/>
+                <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="dFi-Kw-eaD"/>
+            </constraints>
+            <point key="canvasLocation" x="-37.404580152671755" y="41.549295774647888"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
