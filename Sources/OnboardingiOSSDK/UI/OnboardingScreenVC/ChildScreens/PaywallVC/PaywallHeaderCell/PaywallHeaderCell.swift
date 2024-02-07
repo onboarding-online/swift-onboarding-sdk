@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ScreensGraph
 
 final class PaywallHeaderCell: UICollectionViewCell {
 
@@ -14,6 +15,9 @@ final class PaywallHeaderCell: UICollectionViewCell {
     @IBOutlet private weak var titlesLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var gradientView: GradientView!
     @IBOutlet private weak var contentStackView: UIStackView!
+    
+    private var screenData: ScreenBasicPaywall! = nil
+
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,9 +32,19 @@ final class PaywallHeaderCell: UICollectionViewCell {
 
 // MARK: - Open methods
 extension PaywallHeaderCell {
+    
     func setWith(configuration: PaywallVC.HeaderCellConfiguration) {
         setWithStyle(configuration.style)
         Task { @MainActor in
+            imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
+        }
+    }
+    
+    func setWith(configuration: PaywallVC.HeaderCellConfiguration, paywallData: ScreenBasicPaywall) {
+        screenData = paywallData
+        setWithStyle(configuration.style)
+        Task { @MainActor in
+//            screenData.image?.loadImage
             imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
         }
     }
@@ -43,6 +57,7 @@ extension PaywallHeaderCell {
 
 // MARK: - Private methods
 private extension PaywallHeaderCell {
+    
     func setWithStyle(_ style: Style) {
         contentStackView.arrangedSubviews.forEach { view in
             view.removeFromSuperview()
@@ -51,13 +66,16 @@ private extension PaywallHeaderCell {
         switch style {
         case .titleSubtitle(let title, let subtitle):
             let titleLabel = buildTitleLabel()
-            titleLabel.text = title
-            titleLabel.textAlignment = .center
-            
+//            titleLabel.text = title
+//            titleLabel.textAlignment = .center
+//
             let subtitleLabel = buildLabel()
-            subtitleLabel.textColor = .black.withAlphaComponent(0.5)
-            subtitleLabel.textAlignment = .center
-            subtitleLabel.text = subtitle
+//            subtitleLabel.textColor = .black.withAlphaComponent(0.5)
+//            subtitleLabel.textAlignment = .center
+//            subtitleLabel.text = subtitle
+            titleLabel.apply(text: screenData.title)
+            subtitleLabel.apply(text: screenData.subtitle)
+
             
             contentStackView.addArrangedSubview(titleLabel)
             contentStackView.addArrangedSubview(subtitleLabel)
@@ -65,15 +83,16 @@ private extension PaywallHeaderCell {
 
         case .titleBulletsList(let title, let bulletsList):
             let titleLabel = buildTitleLabel()
-            titleLabel.text = title
+            titleLabel.apply(text: screenData.title)
             contentStackView.addArrangedSubview(titleLabel)
             
             var gradientColors: [UIColor] = [.clear]
             
-            for item in bulletsList {
+            
+            for item in screenData.list.items {
                 let label = buildLabel()
-                label.textColor = .black.withAlphaComponent(0.5)
-                label.text = item
+//                label.textColor = .black.withAlphaComponent(0.5)
+                label.apply(text: item.title)
                 
                 let checkmark = buildBulletCheckmark()
                 
@@ -86,6 +105,23 @@ private extension PaywallHeaderCell {
                 gradientColors.insert(.clear, at: 0)
                 gradientColors.append(.white)
             }
+            
+//            for item in bulletsList {
+//                let label = buildLabel()
+//                label.textColor = .black.withAlphaComponent(0.5)
+//                label.text = item
+//                
+//                let checkmark = buildBulletCheckmark()
+//                
+//                let hStack = UIStackView(arrangedSubviews: [checkmark, label])
+//                hStack.axis = .horizontal
+//                hStack.spacing = 20
+//                
+//                contentStackView.addArrangedSubview(hStack)
+//                
+//                gradientColors.insert(.clear, at: 0)
+//                gradientColors.append(.white)
+//            }
             
             gradientView.gradientColors = gradientColors
 

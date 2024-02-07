@@ -50,40 +50,18 @@ import StoreKit
         super.viewDidLoad()
 
         setup()
+         
+         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
     }
+     
+     func setup() {
+         setup(navigationBar: screenData.navigationBar)
+         setupCollectionView()
+         setup(footer: screenData.footer)
+         setupGradientView()
+         loadProducts()
+     }
 
-}
-
-// MARK: - PaywallBottomViewDelegate
-extension PaywallVC: PaywallBottomViewDelegate {
-    
-    func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        delegate?.onboardingChildScreenUpdate(value: nil, 
-                                              description: "Buy",
-                                              logAnalytics: true)
-        purchaseSelectedProduct()
-    }
-  
-    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-        delegate?.onboardingChildScreenUpdate(value: nil,
-                                              description: "Privacy Policy",
-                                              logAnalytics: true)
-        showSafariWith(url: ppURL)
-    }
-    
-    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-        delegate?.onboardingChildScreenUpdate(value: nil,
-                                              description: "Terms and conditions",
-                                              logAnalytics: true)
-        showSafariWith(url: tacURL)
-    }
-    
-    func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        delegate?.onboardingChildScreenUpdate(value: nil, 
-                                              description: "Restore",
-                                              logAnalytics: true)
-        restoreProducts()
-    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -180,8 +158,42 @@ extension PaywallVC: UICollectionViewDelegate {
     }
 }
 
+
+// MARK: - PaywallBottomViewDelegate
+extension PaywallVC: PaywallBottomViewDelegate {
+    
+    func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        delegate?.onboardingChildScreenUpdate(value: nil,
+                                              description: "Buy",
+                                              logAnalytics: true)
+        purchaseSelectedProduct()
+    }
+  
+    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
+        delegate?.onboardingChildScreenUpdate(value: nil,
+                                              description: "Privacy Policy",
+                                              logAnalytics: true)
+        showSafariWith(url: ppURL)
+    }
+    
+    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
+        delegate?.onboardingChildScreenUpdate(value: nil,
+                                              description: "Terms and conditions",
+                                              logAnalytics: true)
+        showSafariWith(url: tacURL)
+    }
+    
+    func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        delegate?.onboardingChildScreenUpdate(value: nil,
+                                              description: "Restore",
+                                              logAnalytics: true)
+        restoreProducts()
+    }
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout
 extension PaywallVC: UICollectionViewDelegateFlowLayout {
+    
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let sections = allSections()
         let section = sections[indexPath.section]
@@ -418,13 +430,7 @@ private extension PaywallVC {
 // MARK: - Setup methods
 private extension PaywallVC {
     
-    func setup() {
-        setup(navigationBar: screenData.navigationBar)
-        setupCollectionView()
-        setup(footer: screenData.footer)
-        setupGradientView()
-        loadProducts()
-    }
+
     
     func setup(footer: PaywallFooter) {
         bottomView.setup(footer: footer)
@@ -553,6 +559,8 @@ extension PaywallVC {
 
             switch style {
             case .subscriptionsList:
+                
+                
                 return products.map { product in
                     switch product.type {
                     case .oneTimePurchase:
