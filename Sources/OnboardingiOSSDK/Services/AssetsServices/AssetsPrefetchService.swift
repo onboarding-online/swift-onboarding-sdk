@@ -168,6 +168,8 @@ private extension AssetsPrefetchService {
     
     func prefetchAssetsFor(screenStruct: ScreenStruct) async throws {
         switch screenStruct {
+        case .typeScreenBasicPaywall(_), .typeScreenScalableImageTextSelection(_):
+            print( "implement assets prefetch for new screens")
         case .typeScreenImageTitleSubtitles(let value):
             try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenProgressBarTitle(let value):

@@ -610,6 +610,27 @@ extension UIButton: UIImageLoader {
         self.layer.borderColor = (button.styles.borderColor ?? "").hexStringToColor.cgColor
     }
     
+    func apply(navLink: NavLink?, isBackButton: Bool = false) {
+        guard let button = navLink else {
+            self.isHidden = true
+            return
+        }
+        
+        switch button.content {
+        case .typeBaseImage(_): break
+
+        case .typeBaseText(let value):
+            let text = value.textByLocale()
+            
+            self.titleLabel?.font = value.styles.getFontSettings()
+            self.setTitle(text, for: .normal)
+            
+            if let color = value.styles.color?.hexStringToColor {
+                self.setTitleColor(color, for: .normal)
+            }
+        }
+    }
+    
 }
 
 extension Button {
@@ -1045,6 +1066,8 @@ extension Screen {
     
     func screenValueType() -> ValueTypes  {
         switch self._struct {
+        case .typeScreenBasicPaywall(_), .typeScreenScalableImageTextSelection(_):
+            return ValueTypes.none
         case .typeScreenImageTitleSubtitles(_):
             return ValueTypes.none
         case .typeScreenProgressBarTitle(_):

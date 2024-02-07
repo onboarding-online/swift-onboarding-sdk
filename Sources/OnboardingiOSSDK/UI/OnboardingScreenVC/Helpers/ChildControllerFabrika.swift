@@ -22,6 +22,8 @@ class ChildControllerFabrika {
         var childController: BaseChildScreenGraphViewController
 
         switch screen._struct {
+        case .typeScreenBasicPaywall(_), .typeScreenScalableImageTextSelection(_):
+            return nil
         case .typeScreenImageTitleSubtitles(let value):
             
             baseScreen = saveMainScreenDataFor(value: value)

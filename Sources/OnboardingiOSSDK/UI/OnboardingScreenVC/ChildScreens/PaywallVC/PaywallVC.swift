@@ -17,12 +17,22 @@ import StoreKit
         paywallVC.paymentService = paymentService
         return paywallVC
     }
-    
+     
+     public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screenData: ScreenBasicPaywall) -> PaywallVC {
+         let paywallVC = PaywallVC.nibInstance()
+         paywallVC.paymentService = paymentService
+         paywallVC.screenData = screenData
+         return paywallVC
+     }
+     
+    private var screenData: ScreenBasicPaywall! = nil
+
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomView: PaywallBottomView!
     @IBOutlet weak var gradientView: GradientView!
     
+     
     override var isEmbedded: Bool { false }
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
@@ -46,6 +56,7 @@ import StoreKit
 
 // MARK: - PaywallBottomViewDelegate
 extension PaywallVC: PaywallBottomViewDelegate {
+    
     func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
         delegate?.onboardingChildScreenUpdate(value: nil, 
                                               description: "Buy",
@@ -53,14 +64,14 @@ extension PaywallVC: PaywallBottomViewDelegate {
         purchaseSelectedProduct()
     }
   
-    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView) {
+    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
         delegate?.onboardingChildScreenUpdate(value: nil,
                                               description: "Privacy Policy",
                                               logAnalytics: true)
         showSafariWith(url: ppURL)
     }
     
-    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView) {
+    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
         delegate?.onboardingChildScreenUpdate(value: nil,
                                               description: "Terms and conditions",
                                               logAnalytics: true)
@@ -406,22 +417,37 @@ private extension PaywallVC {
 
 // MARK: - Setup methods
 private extension PaywallVC {
+    
     func setup() {
-        setupNavigationBar()
+        setup(navigationBar: screenData.navigationBar)
         setupCollectionView()
-        setupBottomView()
+        setup(footer: screenData.footer)
         setupGradientView()
         loadProducts()
     }
     
-    func setupNavigationBar() {
+    func setup(footer: PaywallFooter) {
+        bottomView.setup(footer: footer)
+        bottomView.delegate = self
+    }
+
+    
+    func setup(navigationBar: PaywallNavigationBar) {
+        
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithTransparentBackground()
         navigationController?.navigationBar.standardAppearance = navBarAppearance
         
         let closeButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeButtonPressed))
-        closeButton.tintColor = .black
-        navigationItem.leftBarButtonItem = closeButton
+        
+        closeButton.tintColor = navigationBar.close?.styles.backgroundColor?.hexStringToColor ?? .black
+        
+        switch navigationBar.styles.closeHorizontalAlignment! {
+        case ._left:
+            navigationItem.leftBarButtonItem = closeButton
+        case ._right:
+            navigationItem.rightBarButtonItem = closeButton
+        }
     }
     
     func setupCollectionView() {
@@ -438,10 +464,6 @@ private extension PaywallVC {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.clipsToBounds = false
-    }
-    
-    func setupBottomView() {
-        bottomView.delegate = self
     }
     
     func setupGradientView() {
@@ -557,6 +579,7 @@ extension PaywallVC {
 }
 
 extension PaywallVC {
+    
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
         static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
@@ -568,10 +591,10 @@ extension PaywallVC {
     }
 }
 
-@available(iOS 17, *)
-#Preview {
-    createPreviewVC()
-}
+//@available(iOS 17, *)
+//#Preview {
+//    createPreviewVC()
+//}
 
 //import SwiftUI
 //struct PaywallVCPreviews: PreviewProvider {

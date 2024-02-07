@@ -33,6 +33,7 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 
 // MARK: - Open methods
 extension PaywallListSubscriptionCell {
+    
     func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
                  isSelected: Bool) {
         setBadgePosition(configuration.badgePosition)

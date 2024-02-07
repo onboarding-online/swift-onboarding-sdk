@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import ScreensGraph
 
 protocol PaywallBottomViewDelegate: AnyObject {
     func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView)
-    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView)
-    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView)
+    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url : String)
+    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url : String)
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView)
 }
 
@@ -27,6 +28,8 @@ final class PaywallBottomView: UIView {
     
     weak var delegate: PaywallBottomViewDelegate?
     
+    private var footer: PaywallFooter! = nil
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -37,6 +40,25 @@ final class PaywallBottomView: UIView {
         super.init(coder: coder)
         
         setup()
+    }
+    
+    func setup(footer: PaywallFooter) {
+        buyButton.apply(button: footer.purchase)
+        
+        buyButton.apply(button: footer.restore)
+
+        
+        tacButton.apply(navLink: footer.termsOfUse)
+        ppButton.apply(navLink: footer.privacyPolicy)
+
+        additionalInfoLabel.apply(text: footer.autoRenewLabel)
+        self.footer = footer
+        
+//        deleate unneded default settings after applying
+    }
+    
+    func setupPaymentDetailsLabel(content: String) {
+        additionalInfoLabel.text = content
     }
     
 }
@@ -53,11 +75,11 @@ private extension PaywallBottomView {
     }
     
     @objc func ppButtonPressed() {
-        delegate?.paywallBottomViewPPButtonPressed(self)
+        delegate?.paywallBottomViewPPButtonPressed(self, url: footer.privacyPolicy?.uri ?? "")
     }
     
     @objc func tacButtonPressed() {
-        delegate?.paywallBottomViewTACButtonPressed(self)
+        delegate?.paywallBottomViewTACButtonPressed(self, url: footer.privacyPolicy?.uri ?? "")
     }
     
     @objc func restoreButtonPressed() {
