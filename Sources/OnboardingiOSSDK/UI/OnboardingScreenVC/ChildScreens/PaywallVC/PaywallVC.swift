@@ -450,6 +450,9 @@ private extension PaywallVC {
 
     
     func setup(navigationBar: PaywallNavigationBar) {
+        guard let close = navigationBar.close else {
+            return
+        }
         
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithTransparentBackground()
@@ -457,13 +460,37 @@ private extension PaywallVC {
         
         let closeButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeButtonPressed))
         
-        closeButton.tintColor = navigationBar.close?.styles.backgroundColor?.hexStringToColor ?? .black
+        
+       
+        closeButton.tintColor = close.styles.backgroundColor?.hexStringToColor ?? .black
         
         switch navigationBar.styles.closeHorizontalAlignment! {
         case ._left:
             navigationItem.leftBarButtonItem = closeButton
         case ._right:
             navigationItem.rightBarButtonItem = closeButton
+        }
+        
+       
+        
+        switch navigationBar.styles.closeAppearance {
+        case .visibleaftertimer:
+            if let time = navigationBar.styles.closeVisibleAfterTimerValue {
+                if #available(iOS 16.0, *) {
+                    closeButton.isHidden = true
+                } else {
+                    // Fallback on earlier versions
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + time) {
+                    if #available(iOS 16.0, *) {
+                        closeButton.isHidden = false
+                    } else {
+                        // Fallback on earlier versions
+                    }
+                }
+            }
+        default:
+            break
         }
     }
     
