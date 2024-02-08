@@ -294,12 +294,14 @@ private extension OnboardingService {
         guard let screenGraph = self.screenGraph,
             let videoPreparationService = self.videoPreparationService else { return }
         
-        if let nextScreenId = nextScreenId,
-           let screen = screenGraph.screens[nextScreenId] {
+        if let nextScreenId = nextScreenId, let screen = screenGraph.screens[nextScreenId] {
             if screen.isCustomScreen() {
                 if !tryToStartCustomFlow(screen: screen) {
                     finishOnboarding()
                 }
+            } else if let screenData = screen.paywallScreenValue(), let paymentService = paymentService {
+                let controller = PaywallVC.instantiate(paymentService: paymentService, screenData: screenData)
+                showNextOnboardingController(controller, transitionKind: transitionKind)
             } else {
                 let controller = onboardingViewControllerFor(screen: screen,
                                                              videoPreparationService: videoPreparationService)

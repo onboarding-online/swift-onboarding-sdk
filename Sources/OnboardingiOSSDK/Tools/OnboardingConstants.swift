@@ -134,6 +134,24 @@ extension Screen {
         return false
     }
     
+    public func paywallScreenValue() -> ScreenBasicPaywall? {
+        switch self._struct {
+        case .typeScreenBasicPaywall(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    public func isPaywallScreen() -> Bool {
+        if paywallScreenValue() != nil {
+            return true
+        }
+         
+        return false
+    }
+    
+    
 }
 
 protocol JSONEncodable {
