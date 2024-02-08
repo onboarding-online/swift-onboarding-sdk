@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.0.3...v1.0.4) (2024-02-08)
+
+
+### Current Version Changes
+
+* use exact screens graph version ([d6803d4](https://github.com/onboarding-online/swift-onboarding-sdk/commit/d6803d456b72a8089c2e40671808da5edcf7f63b))
+
 ### [1.0.3](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.0.2...v1.0.3) (2024-02-06)
 
 
