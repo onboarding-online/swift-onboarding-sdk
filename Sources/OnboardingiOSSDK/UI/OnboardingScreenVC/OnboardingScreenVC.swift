@@ -47,7 +47,7 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
     var isTimerFinished = false
 
     
-    private var footerController: OnboardingFooterVC? = nil
+    private var footerController: FooterVCProtocol? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -198,7 +198,9 @@ fileprivate extension OnboardingScreenVC {
     
     func setupFooter() {
         if let footer = screenData?.footer, footer.isFooterAvailable()  {
-            let footerController = OnboardingFooterVC.instantiate(footer: footer)
+            
+            
+            let footerController = OnboardingFooterHorisontalVC.instantiate(footer: footer)
             addChildViewController(footerController, andEmbedToView: footerContainerView)
             footerController.animationEnabled = screenData?.animationEnabled ?? true
 
