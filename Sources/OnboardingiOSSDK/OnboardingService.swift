@@ -301,7 +301,12 @@ private extension OnboardingService {
                 }
             } else if let screenData = screen.paywallScreenValue(), let paymentService = paymentService {
                 let controller = PaywallVC.instantiate(paymentService: paymentService, screenData: screenData)
-                showNextOnboardingController(controller, transitionKind: transitionKind)
+               
+                if nextScreenId == screenGraph.launchScreenId {
+                    setInitialOnboardingController(controller)
+                } else {
+                    showNextOnboardingController(controller, transitionKind: transitionKind)
+                }
             } else {
                 let controller = onboardingViewControllerFor(screen: screen,
                                                              videoPreparationService: videoPreparationService)
