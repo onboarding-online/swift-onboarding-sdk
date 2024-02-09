@@ -534,12 +534,13 @@ public extension OnboardingService {
     }
 }
  
-public class GenericError: Error {
+public class GenericError: LocalizedError {
     static public let NoResultError = GenericError(errorCode: -1, localizedDescription: "Something went wrong")
     
     var errorCode: Int
     var localizedDescription: String
-    
+    public var errorDescription: String? { localizedDescription }
+
     init(errorCode: Int, localizedDescription: String) {
         self.errorCode = errorCode
         self.localizedDescription = localizedDescription
