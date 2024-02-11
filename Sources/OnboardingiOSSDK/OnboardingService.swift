@@ -488,9 +488,18 @@ public extension OnboardingService {
         case presentIn(_ viewController: UIViewController)
     }
     
+    /// `AssetsPrefetchMode` determines the strategy for preloading images and videos.
     enum AssetsPrefetchMode {
+        /// Waits until all assets (images and videos) are downloaded before starting the display.
+        /// Useful when you want everything ready before anything is shown to the user.
         case waitForAllDone
+        
+        /// Starts the display as soon as the assets for the first screen are downloaded.
+        /// Other assets continue downloading in the background. Ideal for quick starts with progressive loading.
         case waitForFirstDone
+        
+        /// Similar to `waitForFirstDone`, but allows setting a specific timeout for waiting on assets.
+        /// If the timeout expires, the display starts with whatever is available. This mode gives you control over wait times.
         case waitForScreenToLoad(timeout: TimeInterval)
     }
 
