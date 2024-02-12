@@ -10,16 +10,21 @@ import ScreensGraph
 import StoreKit
 
 // TODO: - Check for canMakePayments before showing paywall 
- public final class PaywallVC: BaseChildScreenGraphViewController {
+final class PaywallVC: BaseScreenGraphViewController {
     
+     var videoPreparationService: VideoPreparationService!
+
+     var transitionKind: ScreenTransitionKind?
+     
     public static func instantiate(paymentService: OnboardingPaymentServiceProtocol) -> PaywallVC {
         let paywallVC = PaywallVC.nibInstance()
         paywallVC.paymentService = paymentService
         return paywallVC
     }
      
-     public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screenData: ScreenBasicPaywall) -> PaywallVC {
+    public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screen: Screen, screenData: ScreenBasicPaywall) -> PaywallVC {
          let paywallVC = PaywallVC.nibInstance()
+         paywallVC.screen = screen
          paywallVC.paymentService = paymentService
          paywallVC.screenData = screenData
          return paywallVC
@@ -33,7 +38,6 @@ import StoreKit
     @IBOutlet weak var gradientView: GradientView!
     
      
-    override var isEmbedded: Bool { false }
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
     private var isLoadingProducts = true
@@ -50,8 +54,19 @@ import StoreKit
         super.viewDidLoad()
 
         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
-         productIds = ["com.onboardOnline.premium.week.no.trial", "com.onboardOnline.premium.week.no.trial"]
+         productIds = ["com.onboardOnline.premium.week.no.trial"]
+//         productIds = ["premium_week_trial_7_days"]
+
         setup()
+    }
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.isNavigationBarHidden = false
+
     }
      
      func setup() {
@@ -61,35 +76,20 @@ import StoreKit
          setupGradientView()
          loadProducts()
      }
-
 }
 
 
 
-extension PaywallVC: OnboardingChildScreenDelegate {
+extension PaywallVC {
     
-    func onboardingChildScreenUpdate(value: Any?, description : String?, logAnalytics: Bool = true) {
-//        self.value = value
-//
-//        setFooterStateBasedOnUserInputValue()
-//
-//        var params: AnalyticsEventParameters = [.screenID : screen.id, .screenName : screen.name]
-//
-//        if let description = description {
-//            params[.buttonTitle] = description
-//        }
-//
-//        if let value = value {
-//            params[.userInputValue] = value
-//            if logAnalytics {
-//                OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: params )
-//            }
-//        }
-    }
-    
-    func onboardingChildScreenPerform(action: Action) {
-//        self.finishWith(action: action)
-    }
+    func finishWith(action: Action?) {
+          DispatchQueue.main.async {[weak self] in
+              guard let strongSelf = self, let action = action  else { return }
+              self?.view.endEditing(true)
+
+              strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
+          }
+      }
 }
 
 
@@ -174,9 +174,9 @@ extension PaywallVC: UICollectionViewDelegate {
                 indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
-                delegate?.onboardingChildScreenUpdate(value: indexPath.row, 
-                                                      description: products[selectedIndex].id,
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: indexPath.row,
+//                                                      description: products[selectedIndex].id,
+//                                                      logAnalytics: true)
             }
         }
     }
@@ -201,34 +201,34 @@ extension PaywallVC: UICollectionViewDelegate {
 extension PaywallVC: PaywallBottomViewDelegate {
     
     func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        delegate?.onboardingChildScreenUpdate(value: nil,
-                                              description: "Buy",
-                                              logAnalytics: true)
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Buy",
+//                                              logAnalytics: true)
         purchaseSelectedProduct()
     }
   
     func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-        delegate?.onboardingChildScreenUpdate(value: nil,
-                                              description: "Privacy Policy",
-                                              logAnalytics: true)
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Privacy Policy",
+//                                              logAnalytics: true)
         if let url = URL.init(string: url) {
             showSafariWith(url: url)
         }
     }
     
     func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-        delegate?.onboardingChildScreenUpdate(value: nil,
-                                              description: "Terms and conditions",
-                                              logAnalytics: true)
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Terms and conditions",
+//                                              logAnalytics: true)
         if let url = URL.init(string: url) {
             showSafariWith(url: tacURL)
         }
     }
     
     func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        delegate?.onboardingChildScreenUpdate(value: nil,
-                                              description: "Restore",
-                                              logAnalytics: true)
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Restore",
+//                                              logAnalytics: true)
         restoreProducts()
     }
 }
@@ -330,16 +330,16 @@ private extension PaywallVC {
     }
     
     func loadProducts() {
-        delegate?.onboardingChildScreenUpdate(value: nil, 
-                                              description: "Will load products",
-                                              logAnalytics: true)
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Will load products",
+//                                              logAnalytics: true)
 
         Task {
             do {
                 let products = try await paymentService.fetchProductsWith(ids: Set(productIds))
-                delegate?.onboardingChildScreenUpdate(value: nil,
-                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
+//                                                      logAnalytics: true)
                 self.products = products
                     .compactMap( { StoreKitProduct(skProduct: $0) })
                     .sorted(by: { lhs, rhs in
@@ -352,9 +352,9 @@ private extension PaywallVC {
                     })
                 didLoadProducts()
             } catch {
-                delegate?.onboardingChildScreenUpdate(value: nil,
-                                                      description: "Did fail to load products: \(error.localizedDescription)",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did fail to load products: \(error.localizedDescription)",
+//                                                      logAnalytics: true)
                 handleError(error, message: "Something went wrong") { [weak self] in
                     self?.loadProducts()
                 }
@@ -367,20 +367,20 @@ private extension PaywallVC {
         Task {
             do {
                 try await paymentService?.restorePurchases()
-                delegate?.onboardingChildScreenUpdate(value: nil, 
-                                                      description: "Did restore purchases",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did restore purchases",
+//                                                      logAnalytics: true)
                 let hasActiveSubscription = try await paymentService?.hasActiveSubscription()
                 if hasActiveSubscription == true {
-                    delegate?.onboardingChildScreenUpdate(value: nil,
-                                                          description: "User has active subscription",
-                                                          logAnalytics: true)
+//                    delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                          description: "User has active subscription",
+//                                                          logAnalytics: true)
                     close()
                 }
             } catch {
-                delegate?.onboardingChildScreenUpdate(value: nil, 
-                                                      description: "Did fail to restore purchases: \(error.localizedDescription)",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did fail to restore purchases: \(error.localizedDescription)",
+//                                                      logAnalytics: true)
                 handleError(error, message: "Failed to restore purchases") { [weak self] in
                     self?.restoreProducts()
                 }
@@ -397,16 +397,16 @@ private extension PaywallVC {
         Task {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
-                delegate?.onboardingChildScreenUpdate(value: nil,
-                                                      description: "Did purchase product: \(selectedProduct.id)",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did purchase product: \(selectedProduct.id)",
+//                                                      logAnalytics: true)
                 // TODO: - Finish
                 //                onboardingChildScreenPerform
                 close()
             } catch OnboardingPaywallError.cancelled {
-                delegate?.onboardingChildScreenUpdate(value: nil, 
-                                                      description: "Cancelled purchase",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Cancelled purchase",
+//                                                      logAnalytics: true)
                 if shouldCloseOnPurchaseCancel {
                     close()
                 }
@@ -414,9 +414,9 @@ private extension PaywallVC {
                 handleError(error, message: "Failed to purchase", retryAction: { [weak self] in
                     self?.purchaseSelectedProduct()
                 })
-                delegate?.onboardingChildScreenUpdate(value: nil,
-                                                      description: "Did fail to purchase: \(error.localizedDescription)",
-                                                      logAnalytics: true)
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did fail to purchase: \(error.localizedDescription)",
+//                                                      logAnalytics: true)
             }
             setViewBusy(false)
         }
@@ -433,9 +433,9 @@ private extension PaywallVC {
     @objc func closeButtonPressed() {
         guard !isBusy else { return }
         
-        delegate?.onboardingChildScreenUpdate(value: nil, 
-                                              description: "Close",
-                                              logAnalytics: true)
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Close",
+//                                              logAnalytics: true)
         close()
     }
     
@@ -450,9 +450,9 @@ private extension PaywallVC {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .cancel))
         alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
-            self?.delegate?.onboardingChildScreenUpdate(value: nil, 
-                                                        description: "Restore",
-                                                        logAnalytics: true)
+//            self?.delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                        description: "Restore",
+//                                                        logAnalytics: true)
             retryAction()
         }))
         present(alert, animated: true)

@@ -9,6 +9,7 @@ import Foundation
 import ScreensGraph
 
 public extension OnboardingService {
+    
     static func prepareFullOnboardingFor(projectId: String,
                                          localJSONFileName: String,
                                          env: OnboardingEnvironment = .prod,

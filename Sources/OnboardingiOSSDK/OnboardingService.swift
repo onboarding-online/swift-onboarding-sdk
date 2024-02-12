@@ -300,8 +300,8 @@ private extension OnboardingService {
                     finishOnboarding()
                 }
             } else if let screenData = screen.paywallScreenValue(), let paymentService = paymentService {
-                let controller = PaywallVC.instantiate(paymentService: paymentService, screenData: screenData)
-               
+                let controller = PaywallVC.instantiate(paymentService: paymentService, screen: screen, screenData: screenData)
+                controller.delegate = self
                 if nextScreenId == screenGraph.launchScreenId {
                     setInitialOnboardingController(controller)
                 } else {
