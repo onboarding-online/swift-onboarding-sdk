@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,6 +13,7 @@
             <connections>
                 <outlet property="activityIndicator" destination="AhR-je-0Lz" id="ooX-6j-IOV"/>
                 <outlet property="bottomView" destination="W64-mO-hfO" id="yYf-0B-DiB"/>
+                <outlet property="closeButton" destination="l7h-OY-I3d" id="mdY-Ea-UPa"/>
                 <outlet property="collectionView" destination="znm-pk-GdZ" id="nhD-iE-CsL"/>
                 <outlet property="gradientView" destination="aik-Mc-8uZ" id="Lol-MJ-kX7"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -24,7 +25,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="678"/>
+                    <rect key="frame" x="0.0" y="59" width="393" height="619"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y0e-4e-Mzq">
                         <size key="itemSize" width="128" height="128"/>
@@ -53,19 +54,41 @@
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="AhR-je-0Lz">
                     <rect key="frame" x="178" y="407.66666666666669" width="37" height="37"/>
                 </activityIndicatorView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M66-6a-djW">
+                    <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l7h-OY-I3d">
+                            <rect key="frame" x="16" y="2" width="40" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="346-ac-SzY"/>
+                                <constraint firstAttribute="width" constant="40" id="vT7-AD-I73"/>
+                            </constraints>
+                            <buttonConfiguration key="configuration" style="plain"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="Jda-xz-Mig"/>
+                        <constraint firstItem="l7h-OY-I3d" firstAttribute="leading" secondItem="M66-6a-djW" secondAttribute="leading" constant="16" id="Kmp-xS-pOO"/>
+                        <constraint firstItem="l7h-OY-I3d" firstAttribute="centerY" secondItem="M66-6a-djW" secondAttribute="centerY" id="NsL-jI-PMn"/>
+                    </constraints>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="M66-6a-djW" secondAttribute="trailing" id="3hc-Zd-Xvi"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="4Pr-j2-hP0"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="-12" id="Cjy-w8-G4J"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="GaN-z7-99S"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="JDq-Np-HSu"/>
+                <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="M66-6a-djW" secondAttribute="bottom" constant="-44" id="KpO-Ob-1rg"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Mfv-JL-kyM"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Nl5-fF-wOR"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="aKB-Gw-uGh"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cMD-Ky-5vG"/>
-                <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="dFi-Kw-eaD"/>
+                <constraint firstItem="M66-6a-djW" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="ckc-W0-CgR"/>
+                <constraint firstItem="M66-6a-djW" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="zGq-i8-QiL"/>
             </constraints>
             <point key="canvasLocation" x="-37.404580152671755" y="41.549295774647888"/>
         </view>

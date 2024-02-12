@@ -37,7 +37,8 @@ final class PaywallVC: BaseScreenGraphViewController {
     @IBOutlet weak var bottomView: PaywallBottomView!
     @IBOutlet weak var gradientView: GradientView!
     
-     
+    @IBOutlet weak var closeButton: UIButton!
+
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
     private var isLoadingProducts = true
@@ -65,8 +66,7 @@ final class PaywallVC: BaseScreenGraphViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.isNavigationBarHidden = false
-
+        navigationController?.isNavigationBarHidden = true
     }
      
      func setup() {
@@ -485,36 +485,25 @@ private extension PaywallVC {
             return
         }
         
-        let navBarAppearance = UINavigationBarAppearance()
-        navBarAppearance.configureWithTransparentBackground()
-        navigationController?.navigationBar.standardAppearance = navBarAppearance
-        
-        let closeButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeButtonPressed))
+        closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
         closeButton.tintColor = close.styles.backgroundColor?.hexStringToColor ?? .black
         
-        if let alignment = navigationBar.styles.closeHorizontalAlignment {
-            switch alignment {
-            case ._left:
-                navigationItem.leftBarButtonItem = closeButton
-            case ._right:
-                navigationItem.rightBarButtonItem = closeButton
-            }
-        }
+//        if let alignment = navigationBar.styles.closeHorizontalAlignment {
+//            switch alignment {
+//            case ._left:
+//                navigationItem.leftBarButtonItem = closeButton
+//            case ._right:
+//                navigationItem.rightBarButtonItem = closeButton
+//            }
+//        }
         
         switch navigationBar.styles.closeAppearance {
         case .visibleaftertimer:
             if let time = navigationBar.styles.closeVisibleAfterTimerValue {
-                if #available(iOS 16.0, *) {
-                    closeButton.isHidden = true
-                } else {
-                    // Fallback on earlier versions
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + time) {
-                    if #available(iOS 16.0, *) {
-                        closeButton.isHidden = false
-                    } else {
-                        // Fallback on earlier versions
-                    }
+                closeButton.isHidden = true
+               
+                DispatchQueue.main.asyncAfter(deadline: .now() + time) {[weak self]  in
+                    self?.closeButton.isHidden = false
                 }
             }
         default:
