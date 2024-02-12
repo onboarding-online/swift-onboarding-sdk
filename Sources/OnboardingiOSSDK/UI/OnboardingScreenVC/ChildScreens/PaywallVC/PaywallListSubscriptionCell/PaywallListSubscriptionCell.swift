@@ -136,7 +136,7 @@ private extension PaywallListSubscriptionCell {
             case .topright:
                 constraints.append(contentContainerView.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 16))
             default:
-                return
+                constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
             }
         } else {
             savedMoneyView.isHidden = true

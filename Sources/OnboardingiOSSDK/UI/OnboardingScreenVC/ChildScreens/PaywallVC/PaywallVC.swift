@@ -84,10 +84,12 @@ extension PaywallVC {
     
     func finishWith(action: Action?) {
           DispatchQueue.main.async {[weak self] in
-              guard let strongSelf = self, let action = action  else { return }
-              self?.view.endEditing(true)
+//              guard let strongSelf = self, let action = action  else { return }
+              guard let strongSelf = self else { return }
 
-              strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
+//              self?.view.endEditing(true)
+              let action1 = Action.init(edges: [], kind: .next)
+              strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action1)
           }
       }
 }
@@ -431,7 +433,7 @@ private extension PaywallVC {
     }
     
     @objc func closeButtonPressed() {
-        guard !isBusy else { return }
+//        guard !isBusy else { return }
         
 //        delegate?.onboardingChildScreenUpdate(value: nil,
 //                                              description: "Close",
@@ -440,7 +442,7 @@ private extension PaywallVC {
     }
     
     func close() {
-        
+        finishWith(action: nil)
     }
     
     @MainActor

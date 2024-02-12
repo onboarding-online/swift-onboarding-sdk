@@ -168,8 +168,14 @@ private extension AssetsPrefetchService {
     
     func prefetchAssetsFor(screenStruct: ScreenStruct) async throws {
         switch screenStruct {
-        case .typeScreenBasicPaywall(_), .typeScreenScalableImageTextSelection(_):
+        case .typeScreenBasicPaywall(let value):
+            try await prefetchAssetsForPaywall(type: value, imageList: value.list.items)
+
             print( "implement assets prefetch for new screens")
+            
+        case  .typeScreenScalableImageTextSelection(let value):
+            try await prefetchAssetsFor(type: value, imageList: value.list.items)
+
         case .typeScreenImageTitleSubtitles(let value):
             try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenProgressBarTitle(let value):
@@ -235,6 +241,24 @@ private extension AssetsPrefetchService {
             
             try await prefetchAssetsFor(type: value, imageList: nil)
         }
+    }
+    
+    func prefetchAssetsForPaywall(type: Any, imageList: Any?) async throws {
+        var allAssets = [AssetPrefetchType]()
+        if let sceenDataType = type as? ImageOptionalProtocol, let image =  sceenDataType.image {
+            let image: [AssetPrefetchType] = [.from(image: image)].compactMap({ $0 })
+            allAssets += image
+        }
+        
+        if let sceenDataType = type as? BaseScreenStyleProtocol {
+            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background)
+            allAssets += backgroundAssets
+        }
+        
+        let listAsset = prefetchAssetsFor(list: imageList)
+        allAssets += listAsset
+        
+        try await load(assets: allAssets)
     }
     
     func prefetchAssetsFor(type: Any, imageList: Any?) async throws {

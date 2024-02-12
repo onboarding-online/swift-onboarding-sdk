@@ -36,6 +36,10 @@ protocol ImageProtocol {
     var image: Image { get }
 }
 
+protocol ImageOptionalProtocol {
+    var image: Image? { get }
+}
+
 protocol PickerItem: Equatable {
     var title: String { get }
 }
@@ -115,7 +119,10 @@ extension ScreenTwoColumnMultipleSelection: BaseScreenProtocol { }
 
 extension ScreenTwoColumnSingleSelection: BaseScreenProtocol { }
 
-extension ScreenScalableImageTextSelection: BaseScreenProtocol { }
+extension ScreenScalableImageTextSelection: Assetable { }
+
+
+extension ScreenBasicPaywall: ImageOptionalProtocol { }
 
 
 
