@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ScreensGraph
 
 final class PaywallTileSubscriptionCell: UICollectionViewCell {
 
@@ -17,6 +18,9 @@ final class PaywallTileSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var savedMoneyView: SavedMoneyView!
     @IBOutlet private weak var checkboxStackContainerTopConstraint: NSLayoutConstraint!
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
+    
+    private var item: ItemTypeSubscription! = nil
+
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,24 +36,49 @@ final class PaywallTileSubscriptionCell: UICollectionViewCell {
 
 // MARK: - Open methods
 extension PaywallTileSubscriptionCell {
+//    func setWith(configuration: PaywallVC.TileSubscriptionCellConfiguration,
+//                 isSelected: Bool) {
+//        setBadgePosition(configuration.badgePosition)
+//        setCheckmarkPosition(configuration.checkmarkPosition)
+//        setSelected(isSelected)
+//
+//        let subscriptionDescription = configuration.subscriptionDescription
+//        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
+//        let price = subscriptionDescription.localizedPrice
+//
+//        durationLabel.text = periodUnitName
+//        pricePerMonthLabel.text = "\(price)/Month"
+//    }
+    
     func setWith(configuration: PaywallVC.TileSubscriptionCellConfiguration,
-                 isSelected: Bool) {
-        setBadgePosition(configuration.badgePosition)
-        setCheckmarkPosition(configuration.checkmarkPosition)
-        setSelected(isSelected)
+                    isSelected: Bool,
+                    subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList) {
+        self.item = subscriptionItem
         
-        let subscriptionDescription = configuration.subscriptionDescription
-        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
-        let price = subscriptionDescription.localizedPrice
+        setBadgePosition(configuration.badgePosition, settings: item.badge)
+        setSelected(isSelected, listWithStyles: listWithStyles)
         
-        durationLabel.text = periodUnitName
-        pricePerMonthLabel.text = "\(price)/Month"
+//        setupLabels(configuration: configuration, subscriptionItem: subscriptionItem)
     }
+    
+    
+    
 }
 
 // MARK: - Private methods
 private extension PaywallTileSubscriptionCell {
-    func setSelected(_ isSelected: Bool) {
+    
+//    func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
+//        checkbox.isOn = isSelected
+//
+//        if isSelected {
+//            setSelected(selectedBlock: listWithStyles.selectedBlock)
+//        } else {
+//            setDefault(style: listWithStyles.styles)
+//        }
+//    }
+    
+    func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
         checkbox.isOn = isSelected
         contentContainerView.layer.borderWidth = isSelected ? 1 : 0
         contentContainerView.backgroundColor = isSelected ? .white : .systemGray6
@@ -61,26 +90,57 @@ private extension PaywallTileSubscriptionCell {
         }
     }
     
-    func setBadgePosition(_ position: SavedMoneyBadgePosition) {
-        savedMoneyView.isHidden = position == .none
+    func setBadgePosition(_ position: SavedMoneyBadgePosition, settings: Badge?) {
+       
         NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
-        
+
         var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
                                                  savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
-        switch position {
-        case .none:
-            return
-        case .left:
-            constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
-        case .center:
-            constraints.append(savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor))
-        case .right:
-            constraints.append(contentContainerView.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 16))
+        
+        if let badge = settings {
+            savedMoneyView.isHidden = false
+            
+            savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
+            savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
+
+            switch badge.styles.position {
+            case .topleft:
+                constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
+            case .topcenter:
+                constraints.append(savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor))
+            case .topright:
+                constraints.append(contentContainerView.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 16))
+            default:
+                return
+            }
+        } else {
+            savedMoneyView.isHidden = true
         }
         
         NSLayoutConstraint.activate(constraints)
         currentSavedMoneyViewConstraints = constraints
     }
+    
+//    func setBadgePosition(_ position: SavedMoneyBadgePosition) {
+//        savedMoneyView.isHidden = position == .none
+//        NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
+//
+//        var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
+//                                                 savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
+//        switch position {
+//        case .none:
+//            return
+//        case .left:
+//            constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
+//        case .center:
+//            constraints.append(savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor))
+//        case .right:
+//            constraints.append(contentContainerView.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 16))
+//        }
+//
+//        NSLayoutConstraint.activate(constraints)
+//        currentSavedMoneyViewConstraints = constraints
+//    }
     
     func setCheckmarkPosition(_ position: CheckmarkPosition) {
         

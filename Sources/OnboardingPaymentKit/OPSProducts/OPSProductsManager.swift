@@ -23,6 +23,7 @@ final class OPSProductsManager {
 
 // MARK: - Open methods
 extension OPSProductsManager {
+    
     func fetchProductsWith(ids: SKProductIDs) async throws -> OPSProductsResponse {
         if let cachedProducts = self.cachedProductsWith(ids: ids) {
             OPSLogger.logEvent("ProductsRequest.Will return products with ids \(ids) from cache")

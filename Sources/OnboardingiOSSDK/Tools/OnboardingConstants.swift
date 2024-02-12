@@ -115,6 +115,11 @@ extension ScreenTwoColumnMultipleSelection: BaseScreenProtocol { }
 
 extension ScreenTwoColumnSingleSelection: BaseScreenProtocol { }
 
+extension ScreenScalableImageTextSelection: BaseScreenProtocol { }
+
+
+
+
 extension Screen {
     
     public func customScreenValue() -> CustomScreen? {

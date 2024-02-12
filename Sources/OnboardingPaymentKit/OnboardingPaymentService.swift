@@ -31,6 +31,7 @@ public final class OnboardingPaymentService {
 
 // MARK: - OnboardingPaymentServiceProtocol
 extension OnboardingPaymentService: OnboardingPaymentServiceProtocol {
+    
     public var canMakePayments: Bool {
         SKPaymentQueue.canMakePayments()
     }

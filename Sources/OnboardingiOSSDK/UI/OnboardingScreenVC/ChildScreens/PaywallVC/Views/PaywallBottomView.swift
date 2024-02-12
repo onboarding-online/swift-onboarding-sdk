@@ -43,13 +43,13 @@ final class PaywallBottomView: UIView {
     }
     
     func setup(footer: PaywallFooter) {
-        buyButton.apply(button: footer.purchase)
-        
-        buyButton.apply(button: footer.restore)
-
-        
-        tacButton.apply(navLink: footer.termsOfUse)
-        ppButton.apply(navLink: footer.privacyPolicy)
+//        buyButton.apply(button: footer.purchase)
+//        
+//        buyButton.apply(button: footer.restore)
+//
+//        
+//        tacButton.apply(navLink: footer.termsOfUse)
+//        ppButton.apply(navLink: footer.privacyPolicy)
 
         additionalInfoLabel.apply(text: footer.autoRenewLabel)
         self.footer = footer

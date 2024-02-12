@@ -40,7 +40,7 @@ import StoreKit
     private var isBusy = true
     private var products: [StoreKitProduct] = []
     public var productIds: [String] = [] // TODO: - Set product ids
-    public var style: Style = .subscriptionsTiles
+    public var style: Style = .subscriptionsList
     var shouldCloseOnPurchaseCancel = false
     
     public var dismissalHandler: (() -> ())!
@@ -50,7 +50,7 @@ import StoreKit
         super.viewDidLoad()
 
         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
-
+         productIds = ["com.onboardOnline.premium.week.no.trial", "com.onboardOnline.premium.week.no.trial"]
         setup()
     }
      
@@ -64,8 +64,40 @@ import StoreKit
 
 }
 
+
+
+extension PaywallVC: OnboardingChildScreenDelegate {
+    
+    func onboardingChildScreenUpdate(value: Any?, description : String?, logAnalytics: Bool = true) {
+//        self.value = value
+//
+//        setFooterStateBasedOnUserInputValue()
+//
+//        var params: AnalyticsEventParameters = [.screenID : screen.id, .screenName : screen.name]
+//
+//        if let description = description {
+//            params[.buttonTitle] = description
+//        }
+//
+//        if let value = value {
+//            params[.userInputValue] = value
+//            if logAnalytics {
+//                OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: params )
+//            }
+//        }
+    }
+    
+    func onboardingChildScreenPerform(action: Action) {
+//        self.finishWith(action: action)
+    }
+}
+
+
+
+
 // MARK: - UICollectionViewDataSource
 extension PaywallVC: UICollectionViewDataSource {
+    
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         allSections().count
     }
@@ -79,9 +111,7 @@ extension PaywallVC: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
-        
-
-        
+                
         switch row {
         case .header(let configuration):
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
@@ -118,9 +148,10 @@ extension PaywallVC: UICollectionViewDataSource {
         case .tileSubscription(let configuration):
             let index = indexPath.row
             let isSelected = selectedIndex == index
-            
+            let item = screenData.subscriptions.items[index]
+
             let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
-            cell.setWith(configuration: configuration, isSelected: isSelected)
+            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions)
             
             return cell
         }
@@ -459,19 +490,16 @@ private extension PaywallVC {
         navigationController?.navigationBar.standardAppearance = navBarAppearance
         
         let closeButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(closeButtonPressed))
-        
-        
-       
         closeButton.tintColor = close.styles.backgroundColor?.hexStringToColor ?? .black
         
-        switch navigationBar.styles.closeHorizontalAlignment! {
-        case ._left:
-            navigationItem.leftBarButtonItem = closeButton
-        case ._right:
-            navigationItem.rightBarButtonItem = closeButton
+        if let alignment = navigationBar.styles.closeHorizontalAlignment {
+            switch alignment {
+            case ._left:
+                navigationItem.leftBarButtonItem = closeButton
+            case ._right:
+                navigationItem.rightBarButtonItem = closeButton
+            }
         }
-        
-       
         
         switch navigationBar.styles.closeAppearance {
         case .visibleaftertimer:

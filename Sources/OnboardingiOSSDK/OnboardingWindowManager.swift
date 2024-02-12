@@ -36,6 +36,7 @@ final class OnboardingWindowManager {
 
 // MARK: - Open methods
 extension OnboardingWindowManager: OnboardingWindowManagerProtocol {
+    
     func getWindows() -> [UIWindow] {
         UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
@@ -91,7 +92,9 @@ extension OnboardingWindowManager: OnboardingWindowManagerProtocol {
 
 // MARK: - Private methods
 private extension OnboardingWindowManager {
+    
     func getKeyWindow() -> UIWindow? {
         getWindows().first(where: \.isKeyWindow)
     }
+    
 }
