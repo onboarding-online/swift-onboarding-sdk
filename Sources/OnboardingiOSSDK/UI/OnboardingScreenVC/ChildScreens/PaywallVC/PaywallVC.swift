@@ -58,7 +58,8 @@ final class PaywallVC: BaseScreenGraphViewController {
 
         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
 //         productIds = ["com.onboardOnline.premium.week.no.trial"]
-         productIds = ["premium_week_trial_7_days"]
+        productIds =   screenData.subtitle.textByLocale().isEmpty ? ["premium_week_trial_7_days"] : [screenData.subtitle.textByLocale()]
+         
 
          loadProducts()
 
@@ -92,8 +93,7 @@ extension PaywallVC {
               guard let strongSelf = self else { return }
 
 //              self?.view.endEditing(true)
-              let action1 = Action.init(edges: [], kind: .next)
-              strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action1)
+              strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
           }
       }
 }
