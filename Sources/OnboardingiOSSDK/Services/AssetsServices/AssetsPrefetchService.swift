@@ -171,7 +171,7 @@ private extension AssetsPrefetchService {
         case .typeScreenBasicPaywall(let value):
             try await prefetchAssetsForPaywall(type: value, imageList: value.list.items)
 
-            print( "implement assets prefetch for new screens")
+            print( "implement assets prefetch for paywall")
             
         case  .typeScreenScalableImageTextSelection(let value):
             try await prefetchAssetsFor(type: value, imageList: value.list.items)

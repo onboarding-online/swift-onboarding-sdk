@@ -55,8 +55,8 @@ final class PaywallVC: BaseScreenGraphViewController {
         super.viewDidLoad()
 
         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
-         productIds = ["com.onboardOnline.premium.week.no.trial"]
-//         productIds = ["premium_week_trial_7_days"]
+//         productIds = ["com.onboardOnline.premium.week.no.trial"]
+         productIds = ["premium_week_trial_7_days"]
 
         setup()
     }
@@ -404,7 +404,7 @@ private extension PaywallVC {
 //                                                      logAnalytics: true)
                 // TODO: - Finish
                 //                onboardingChildScreenPerform
-                close()
+                finishWith(action: screenData.footer.purchase?.action)
             } catch OnboardingPaywallError.cancelled {
 //                delegate?.onboardingChildScreenUpdate(value: nil,
 //                                                      description: "Cancelled purchase",
@@ -438,11 +438,12 @@ private extension PaywallVC {
 //        delegate?.onboardingChildScreenUpdate(value: nil,
 //                                              description: "Close",
 //                                              logAnalytics: true)
-        close()
+        
+        finishWith(action: screenData.navigationBar.close?.action)
     }
     
     func close() {
-        finishWith(action: nil)
+        finishWith(action: screenData.footer.purchase?.action)
     }
     
     @MainActor
@@ -473,8 +474,6 @@ private extension PaywallVC {
 
 // MARK: - Setup methods
 private extension PaywallVC {
-    
-
     
     func setup(footer: PaywallFooter) {
         bottomView.setup(footer: footer)

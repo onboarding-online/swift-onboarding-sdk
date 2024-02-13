@@ -92,8 +92,8 @@ private extension PaywallHeaderCell {
                 let label = buildLabel()
 //                label.textColor = .black.withAlphaComponent(0.5)
                 label.apply(text: item.title)
-                
-                let checkmark = buildBulletCheckmark()
+//                item.image.styles.width
+                let checkmark = buildBulletCheckmark(width: item.image.styles.width ?? 24, height: item.image.styles.height ?? 24)
                 
                 let hStack = UIStackView(arrangedSubviews: [checkmark, label])
                 hStack.axis = .horizontal
@@ -127,13 +127,12 @@ private extension PaywallHeaderCell {
         }
     }
     
-    func buildBulletCheckmark() -> UIImageView {
+    func buildBulletCheckmark(width: CGFloat, height: CGFloat) -> UIImageView {
         let imageView = UIImageView(image: .checkmark)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .black
-        let imageSize: CGFloat = 30
-        NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: imageSize),
-                                     imageView.heightAnchor.constraint(equalToConstant: imageSize)])
+        NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
+                                     imageView.heightAnchor.constraint(equalToConstant: height)])
         
         return imageView
     }

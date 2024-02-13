@@ -43,7 +43,7 @@ final class PaywallBottomView: UIView {
     }
     
     func setup(footer: PaywallFooter) {
-//        buyButton.apply(button: footer.purchase)
+        buyButton.apply(button: footer.purchase)
 //        
 //        buyButton.apply(button: footer.restore)
 //
