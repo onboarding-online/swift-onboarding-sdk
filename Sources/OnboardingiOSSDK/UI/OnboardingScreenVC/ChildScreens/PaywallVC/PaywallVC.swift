@@ -180,6 +180,9 @@ extension PaywallVC: UICollectionViewDelegate {
                 indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
+                let currentProductDescription = self.products[selectedIndex].subscriptionDescription
+                bottomView.setupPaymentDetailsLabel(content: currentProductDescription?.periodLocalizedUnitName ?? "")
+                
 //                delegate?.onboardingChildScreenUpdate(value: indexPath.row,
 //                                                      description: products[selectedIndex].id,
 //                                                      logAnalytics: true)
@@ -431,6 +434,10 @@ private extension PaywallVC {
     func didLoadProducts() {
         self.isLoadingProducts = false
         let sections = allSections()
+        
+        let currentProductDescription = self.products[selectedIndex].subscriptionDescription
+        bottomView.setupPaymentDetailsLabel(content: currentProductDescription?.periodLocalizedUnitName ?? "")
+        
         self.collectionView.performBatchUpdates {
             collectionView.reloadSections(IndexSet(0..<sections.count))
         }

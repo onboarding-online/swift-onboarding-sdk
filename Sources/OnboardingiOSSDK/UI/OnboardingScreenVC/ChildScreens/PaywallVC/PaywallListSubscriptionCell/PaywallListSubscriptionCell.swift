@@ -71,10 +71,10 @@ extension PaywallListSubscriptionCell {
         pricePerMonthLabel.apply(text: subscriptionItem.description)
         
 //      replace <price/>, <duration/> -- price, periodUnitName
-        durationLabel.text =  durationLabel.text ?? "" + periodUnitName
-        priceLabel.text = priceLabel.text ?? "" + price
+        durationLabel.text =  periodUnitName
+        priceLabel.text = price
         
-        pricePerMonthLabel.text =  subscriptionDescription.trialDescription?.periodDuration.title
+        pricePerMonthLabel.text =  "\(price) per \(periodUnitName)"
     }
     
     func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,
