@@ -16,6 +16,7 @@
                 <outlet property="closeButton" destination="l7h-OY-I3d" id="mdY-Ea-UPa"/>
                 <outlet property="collectionView" destination="znm-pk-GdZ" id="nhD-iE-CsL"/>
                 <outlet property="gradientView" destination="aik-Mc-8uZ" id="Lol-MJ-kX7"/>
+                <outlet property="headerView" destination="M66-6a-djW" id="V6a-kM-1mu"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -57,7 +58,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M66-6a-djW">
                     <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l7h-OY-I3d">
+                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l7h-OY-I3d">
                             <rect key="frame" x="16" y="2" width="40" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="346-ac-SzY"/>
@@ -69,7 +70,6 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="Jda-xz-Mig"/>
-                        <constraint firstItem="l7h-OY-I3d" firstAttribute="leading" secondItem="M66-6a-djW" secondAttribute="leading" constant="16" id="Kmp-xS-pOO"/>
                         <constraint firstItem="l7h-OY-I3d" firstAttribute="centerY" secondItem="M66-6a-djW" secondAttribute="centerY" id="NsL-jI-PMn"/>
                     </constraints>
                 </view>

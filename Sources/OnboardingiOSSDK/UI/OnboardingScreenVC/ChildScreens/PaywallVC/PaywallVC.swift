@@ -38,6 +38,8 @@ final class PaywallVC: BaseScreenGraphViewController {
     @IBOutlet weak var gradientView: GradientView!
     
     @IBOutlet weak var closeButton: UIButton!
+    @IBOutlet weak var headerView: UIView!
+
 
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
@@ -58,7 +60,8 @@ final class PaywallVC: BaseScreenGraphViewController {
 //         productIds = ["com.onboardOnline.premium.week.no.trial"]
          productIds = ["premium_week_trial_7_days"]
 
-        setup()
+         loadProducts()
+
     }
     
     
@@ -66,6 +69,8 @@ final class PaywallVC: BaseScreenGraphViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        setup()
+
         navigationController?.isNavigationBarHidden = true
     }
      
@@ -74,7 +79,6 @@ final class PaywallVC: BaseScreenGraphViewController {
          setupCollectionView()
          setup(footer: screenData.footer)
          setupGradientView()
-         loadProducts()
      }
 }
 
@@ -483,32 +487,41 @@ private extension PaywallVC {
     
     func setup(navigationBar: PaywallNavigationBar) {
         guard let close = navigationBar.close else {
+            closeButton.isHidden = true
             return
         }
-        
+    
         closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
         closeButton.tintColor = close.styles.backgroundColor?.hexStringToColor ?? .black
         
-//        if let alignment = navigationBar.styles.closeHorizontalAlignment {
-//            switch alignment {
-//            case ._left:
-//                navigationItem.leftBarButtonItem = closeButton
-//            case ._right:
-//                navigationItem.rightBarButtonItem = closeButton
-//            }
-//        }
+        var horizontalConstraint = closeButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)
+   
+        if let alignment = navigationBar.styles.closeHorizontalAlignment {
+            switch alignment {
+            case ._left:
+                horizontalConstraint = closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
+            case ._right:
+                break
+            }
+        }
+        NSLayoutConstraint.activate([horizontalConstraint])
+
+
         
         switch navigationBar.styles.closeAppearance {
         case .visibleaftertimer:
             if let time = navigationBar.styles.closeVisibleAfterTimerValue {
                 closeButton.isHidden = true
-               
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + time) {[weak self]  in
                     self?.closeButton.isHidden = false
                 }
             }
         default:
-            break
+            closeButton.isHidden = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {[weak self]  in
+                self?.closeButton.isHidden = false
+            }
         }
     }
     
