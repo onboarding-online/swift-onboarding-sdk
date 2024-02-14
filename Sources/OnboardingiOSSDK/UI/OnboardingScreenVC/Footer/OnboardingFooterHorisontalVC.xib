@@ -11,16 +11,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OnboardingFooterHorisontalVC" customModule="OnboardingiOSSDK">
             <connections>
                 <outlet property="bottomFooterConstrain" destination="rL1-9J-FNw" id="aWi-Ms-F2d"/>
-                <outlet property="centerNextButtonConstraint" destination="3fo-kn-WCz" id="AVl-mD-rjq"/>
-                <outlet property="containerButton1" destination="rqt-R3-6iZ" id="22L-d2-2In"/>
-                <outlet property="containerButton2" destination="cKZ-Py-47y" id="CmU-a6-knL"/>
-                <outlet property="leadingNextButtonConstraint" destination="2Bj-Ra-DrH" id="Aqp-Mw-Jbu"/>
                 <outlet property="nextButton1" destination="iPc-fh-Iqx" id="nkI-9G-XEK"/>
                 <outlet property="nextButton1Height" destination="M2Z-DR-Uqb" id="kya-88-BP7"/>
                 <outlet property="nextButton2" destination="FtB-3M-wvX" id="1M3-Cy-0tz"/>
                 <outlet property="nextButton2Height" destination="auT-VC-dnJ" id="gfD-5W-DJr"/>
-                <outlet property="secondButtonCenterNextButtonConstraint" destination="hLU-eK-Laq" id="Nat-Zs-K63"/>
-                <outlet property="secondButtonTrailingNextButtonConstraint" destination="TxO-5q-Cp9" id="MHb-6W-PeE"/>
                 <outlet property="stackView" destination="VZD-rN-DFa" id="agW-1a-Fae"/>
                 <outlet property="topFooterConstrain" destination="Ti5-9Z-Wom" id="L7E-hu-vCQ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -37,69 +31,41 @@
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="VZD-rN-DFa">
                             <rect key="frame" x="16" y="32" width="361" height="50"/>
                             <subviews>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rqt-R3-6iZ">
-                                    <rect key="frame" x="0.0" y="0.0" width="66" height="50"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iPc-fh-Iqx">
-                                            <rect key="frame" x="0.0" y="0.0" width="66" height="50"/>
-                                            <color key="backgroundColor" red="1" green="0.63164245190000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="50" id="M2Z-DR-Uqb"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
-                                            <state key="normal" title="button 1"/>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                    <real key="value" value="12"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="firstButtonAction:" destination="-1" eventType="touchUpInside" id="4GQ-mA-g9p"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iPc-fh-Iqx">
+                                    <rect key="frame" x="0.0" y="0.0" width="167.66666666666666" height="50"/>
+                                    <color key="backgroundColor" red="1" green="0.63164245190000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
-                                        <constraint firstItem="iPc-fh-Iqx" firstAttribute="leading" secondItem="rqt-R3-6iZ" secondAttribute="leading" id="2Bj-Ra-DrH"/>
-                                        <constraint firstItem="iPc-fh-Iqx" firstAttribute="centerX" secondItem="rqt-R3-6iZ" secondAttribute="centerX" id="3fo-kn-WCz"/>
-                                        <constraint firstAttribute="bottom" secondItem="iPc-fh-Iqx" secondAttribute="bottom" id="Mfx-FP-tMa"/>
-                                        <constraint firstItem="iPc-fh-Iqx" firstAttribute="top" secondItem="rqt-R3-6iZ" secondAttribute="top" id="v9Z-sB-RgC"/>
+                                        <constraint firstAttribute="height" constant="50" id="M2Z-DR-Uqb"/>
                                     </constraints>
-                                </view>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cKZ-Py-47y">
-                                    <rect key="frame" x="74" y="0.0" width="287" height="50"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FtB-3M-wvX">
-                                            <rect key="frame" x="0.0" y="0.0" width="287" height="50"/>
-                                            <color key="backgroundColor" red="1" green="0.63164245190000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="50" id="auT-VC-dnJ"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
-                                            <state key="normal" title="button 2"/>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                    <real key="value" value="12"/>
-                                                </userDefinedRuntimeAttribute>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="secondButtonAction:" destination="-1" eventType="touchUpInside" id="owi-Z3-fUR"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
+                                    <state key="normal" title="button 1"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                            <real key="value" value="12"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="firstButtonAction:" destination="-1" eventType="touchUpInside" id="4GQ-mA-g9p"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FtB-3M-wvX">
+                                    <rect key="frame" x="175.66666666666663" y="0.0" width="185.33333333333337" height="50"/>
+                                    <color key="backgroundColor" red="1" green="0.63164245190000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="FtB-3M-wvX" secondAttribute="bottom" id="Ib1-kg-2QC"/>
-                                        <constraint firstItem="FtB-3M-wvX" firstAttribute="top" secondItem="cKZ-Py-47y" secondAttribute="top" id="TZo-w7-qdo"/>
-                                        <constraint firstAttribute="trailing" secondItem="FtB-3M-wvX" secondAttribute="trailing" id="TxO-5q-Cp9"/>
-                                        <constraint firstItem="FtB-3M-wvX" firstAttribute="centerX" secondItem="cKZ-Py-47y" secondAttribute="centerX" id="hLU-eK-Laq"/>
+                                        <constraint firstAttribute="height" constant="50" id="auT-VC-dnJ"/>
                                     </constraints>
-                                </view>
+                                    <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
+                                    <state key="normal" title="button 2"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                            <real key="value" value="12"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="secondButtonAction:" destination="-1" eventType="touchUpInside" id="owi-Z3-fUR"/>
+                                    </connections>
+                                </button>
                             </subviews>
-                            <constraints>
-                                <constraint firstItem="rqt-R3-6iZ" firstAttribute="width" secondItem="VZD-rN-DFa" secondAttribute="width" multiplier="0.182825" id="0Ex-im-puv"/>
-                                <constraint firstItem="cKZ-Py-47y" firstAttribute="width" secondItem="VZD-rN-DFa" secondAttribute="width" multiplier="0.795014" id="sKW-mI-Sdy"/>
-                            </constraints>
                         </stackView>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

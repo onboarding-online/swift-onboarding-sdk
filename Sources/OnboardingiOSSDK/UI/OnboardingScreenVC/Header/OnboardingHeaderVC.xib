@@ -17,6 +17,7 @@
                 <outlet property="backButtonHeightConstraint" destination="M4U-tq-eUf" id="Q7I-6I-tqK"/>
                 <outlet property="backButtonWidthConstraint" destination="y35-op-LOC" id="EoA-v3-IcL"/>
                 <outlet property="dashesProgressView" destination="nke-3a-T1S" id="xZC-hb-7ey"/>
+                <outlet property="dashesTitle" destination="dpT-aK-QaB" id="gFM-HK-Ljj"/>
                 <outlet property="parentProgressView" destination="QMI-KD-2xr" id="j42-p7-7Tq"/>
                 <outlet property="progressView" destination="hoC-SV-kd8" id="M4w-Rt-wdQ"/>
                 <outlet property="skipButton" destination="Ko9-QH-zh0" id="wUj-U9-qVJ"/>

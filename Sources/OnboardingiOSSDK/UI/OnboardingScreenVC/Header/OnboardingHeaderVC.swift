@@ -13,9 +13,12 @@ class OnboardingHeaderVC: UIViewController {
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
-    @IBOutlet weak var dashesProgressView: DashesProgressView!
     
+    @IBOutlet weak var dashesProgressView: DashesProgressView!
+    @IBOutlet weak var dashesTitle: UILabel!
+
     @IBOutlet weak var parentProgressView: UIView!
+
 
 
     
@@ -82,15 +85,18 @@ private extension OnboardingHeaderVC {
         if let progres  = navigationBar.pageIndicator, let progressView = progressView {
             let value = (progres.value / 100.0).floatValue
             let filledColor = progres.styles.color?.hexStringToColor ?? .clear
-            let notFilledColor = progres.styles.trackColor?.hexStringToColor ?? .clear
+            let notFilledColor = progres.styles.trackColor?.hexStringToColor ?? .lightGray
             
-            if true {
+            if navigationBar.pageIndicator?.styles.trackColor == nil {
                 progressView.isHidden = true
                 parentProgressView.layoutIfNeeded()
                 let config = DashesProgressView.Configuration.init(notFilledColor: notFilledColor, filledColor: filledColor, numberOfDashes: 5)
                 
                 dashesProgressView.setWith(configuration: config)
                 dashesProgressView.setProgress(value.doubleValue)
+            } else {
+                dashesProgressView.isHidden = true
+                dashesTitle.isHidden = true
             }
             
             progressView.tintColor = filledColor
