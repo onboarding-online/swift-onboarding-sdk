@@ -26,7 +26,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
-                    <rect key="frame" x="0.0" y="59" width="393" height="619"/>
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="678"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y0e-4e-Mzq">
                         <size key="itemSize" width="128" height="128"/>
@@ -82,12 +82,12 @@
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="-12" id="Cjy-w8-G4J"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="GaN-z7-99S"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="JDq-Np-HSu"/>
-                <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="M66-6a-djW" secondAttribute="bottom" constant="-44" id="KpO-Ob-1rg"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Mfv-JL-kyM"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Nl5-fF-wOR"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="aKB-Gw-uGh"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cMD-Ky-5vG"/>
                 <constraint firstItem="M66-6a-djW" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="ckc-W0-CgR"/>
+                <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="xp1-E2-FFV"/>
                 <constraint firstItem="M66-6a-djW" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="zGq-i8-QiL"/>
             </constraints>
             <point key="canvasLocation" x="-37.404580152671755" y="41.549295774647888"/>

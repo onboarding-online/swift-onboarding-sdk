@@ -8,13 +8,17 @@
 import UIKit
 import ScreensGraph
 
-final class PaywallHeaderCell: UICollectionViewCell {
+final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var titlesLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var gradientView: GradientView!
     @IBOutlet private weak var contentStackView: UIStackView!
+    
+    @IBOutlet private weak var listBackground: UIView!
+
+    @IBOutlet weak var blurView: UIVisualEffectView!
     
     private var screenData: ScreenBasicPaywall! = nil
 
@@ -87,17 +91,38 @@ private extension PaywallHeaderCell {
             
             var gradientColors: [UIColor] = [.clear]
             
+            blurView.isHidden = true
+
+            if let colorText = screenData.list.styles.backgroundColor {
+                if colorText == "#ffffff" {
+                    blurView.isHidden = false
+                } else {
+                    contentStackView.backgroundColor = colorText.hexStringToColor
+                    blurView.isHidden = true
+                }
+            } else {                
+                contentStackView.backgroundColor = .clear
+            }
             
             for item in screenData.list.items {
                 let label = buildLabel()
 //                label.textColor = .black.withAlphaComponent(0.5)
                 label.apply(text: item.title)
 //                item.image.styles.width
-                let checkmark = buildBulletCheckmark(width: item.image.styles.width ?? 24, height: item.image.styles.height ?? 24)
+                let checkmark = buildBulletCheckmark(image: item.image)
                 
                 let hStack = UIStackView(arrangedSubviews: [checkmark, label])
                 hStack.axis = .horizontal
                 hStack.spacing = 20
+                
+
+             
+                
+                
+                listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
+                listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
+                listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
+
                 
                 contentStackView.addArrangedSubview(hStack)
                 
@@ -127,13 +152,17 @@ private extension PaywallHeaderCell {
         }
     }
     
-    func buildBulletCheckmark(width: CGFloat, height: CGFloat) -> UIImageView {
+    func buildBulletCheckmark(image: Image) -> UIImageView {
+        let width = image.styles.width ?? 24
+        let height = image.styles.height ?? 24
+       
         let imageView = UIImageView(image: .checkmark)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .black
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
+        load(image: image, in: imageView)
         return imageView
     }
     

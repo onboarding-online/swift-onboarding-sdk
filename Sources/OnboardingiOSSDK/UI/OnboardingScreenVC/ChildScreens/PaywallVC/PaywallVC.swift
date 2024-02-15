@@ -58,8 +58,12 @@ final class PaywallVC: BaseScreenGraphViewController {
 
         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
 //         productIds = ["com.onboardOnline.premium.week.no.trial"]
-        productIds =   screenData.subtitle.textByLocale().isEmpty ? ["premium_week_trial_7_days"] : [screenData.subtitle.textByLocale()]
          
+         if !screenData.subtitle.textByLocale().isEmpty {
+             productIds =  [screenData.subtitle.textByLocale()]
+         } else {
+             productIds =  ["test_3month_59_trial"]
+         }
 
          loadProducts()
 
