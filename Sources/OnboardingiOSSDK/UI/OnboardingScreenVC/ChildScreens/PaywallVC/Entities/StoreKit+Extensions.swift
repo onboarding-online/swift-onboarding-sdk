@@ -61,22 +61,21 @@ extension SKProductDiscount {
 extension SKProductSubscriptionPeriod {
     
     var period: StoreKitSubscriptionPeriod {
-        var unit = self.unit
         if unit == .day && self.numberOfUnits == 7 {
-            unit = .week
+            return .week(1)
         }
         
         switch unit {
         case .week:
-            return .week
+            return .week(numberOfUnits)
         case .month:
-            return .month
+            return .month(numberOfUnits)
         case .year:
-            return .year
+            return .year(numberOfUnits)
         case .day:
-            return .year
+            return .days(numberOfUnits)
         @unknown default:
-            return .year
+            return .year(numberOfUnits)
         }
     }
     
