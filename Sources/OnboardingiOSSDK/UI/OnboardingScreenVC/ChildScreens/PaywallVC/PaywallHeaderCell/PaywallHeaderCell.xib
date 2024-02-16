@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,44 +19,47 @@
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
-                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KAh-zU-tV3">
-                        <rect key="frame" x="24" y="159" width="298" height="104"/>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KAh-zU-tV3">
+                        <rect key="frame" x="24" y="159" width="298" height="84"/>
                         <subviews>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5LR-dD-o6v">
-                                <rect key="frame" x="0.0" y="-12" width="298" height="128"/>
+                                <rect key="frame" x="0.0" y="0.0" width="298" height="84"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="yuV-KL-dVm">
-                                    <rect key="frame" x="0.0" y="0.0" width="298" height="128"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="298" height="84"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <blurEffect style="light"/>
                             </visualEffectView>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
-                                <rect key="frame" x="0.0" y="20" width="298" height="64"/>
+                                <rect key="frame" x="8" y="8" width="282" height="68"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="jjj-3w-9m3" firstAttribute="top" secondItem="KAh-zU-tV3" secondAttribute="top" constant="8" id="9yq-H0-hSe"/>
-                            <constraint firstItem="5LR-dD-o6v" firstAttribute="top" secondItem="KAh-zU-tV3" secondAttribute="top" id="IcX-Jh-Dwf"/>
-                            <constraint firstAttribute="bottom" secondItem="5LR-dD-o6v" secondAttribute="bottom" id="Icx-3q-gEq"/>
                             <constraint firstAttribute="bottom" secondItem="jjj-3w-9m3" secondAttribute="bottom" constant="8" id="Kjs-RK-K13"/>
-                            <constraint firstItem="5LR-dD-o6v" firstAttribute="leading" secondItem="KAh-zU-tV3" secondAttribute="leading" id="Mhf-ON-2jS"/>
-                            <constraint firstAttribute="trailing" secondItem="5LR-dD-o6v" secondAttribute="trailing" id="aw2-LL-gRg"/>
-                            <constraint firstItem="jjj-3w-9m3" firstAttribute="leading" secondItem="KAh-zU-tV3" secondAttribute="leading" id="gb4-t4-bYx"/>
-                            <constraint firstAttribute="trailing" secondItem="jjj-3w-9m3" secondAttribute="trailing" id="x99-ts-bcy"/>
+                            <constraint firstItem="5LR-dD-o6v" firstAttribute="leading" secondItem="KAh-zU-tV3" secondAttribute="leading" id="UwD-ml-W6I"/>
+                            <constraint firstAttribute="bottom" secondItem="5LR-dD-o6v" secondAttribute="bottom" id="aU5-Kq-Wjz"/>
+                            <constraint firstItem="5LR-dD-o6v" firstAttribute="top" secondItem="KAh-zU-tV3" secondAttribute="top" id="crm-uf-veS"/>
+                            <constraint firstItem="jjj-3w-9m3" firstAttribute="leading" secondItem="KAh-zU-tV3" secondAttribute="leading" constant="8" id="gb4-t4-bYx"/>
+                            <constraint firstAttribute="trailing" secondItem="5LR-dD-o6v" secondAttribute="trailing" id="r5n-eD-DYZ"/>
+                            <constraint firstAttribute="trailing" secondItem="jjj-3w-9m3" secondAttribute="trailing" constant="8" id="x99-ts-bcy"/>
                         </constraints>
                     </view>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="KAh-zU-tV3" secondAttribute="trailing" constant="24" id="5E7-Xa-Myk"/>
                 <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="E6W-pI-TQp"/>
                 <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Inw-Nc-nzE"/>
                 <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="Jaj-pK-fbx"/>
@@ -78,14 +80,15 @@
                 <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
                 <outlet property="imageViewTopConstraint" destination="zYm-A4-zOD" id="TwS-0q-rA9"/>
                 <outlet property="listBackground" destination="KAh-zU-tV3" id="MfK-Es-4Eg"/>
-                <outlet property="titlesLeadingConstraint" destination="Ru8-Zz-dn8" id="2yB-7b-D7A"/>
+                <outlet property="listBottomConstraint" destination="gqG-wD-Dfa" id="giD-KQ-1qk"/>
+                <outlet property="listItemBottomConstraint" destination="Kjs-RK-K13" id="YOG-mr-skG"/>
+                <outlet property="listItemLeadingConstraint" destination="gb4-t4-bYx" id="OU6-QS-vI2"/>
+                <outlet property="listItemTopConstraint" destination="9yq-H0-hSe" id="rtH-IN-Knp"/>
+                <outlet property="listItemTrailingConstraint" destination="x99-ts-bcy" id="Llm-OY-20P"/>
+                <outlet property="listLeadingConstraint" destination="Ru8-Zz-dn8" id="OSk-ah-3ft"/>
+                <outlet property="listTrailingConstraint" destination="5E7-Xa-Myk" id="Xe6-UL-nAK"/>
             </connections>
             <point key="canvasLocation" x="271.75572519083971" y="-34.859154929577464"/>
         </collectionViewCell>
     </objects>
-    <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>

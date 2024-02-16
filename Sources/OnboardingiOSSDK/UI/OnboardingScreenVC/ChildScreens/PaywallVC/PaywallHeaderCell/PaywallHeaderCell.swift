@@ -16,6 +16,18 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
     @IBOutlet private weak var gradientView: GradientView!
     @IBOutlet private weak var contentStackView: UIStackView!
     
+    @IBOutlet private weak var listLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var listTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var listBottomConstraint: NSLayoutConstraint!
+    
+    
+    @IBOutlet private weak var listItemLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var listItemTrailingConstraint: NSLayoutConstraint!
+    
+    @IBOutlet private weak var listItemTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var listItemBottomConstraint: NSLayoutConstraint!
+
+    
     @IBOutlet private weak var listBackground: UIView!
 
     @IBOutlet weak var blurView: UIVisualEffectView!
@@ -29,7 +41,7 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
         gradientView.gradientColors = [.clear, .white]
         gradientView.gradientDirection = .topToBottom
         clipsToBounds = false
-        titlesLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
+//        titlesLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
     }
 
 }
@@ -88,8 +100,9 @@ private extension PaywallHeaderCell {
             contentStackView.addArrangedSubview(titleLabel)
             contentStackView.addArrangedSubview(subtitleLabel)
 
-            var gradientColors: [UIColor] = [.clear, .white]
-            
+//            var gradientColors: [UIColor] = [.clear, .white]
+            var gradientColors: [UIColor] = [.clear]
+
             applyListSettings()
             
             for item in screenData.list.items {
@@ -99,12 +112,12 @@ private extension PaywallHeaderCell {
                 
                 let hStack = UIStackView(arrangedSubviews: [checkmark, label])
                 hStack.axis = .horizontal
-                hStack.spacing = 20
+                hStack.spacing = 16
                 
                 contentStackView.addArrangedSubview(hStack)
                 
-                gradientColors.insert(.clear, at: 0)
-                gradientColors.append(.white)
+//                gradientColors.insert(.clear, at: 0)
+//                gradientColors.append(.white)
             }
                         
             gradientView.gradientColors = gradientColors
@@ -128,6 +141,19 @@ private extension PaywallHeaderCell {
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
         listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
         listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
+        
+        listLeadingConstraint.constant = screenData.list.box.styles.paddingLeft ?? 24
+        listTrailingConstraint.constant = screenData.list.box.styles.paddingRight ?? 24
+        listBottomConstraint.constant = screenData.list.box.styles.paddingBottom ?? 24
+        
+        
+//        screenData.list.items.first?.box.styles.paddingBottom
+//        screenData.list.styles.paddingLeft
+        
+        listItemLeadingConstraint.constant = screenData.list.styles.paddingLeft ?? 4
+        listItemTrailingConstraint.constant = screenData.list.styles.paddingRight ?? 4
+        listItemTopConstraint.constant = screenData.list.styles.paddingTop ?? 8
+        listItemBottomConstraint.constant = screenData.list.styles.paddingBottom ?? 8
     }
     
     func buildBulletCheckmark(image: Image) -> UIImageView {

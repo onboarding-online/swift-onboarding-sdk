@@ -103,7 +103,7 @@ private extension PaywallBottomView {
 // MARK: - Setup methods
 private extension PaywallBottomView {
     func setup() {
-        backgroundColor = .white
+//        backgroundColor = .white
         addBuyButtonWithInfoStack()
         addBuyButton()
         addInfoLabel()
