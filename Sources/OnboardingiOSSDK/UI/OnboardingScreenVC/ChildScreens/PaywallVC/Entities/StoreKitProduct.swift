@@ -85,4 +85,53 @@ struct StoreKitProduct: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+    
+    func pricePerWeek() -> Double? {
+        guard let subscriptionDescription else { return nil }
+        
+        switch subscriptionDescription.period {
+        case .days:
+            return nil
+        case .week(let int):
+            return price / Double(int)
+        case .month(let int):
+            let weeksInMonth = 4
+            let numberOfWeeks = weeksInMonth * int
+            return price / Double(numberOfWeeks)
+        case .year(let int):
+            let weeksInYear = 52
+            let numberOfWeeks = weeksInYear * int
+            return price / Double(numberOfWeeks)
+        }
+    }
+    
+    func localizedPricePerWeek() -> String? {
+        guard let price = pricePerWeek() else { return nil }
+        
+        return skProduct.localizedPriceFor(price)
+    }
+    
+    
+    func pricePerMonth() -> Double? {
+        guard let subscriptionDescription else { return nil }
+        
+        switch subscriptionDescription.period {
+        case .days:
+            return nil
+        case .week:
+            return nil
+        case .month(let int):
+            return price / Double(int)
+        case .year(let int):
+            let monthsInYear = 12
+            let numberOfMonths = monthsInYear * int
+            return price / Double(numberOfMonths)
+        }
+    }
+    
+    func localizedPricePerMonth() -> String? {
+        guard let price = pricePerMonth() else { return nil }
+        
+        return skProduct.localizedPriceFor(price)
+    }
 }
