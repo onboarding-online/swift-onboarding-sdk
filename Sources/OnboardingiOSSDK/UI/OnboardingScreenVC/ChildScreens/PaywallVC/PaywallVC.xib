@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PaywallVC" customModule="OnboardingiOSSDK">
             <connections>
                 <outlet property="activityIndicator" destination="AhR-je-0Lz" id="ooX-6j-IOV"/>
+                <outlet property="backgroundContainerView" destination="i5M-Pr-FkT" id="kWZ-jH-3F7"/>
                 <outlet property="bottomView" destination="W64-mO-hfO" id="yYf-0B-DiB"/>
                 <outlet property="closeButton" destination="l7h-OY-I3d" id="mdY-Ea-UPa"/>
                 <outlet property="collectionView" destination="znm-pk-GdZ" id="nhD-iE-CsL"/>

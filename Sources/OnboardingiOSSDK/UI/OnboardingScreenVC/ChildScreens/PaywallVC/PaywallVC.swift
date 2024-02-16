@@ -22,13 +22,14 @@ final class PaywallVC: BaseScreenGraphViewController {
         return paywallVC
     }
      
-    public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screen: Screen, screenData: ScreenBasicPaywall) -> PaywallVC {
-         let paywallVC = PaywallVC.nibInstance()
-         paywallVC.screen = screen
-         paywallVC.paymentService = paymentService
-         paywallVC.screenData = screenData
-         return paywallVC
-     }
+    public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screen: Screen, screenData: ScreenBasicPaywall, videoPreparationService: VideoPreparationService) -> PaywallVC {
+        let paywallVC = PaywallVC.nibInstance()
+        paywallVC.screen = screen
+        paywallVC.paymentService = paymentService
+        paywallVC.videoPreparationService = videoPreparationService
+        paywallVC.screenData = screenData
+        return paywallVC
+    }
      
     private var screenData: ScreenBasicPaywall! = nil
 
@@ -52,7 +53,9 @@ final class PaywallVC: BaseScreenGraphViewController {
     
     public var dismissalHandler: (() -> ())!
 
+    @IBOutlet private weak var backgroundContainerView: UIView!
 
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -75,6 +78,24 @@ final class PaywallVC: BaseScreenGraphViewController {
         setupCollectionView()
         setup(footer: screenData.footer)
         setupGradientView()
+        
+        setupBackground()
+    }
+    
+    func setupBackground() {
+        backgroundView = backgroundContainerView
+
+        if let background = self.screenData?.styles.background {
+            switch background.styles {
+            case .typeBackgroundStyleColor(let value):
+                backgroundContainerView.backgroundColor = value.color.hexStringToColor
+            case .typeBackgroundStyleImage(let value):
+                updateBackground(image: value.image)
+            case .typeBackgroundStyleVideo:
+                setupBackgroundFor(screenId: screen.id,
+                                   using: videoPreparationService)
+            }
+        }
     }
     
 }

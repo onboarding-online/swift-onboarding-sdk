@@ -62,9 +62,9 @@ private extension VideoPreparationService {
     
     func prepareVideo() {
         for (screenId, screen) in screenGraph.screens {
-            guard let baseScreenStruct = ChildControllerFabrika.viewControllerFor(screen: screen) else { continue }
+            guard let background = ChildControllerFabrika.background(screen: screen) else { continue }
             
-            switch baseScreenStruct.baseScreen.styles.background.styles {
+            switch background.styles {
             case .typeBackgroundStyleColor, .typeBackgroundStyleImage:
                 continue
             case .typeBackgroundStyleVideo(let value):

@@ -25,12 +25,10 @@ class ChildControllerFabrika {
         case .typeScreenBasicPaywall(_):
             return nil
             
-            
         case .typeScreenScalableImageTextSelection(let value):
+            
             baseScreen = saveMainScreenDataFor(value: value)
             childController = ScreenScaledImageTitleSubtitleMultiSelectionListVC.instantiate(screenData: value)
-            
-            
         case .typeScreenImageTitleSubtitles(let value):
             
             baseScreen = saveMainScreenDataFor(value: value)
@@ -97,6 +95,47 @@ class ChildControllerFabrika {
         
         if let baseScreen = baseScreen {
             return BaseScreenStruct.init(baseScreen: baseScreen, permissionAction: permissionAction, childController: childController)
+        }
+        
+        return nil
+    }
+    
+    static func background(screen: Screen) -> BackgroundStyle? {
+        switch screen._struct {
+        case .typeScreenBasicPaywall(let value):
+            return value.styles.background
+        case .typeScreenScalableImageTextSelection(let value):
+            return value.styles.background
+        case .typeScreenImageTitleSubtitles(let value):
+            return value.styles.background
+        case .typeScreenProgressBarTitle(let value):
+            return value.styles.background
+        case .typeScreenTableMultipleSelection(let value):
+            return value.styles.background
+        case .typeScreenTableSingleSelection(let value):
+            return value.styles.background
+        case .typeScreenTitleSubtitleField(let value):
+            return value.styles.background
+        case .typeScreenImageTitleSubtitleList(let value):
+            return value.styles.background
+        case .typeScreenTwoColumnMultipleSelection(let value):
+            return value.styles.background
+        case .typeScreenTwoColumnSingleSelection(let value):
+            return value.styles.background
+        case .typeCustomScreen(let value):
+            return value.styles.background
+        case .typeScreenTooltipPermissions(let value):
+            return value.styles.background
+        case .typeScreenImageTitleSubtitleMultipleSelectionList(let value):
+            return value.styles.background
+        case .typeScreenImageTitleSubtitlePicker(let value):
+            return value.styles.background
+        case .typeScreenTitleSubtitleCalendar(let value):
+            return value.styles.background
+        case .typeScreenSlider(let value):
+            return value.styles.background
+        case .typeScreenTitleSubtitlePicker(let value):
+            return value.styles.background
         }
         
         return nil

@@ -255,6 +255,11 @@ private extension AssetsPrefetchService {
             allAssets += backgroundAssets
         }
         
+        if let sceenDataType = type as? PaywallBaseScreenStyleProtocol {
+            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background)
+            allAssets += backgroundAssets
+        }
+        
         let listAsset = prefetchAssetsFor(list: imageList)
         allAssets += listAsset
         

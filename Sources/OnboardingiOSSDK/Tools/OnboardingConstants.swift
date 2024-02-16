@@ -62,6 +62,10 @@ protocol BaseScreenStyleProtocol {
     var styles: BasicScreenBlock { get }
 }
 
+protocol PaywallBaseScreenStyleProtocol {
+    var styles: ScreenBasicPaywallBlock { get }
+}
+
 protocol PermissionProtocol {
     var permission: RequestPermission? { get }
 }
@@ -121,8 +125,7 @@ extension ScreenTwoColumnSingleSelection: BaseScreenProtocol { }
 
 extension ScreenScalableImageTextSelection: Assetable { }
 
-
-extension ScreenBasicPaywall: ImageOptionalProtocol { }
+extension ScreenBasicPaywall: ImageOptionalProtocol, PaywallBaseScreenStyleProtocol { }
 
 
 
