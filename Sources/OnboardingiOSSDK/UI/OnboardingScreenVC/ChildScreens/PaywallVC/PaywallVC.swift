@@ -221,7 +221,7 @@ extension PaywallVC: PaywallBottomViewDelegate {
 //                                              description: "Terms and conditions",
 //                                              logAnalytics: true)
         if let url = URL.init(string: url) {
-            showSafariWith(url: tacURL)
+            showSafariWith(url: url)
         }
     }
     
@@ -482,7 +482,6 @@ private extension PaywallVC {
         bottomView.delegate = self
     }
 
-    
     func setup(navigationBar: PaywallNavigationBar) {
         guard let close = navigationBar.close else {
             closeButton.isHidden = true
@@ -539,6 +538,7 @@ private extension PaywallVC {
                                        .white]
         gradientView.gradientDirection = .topToBottom
     }
+    
 }
 
 // MARK: - Open methods
@@ -658,6 +658,7 @@ extension PaywallVC {
             UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 150)
         }()
     }
+    
 }
 
 //@available(iOS 17, *)
@@ -706,6 +707,7 @@ final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
     func hasActiveSubscription() async throws -> Bool {
         false
     }
+    
 }
 
 private extension PaywallVC.HeaderCellConfiguration {
