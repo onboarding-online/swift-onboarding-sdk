@@ -240,16 +240,10 @@ extension BaseText {
     
 }
 
-extension Text {
+extension String {
     
-    func textByLocale() -> String {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
-        
-        return valueByLocale
-    }
-    
-    func textFor(product: StoreKitProduct) -> String {
-        var text = self.textByLocale()
+    func applyWith(product: StoreKitProduct) -> String {
+        var text = self
         
         let trialDescription = product.subscriptionDescription?.trialDescription?.trialFullDescription ?? ""
         let price = product.localizedPrice
@@ -264,7 +258,22 @@ extension Text {
                 text =  text.replacingOccurrences(of: key, with: value)
             }
         }
+        return text
+    }
+    
+}
+
+extension Text {
+    
+    func textByLocale() -> String {
+        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
         
+        return valueByLocale
+    }
+    
+    func textFor(product: StoreKitProduct) -> String {
+        let text = self.textByLocale().applyWith(product: product)
+    
         return text
     }
     
@@ -631,6 +640,23 @@ extension UIButton: UIImageLoader {
         self.layer.cornerRadius = button.styles.borderRadiusFloat()
         self.layer.borderWidth = button.styles.borderWidthFloat()
         self.layer.borderColor = (button.styles.borderColor ?? "").hexStringToColor.cgColor
+    }
+    
+    func apply(button: Button?, product: StoreKitProduct) {
+        guard let button = button else {
+            self.isHidden = true
+            return
+        }
+        var text = ""
+        
+        switch button.content {
+        case .typeBaseImage(_):
+            break
+        case .typeBaseText(let value):
+            text = value.textByLocale().applyWith(product: product)
+            
+            self.setTitle(text, for: .normal)
+        }
     }
     
     func apply(navLink: NavLink?, isBackButton: Bool = false) {

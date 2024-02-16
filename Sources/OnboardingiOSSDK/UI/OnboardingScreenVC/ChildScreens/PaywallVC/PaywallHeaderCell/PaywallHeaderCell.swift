@@ -80,10 +80,15 @@ private extension PaywallHeaderCell {
 
         case .titleBulletsList(let title, let bulletsList):
             let titleLabel = buildTitleLabel()
+            let subtitleLabel = buildLabel()
+
             titleLabel.apply(text: screenData.title)
+            subtitleLabel.apply(text: screenData.subtitle)
+
             contentStackView.addArrangedSubview(titleLabel)
-            
-            var gradientColors: [UIColor] = [.clear]
+            contentStackView.addArrangedSubview(subtitleLabel)
+
+            var gradientColors: [UIColor] = [.clear, .white]
             
             applyListSettings()
             

@@ -53,52 +53,43 @@ final class PaywallVC: BaseScreenGraphViewController {
     public var dismissalHandler: (() -> ())!
 
 
-     public override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
-
-        productIds = screenData.subscriptions.items.map({$0.subscriptionId})
-//         productIds = ["com.onboardOnline.premium.week.no.trial"]
-         
-         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
+        
+        let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
         productIds = ids
-
-//         "test_3month_59_trial"
-         
-         loadProducts()
+        
+        loadProducts()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         setup()
-
+        
         navigationController?.isNavigationBarHidden = true
     }
-     
-     func setup() {
-         setup(navigationBar: screenData.navigationBar)
-         setupCollectionView()
-         setup(footer: screenData.footer)
-         setupGradientView()
-     }
+    
+    func setup() {
+        setup(navigationBar: screenData.navigationBar)
+        setupCollectionView()
+        setup(footer: screenData.footer)
+        setupGradientView()
+    }
+    
 }
-
-
 
 extension PaywallVC {
     
     func finishWith(action: Action?) {
-          DispatchQueue.main.async {[weak self] in
-              guard let strongSelf = self else { return }
-
-//              self?.view.endEditing(true)
-              strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
-          }
-      }
+        DispatchQueue.main.async {[weak self] in
+            guard let strongSelf = self else { return }
+            
+            strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
+        }
+    }
+    
 }
-
-
-
 
 // MARK: - UICollectionViewDataSource
 extension PaywallVC: UICollectionViewDataSource {
@@ -513,8 +504,6 @@ private extension PaywallVC {
         }
         NSLayoutConstraint.activate([horizontalConstraint])
 
-
-        
         switch navigationBar.styles.closeAppearance {
         case .visibleaftertimer:
             if let time = navigationBar.styles.closeVisibleAfterTimerValue {
@@ -525,10 +514,7 @@ private extension PaywallVC {
                 }
             }
         default:
-            closeButton.isHidden = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {[weak self]  in
-                self?.closeButton.isHidden = false
-            }
+            break
         }
     }
     
@@ -635,7 +621,6 @@ extension PaywallVC {
 
             switch style {
             case .subscriptionsList:
-                
                 
                 return products.map { product in
                     switch product.type {
