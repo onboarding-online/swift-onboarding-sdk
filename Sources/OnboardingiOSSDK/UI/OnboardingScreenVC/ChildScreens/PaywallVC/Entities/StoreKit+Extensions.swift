@@ -59,6 +59,7 @@ extension SKProductDiscount {
 }
 
 extension SKProductSubscriptionPeriod {
+    
     var period: StoreKitSubscriptionPeriod {
         var unit = self.unit
         if unit == .day && self.numberOfUnits == 7 {
@@ -78,6 +79,7 @@ extension SKProductSubscriptionPeriod {
             return .year
         }
     }
+    
 }
 
 extension SKProduct {

@@ -82,6 +82,9 @@ private extension OnboardingHeaderVC {
     }
     
     func setupProgress() {
+        dashesProgressView.isHidden = true
+        dashesTitle.isHidden = true
+        
         if let progres  = navigationBar.pageIndicator, let progressView = progressView {
             let value = (progres.value / 100.0).floatValue
             let filledColor = progres.styles.color?.hexStringToColor ?? .clear

@@ -24,6 +24,6 @@ struct StoreKitSubscriptionDescription: Hashable {
         case .year:
             unit = .year
         }
-        return Calendar.current.localizedUnitTitle(unit)
+        return Calendar.current.localizedUnitTitle(unit, value: 3)
     }
 }

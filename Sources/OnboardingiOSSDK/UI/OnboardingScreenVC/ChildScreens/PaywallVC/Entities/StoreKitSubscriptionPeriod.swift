@@ -22,4 +22,20 @@ enum StoreKitSubscriptionPeriod: Hashable {
             return "subscriptionAnnual"
         }
     }
+    
+    var periodLocalizedUnitName: String {
+        let unit: NSCalendar.Unit
+        let count: Int = 1
+        switch self {
+        case .days(let count):
+            unit = .day
+        case .week:
+            unit = .weekOfMonth
+        case .month:
+            unit = .month
+        case .year:
+            unit = .year
+        }
+        return Calendar.current.localizedUnitTitle(unit, value: count)
+    }
 }

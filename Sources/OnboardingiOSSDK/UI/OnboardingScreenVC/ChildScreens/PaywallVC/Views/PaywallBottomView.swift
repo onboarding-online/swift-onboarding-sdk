@@ -24,7 +24,7 @@ final class PaywallBottomView: UIView {
     private var ppButton: UIButton!
     private var tacButton: UIButton!
     private var restoreButton: UIButton!
-    private var additionalInfoLabel: UILabel!
+    var additionalInfoLabel: UILabel!
     
     weak var delegate: PaywallBottomViewDelegate?
     
@@ -44,21 +44,39 @@ final class PaywallBottomView: UIView {
     
     func setup(footer: PaywallFooter) {
         buyButton.apply(button: footer.purchase)
-//        
-//        buyButton.apply(button: footer.restore)
-//
-//        
-//        tacButton.apply(navLink: footer.termsOfUse)
-//        ppButton.apply(navLink: footer.privacyPolicy)
+        
+        restoreButton.apply(button: footer.restore)
+        
+        tacButton.apply(navLink: footer.termsOfUse)
+        ppButton.apply(navLink: footer.privacyPolicy)
 
         additionalInfoLabel.apply(text: footer.autoRenewLabel)
         self.footer = footer
-        
-//        deleate unneded default settings after applying
     }
     
     func setupPaymentDetailsLabel(content: String) {
         additionalInfoLabel.text = content
+    }
+    
+    func setupPaymentDetailsLabel(content: StoreKitProduct) {
+        if var text = footer.autoRenewLabel?.textByLocale() {
+            let trialDescription = content.subscriptionDescription?.trialDescription?.trialFullDescription ?? ""
+            let price = content.localizedPrice
+            let duration = content.subscriptionDescription?.periodLocalizedUnitName ?? ""
+
+            let pricePerPeriod = "\(price) per  \(duration)"
+
+            let dict = ["@trialDuration": trialDescription, "@pricePerPeriod" : pricePerPeriod]
+            
+            for key in dict.keys {
+                if let value = dict[key] {
+                    text =  text.replacingOccurrences(of: key, with: value)
+                }
+            }
+            additionalInfoLabel.text = text
+        }
+
+//        additionalInfoLabel.text = content
     }
     
 }
@@ -70,6 +88,7 @@ extension PaywallBottomView {
 
 // MARK: - Private methods
 private extension PaywallBottomView {
+    
     @objc func buyButtonPressed() {
         delegate?.paywallBottomViewBuyButtonPressed(self)
     }
@@ -85,6 +104,7 @@ private extension PaywallBottomView {
     @objc func restoreButtonPressed() {
         delegate?.paywallBottomViewRestoreButtonPressed(self)
     }
+    
 }
 
 // MARK: - Setup methods

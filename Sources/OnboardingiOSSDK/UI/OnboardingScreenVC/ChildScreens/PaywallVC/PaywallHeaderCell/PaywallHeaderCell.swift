@@ -69,17 +69,11 @@ private extension PaywallHeaderCell {
         switch style {
         case .titleSubtitle(let title, let subtitle):
             let titleLabel = buildTitleLabel()
-//            titleLabel.text = title
-//            titleLabel.textAlignment = .center
-//
             let subtitleLabel = buildLabel()
-//            subtitleLabel.textColor = .black.withAlphaComponent(0.5)
-//            subtitleLabel.textAlignment = .center
-//            subtitleLabel.text = subtitle
+
             titleLabel.apply(text: screenData.title)
             subtitleLabel.apply(text: screenData.subtitle)
 
-            
             contentStackView.addArrangedSubview(titleLabel)
             contentStackView.addArrangedSubview(subtitleLabel)
             gradientView.gradientColors = [.clear, .white]
@@ -91,65 +85,44 @@ private extension PaywallHeaderCell {
             
             var gradientColors: [UIColor] = [.clear]
             
-            blurView.isHidden = true
-
-            if let colorText = screenData.list.styles.backgroundColor {
-                if colorText == "#ffffff" {
-                    blurView.isHidden = false
-                } else {
-                    contentStackView.backgroundColor = colorText.hexStringToColor
-                    blurView.isHidden = true
-                }
-            } else {                
-                contentStackView.backgroundColor = .clear
-            }
+            applyListSettings()
             
             for item in screenData.list.items {
                 let label = buildLabel()
-//                label.textColor = .black.withAlphaComponent(0.5)
                 label.apply(text: item.title)
-//                item.image.styles.width
                 let checkmark = buildBulletCheckmark(image: item.image)
                 
                 let hStack = UIStackView(arrangedSubviews: [checkmark, label])
                 hStack.axis = .horizontal
                 hStack.spacing = 20
                 
-
-             
-                
-                
-                listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
-                listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
-                listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
-
-                
                 contentStackView.addArrangedSubview(hStack)
                 
                 gradientColors.insert(.clear, at: 0)
                 gradientColors.append(.white)
             }
-            
-//            for item in bulletsList {
-//                let label = buildLabel()
-//                label.textColor = .black.withAlphaComponent(0.5)
-//                label.text = item
-//
-//                let checkmark = buildBulletCheckmark()
-//
-//                let hStack = UIStackView(arrangedSubviews: [checkmark, label])
-//                hStack.axis = .horizontal
-//                hStack.spacing = 20
-//
-//                contentStackView.addArrangedSubview(hStack)
-//
-//                gradientColors.insert(.clear, at: 0)
-//                gradientColors.append(.white)
-//            }
-            
+                        
             gradientView.gradientColors = gradientColors
-
         }
+    }
+    
+    func applyListSettings() {
+        blurView.isHidden = true
+
+        if let colorText = screenData.list.styles.backgroundColor {
+            if colorText == "#ffffff" {
+                blurView.isHidden = false
+            } else {
+                contentStackView.backgroundColor = colorText.hexStringToColor
+                blurView.isHidden = true
+            }
+        } else {
+            contentStackView.backgroundColor = .clear
+        }
+        
+        listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
+        listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
+        listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
     }
     
     func buildBulletCheckmark(image: Image) -> UIImageView {

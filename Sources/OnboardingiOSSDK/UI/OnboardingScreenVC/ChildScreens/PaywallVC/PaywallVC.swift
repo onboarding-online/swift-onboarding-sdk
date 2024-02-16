@@ -66,11 +66,8 @@ final class PaywallVC: BaseScreenGraphViewController {
          }
 
          loadProducts()
-
     }
-    
-    
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -93,7 +90,6 @@ extension PaywallVC {
     
     func finishWith(action: Action?) {
           DispatchQueue.main.async {[weak self] in
-//              guard let strongSelf = self, let action = action  else { return }
               guard let strongSelf = self else { return }
 
 //              self?.view.endEditing(true)
@@ -184,9 +180,9 @@ extension PaywallVC: UICollectionViewDelegate {
                 indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
-                let currentProductDescription = self.products[selectedIndex].subscriptionDescription
-                bottomView.setupPaymentDetailsLabel(content: currentProductDescription?.periodLocalizedUnitName ?? "")
-                
+                let currentProduct = self.products[selectedIndex]
+                bottomView.setupPaymentDetailsLabel(content: currentProduct)
+
 //                delegate?.onboardingChildScreenUpdate(value: indexPath.row,
 //                                                      description: products[selectedIndex].id,
 //                                                      logAnalytics: true)
@@ -439,8 +435,8 @@ private extension PaywallVC {
         self.isLoadingProducts = false
         let sections = allSections()
         
-        let currentProductDescription = self.products[selectedIndex].subscriptionDescription
-        bottomView.setupPaymentDetailsLabel(content: currentProductDescription?.periodLocalizedUnitName ?? "")
+        let currentProduct = self.products[selectedIndex]
+        bottomView.setupPaymentDetailsLabel(content: currentProduct)
         
         self.collectionView.performBatchUpdates {
             collectionView.reloadSections(IndexSet(0..<sections.count))
