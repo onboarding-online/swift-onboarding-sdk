@@ -248,6 +248,27 @@ extension Text {
         return valueByLocale
     }
     
+    func textFor(product: StoreKitProduct) -> String {
+        var text = self.textByLocale()
+        
+        let trialDescription = product.subscriptionDescription?.trialDescription?.trialFullDescription ?? ""
+        let price = product.localizedPrice
+        let duration = product.subscriptionDescription?.periodLocalizedUnitName ?? ""
+        
+        let pricePerPeriod = "\(price) per \(duration)"
+        
+        let dict = ["@trialDuration": trialDescription, "@pricePerDuration" : pricePerPeriod]
+        
+        for key in dict.keys {
+            if let value = dict[key] {
+                text =  text.replacingOccurrences(of: key, with: value)
+            }
+        }
+        
+        return text
+    }
+    
+    
     func textColor() -> UIColor {
         return (self.styles.color ?? "#FFFFFF").hexStringToColor
     }

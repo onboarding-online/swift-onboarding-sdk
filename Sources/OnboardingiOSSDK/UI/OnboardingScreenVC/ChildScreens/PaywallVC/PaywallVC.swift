@@ -59,12 +59,11 @@ final class PaywallVC: BaseScreenGraphViewController {
         productIds = screenData.subscriptions.items.map({$0.subscriptionId})
 //         productIds = ["com.onboardOnline.premium.week.no.trial"]
          
-         if !screenData.subtitle.textByLocale().isEmpty {
-             productIds =  [screenData.subtitle.textByLocale()]
-         } else {
-             productIds =  ["test_3month_59_trial"]
-         }
+         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
+        productIds = ids
 
+//         "test_3month_59_trial"
+         
          loadProducts()
     }
 
@@ -138,10 +137,11 @@ extension PaywallVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
             
             let item = screenData.subscriptions.items[index]
-
-            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions)
             
-//            cell.setWith(configuration: configuration, isSelected: isSelected)
+            let currentProduct = self.products[index]
+
+            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+    
             return cell
         case .oneTimePurchase(let configuration):
             let index = indexPath.row

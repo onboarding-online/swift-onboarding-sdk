@@ -52,29 +52,25 @@ extension PaywallListSubscriptionCell {
     
     func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
                     isSelected: Bool,
-                    subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList) {
+                 subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList, product: StoreKitProduct) {
+        
+        
         self.item = subscriptionItem
         
         setBadgePosition(configuration.badgePosition, settings: item.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
-        setupLabels(configuration: configuration, subscriptionItem: subscriptionItem)
+        setupLabels(subscriptionItem: subscriptionItem, product: product)
     }
     
-    func setupLabels(configuration: PaywallVC.ListSubscriptionCellConfiguration, subscriptionItem: ItemTypeSubscription) {
-        let subscriptionDescription = configuration.subscriptionDescription
-        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
-        let price = subscriptionDescription.localizedPrice
-                
+    func setupLabels(subscriptionItem: ItemTypeSubscription, product: StoreKitProduct) {
         durationLabel.apply(text: subscriptionItem.period)
         priceLabel.apply(text: subscriptionItem.price)
         pricePerMonthLabel.apply(text: subscriptionItem.description)
         
-//      replace <price/>, <duration/> -- price, periodUnitName
-        durationLabel.text =  periodUnitName
-        priceLabel.text = price
-        
-        pricePerMonthLabel.text =  "\(price) per \(periodUnitName)"
+        durationLabel.text =  subscriptionItem.period.textFor(product: product)
+        priceLabel.text = subscriptionItem.price.textFor(product: product)
+        pricePerMonthLabel.text = subscriptionItem.description.textFor(product: product)
     }
     
     func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,

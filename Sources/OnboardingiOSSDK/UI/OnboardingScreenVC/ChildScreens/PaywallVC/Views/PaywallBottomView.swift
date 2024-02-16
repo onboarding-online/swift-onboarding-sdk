@@ -59,20 +59,20 @@ final class PaywallBottomView: UIView {
     }
     
     func setupPaymentDetailsLabel(content: StoreKitProduct) {
-        if var text = footer.autoRenewLabel?.textByLocale() {
-            let trialDescription = content.subscriptionDescription?.trialDescription?.trialFullDescription ?? ""
-            let price = content.localizedPrice
-            let duration = content.subscriptionDescription?.periodLocalizedUnitName ?? ""
-
-            let pricePerPeriod = "\(price) per  \(duration)"
-
-            let dict = ["@trialDuration": trialDescription, "@pricePerPeriod" : pricePerPeriod]
-            
-            for key in dict.keys {
-                if let value = dict[key] {
-                    text =  text.replacingOccurrences(of: key, with: value)
-                }
-            }
+        if let text = footer.autoRenewLabel?.textFor(product: content) {
+//            let trialDescription = content.subscriptionDescription?.trialDescription?.trialFullDescription ?? ""
+//            let price = content.localizedPrice
+//            let duration = content.subscriptionDescription?.periodLocalizedUnitName ?? ""
+//
+//            let pricePerPeriod = "\(price) per  \(duration)"
+//
+//            let dict = ["@trialDuration": trialDescription, "@pricePerPeriod" : pricePerPeriod]
+//
+//            for key in dict.keys {
+//                if let value = dict[key] {
+//                    text =  text.replacingOccurrences(of: key, with: value)
+//                }
+//            }
             additionalInfoLabel.text = text
         }
 
