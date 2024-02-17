@@ -50,4 +50,34 @@ enum StoreKitSubscriptionPeriod: Hashable {
         }
         return Calendar.current.localizedUnitTitle(unit, value: numberOfUnits)
     }
+    
+    var periodUnitCountLocalizedUnitName: String {
+        let unit: NSCalendar.Unit
+        var unitCount: Int
+        
+        switch self {
+        case .days(let count):
+            unit = .day
+            unitCount = count
+        case .week(let count):
+            unit = .weekOfMonth
+            unitCount = count
+
+        case .month(let count):
+            unit = .month
+            unitCount = count
+
+        case .year(let count):
+            unit = .year
+            unitCount = count
+
+        }
+        let unitName = Calendar.current.localizedUnitTitle(unit, value: unitCount)
+       
+        if unitCount > 1 {
+            return "\(unitCount) \(unitName)"
+        }
+        
+        return unitName
+    }
 }

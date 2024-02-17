@@ -14,16 +14,55 @@ struct StoreKitSubscriptionDescription: Hashable {
     
     var periodLocalizedUnitName: String {
         let unit: NSCalendar.Unit
+        var unitCount: Int
+        
         switch period {
-        case .days:
+        case .days(let count):
             unit = .day
-        case .week:
+            unitCount = count
+        case .week(let count):
             unit = .weekOfMonth
-        case .month:
+            unitCount = count
+
+        case .month(let count):
             unit = .month
-        case .year:
+            unitCount = count
+
+        case .year(let count):
             unit = .year
+            unitCount = count
+
         }
-        return Calendar.current.localizedUnitTitle(unit, value: 3)
+        return Calendar.current.localizedUnitTitle(unit, value: unitCount)
+    }
+    
+    var periodUnitCountLocalizedUnitName: String {
+        let unit: NSCalendar.Unit
+        var unitCount: Int
+        
+        switch period {
+        case .days(let count):
+            unit = .day
+            unitCount = count
+        case .week(let count):
+            unit = .weekOfMonth
+            unitCount = count
+
+        case .month(let count):
+            unit = .month
+            unitCount = count
+
+        case .year(let count):
+            unit = .year
+            unitCount = count
+
+        }
+        let unitName = Calendar.current.localizedUnitTitle(unit, value: unitCount)
+       
+        if unitCount > 1 {
+            return "\(unitCount) \(unitName)"
+        }
+        
+        return unitName
     }
 }

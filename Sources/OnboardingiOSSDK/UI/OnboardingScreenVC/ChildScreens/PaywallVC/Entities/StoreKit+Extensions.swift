@@ -42,7 +42,10 @@ extension SKProduct {
     fileprivate static func localizedPriceFor(price: NSNumber, locale: Locale) -> String? {
         let formatter = SKProduct.formatter
         formatter.locale = locale
-        
+        formatter.roundingMode = .down
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
+
         return formatter.string(from: price)
     }
     

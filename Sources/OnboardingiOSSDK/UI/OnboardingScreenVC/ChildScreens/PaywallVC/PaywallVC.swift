@@ -447,8 +447,11 @@ private extension PaywallVC {
         self.isLoadingProducts = false
         let sections = allSections()
         
-        let currentProduct = self.products[selectedIndex]
-        bottomView.setupPaymentDetailsLabel(content: currentProduct)
+        if products.count - 1 >= selectedIndex {
+            let currentProduct = self.products[selectedIndex]
+            bottomView.setupPaymentDetailsLabel(content: currentProduct)
+        }
+        
         
         self.collectionView.performBatchUpdates {
             collectionView.reloadSections(IndexSet(0..<sections.count))

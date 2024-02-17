@@ -14,6 +14,9 @@ struct StoreKitProductDiscount: Hashable {
     let identifier: String?
     let paymentMode: SKProductDiscount.PaymentMode
     
+    let period: StoreKitSubscriptionPeriod
+
+    
     init?(skProductDiscount: SKProductDiscount) {
         guard let localizedPrice = skProductDiscount.localizedPrice else {
             OnboardingLogger.logError("Failed to get localized price for SKProductDiscount: \(skProductDiscount.identifier ?? "-")")
@@ -23,5 +26,6 @@ struct StoreKitProductDiscount: Hashable {
         self.localizedPrice = localizedPrice
         self.identifier = skProductDiscount.identifier
         self.paymentMode = skProductDiscount.paymentMode
+        self.period =  skProductDiscount.subscriptionPeriod.period
     }
 }

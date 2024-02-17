@@ -245,13 +245,26 @@ extension String {
     func applyWith(product: StoreKitProduct) -> String {
         var text = self
         
-        let trialDescription = product.subscriptionDescription?.trialDescription?.trialFullDescription ?? ""
         let price = product.localizedPrice
-        let duration = product.subscriptionDescription?.periodLocalizedUnitName ?? ""
+        let duration = product.subscriptionDescription?.periodUnitCountLocalizedUnitName ?? ""
+        let pricePerDuration = "\(price)/\(duration)"
+
+        let pricePerWeek = product.localizedPricePerWeek() ?? ""
+        let pricePerMonth = product.localizedPricePerMonth() ?? ""
+
         
-        let pricePerPeriod = "\(price) per \(duration)"
-        
-        let dict = ["@trialDuration": trialDescription, "@pricePerDuration" : pricePerPeriod]
+        let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
+        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+
+        let dict = ["@priceAndcurrency" : price,
+                    "@duration" : duration,
+                    "@price/duration" : pricePerDuration,
+                    "@price/week" : pricePerWeek,
+                    "@price/month" : pricePerMonth,
+
+                    "@introPrice": introOfferPrice,
+                    "@introDuration": introOfferDuration,
+        ]
         
         for key in dict.keys {
             if let value = dict[key] {
