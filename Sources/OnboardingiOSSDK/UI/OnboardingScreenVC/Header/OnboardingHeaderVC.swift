@@ -91,6 +91,8 @@ private extension OnboardingHeaderVC {
             let notFilledColor = progres.styles.trackColor?.hexStringToColor ?? .lightGray
             
             if navigationBar.pageIndicator?.styles.trackColor == nil {
+                dashesProgressView.isHidden = false
+                dashesTitle.isHidden = false
                 progressView.isHidden = true
                 parentProgressView.layoutIfNeeded()
                 let config = DashesProgressView.Configuration.init(notFilledColor: notFilledColor, filledColor: filledColor, numberOfDashes: 5)
