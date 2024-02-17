@@ -105,8 +105,6 @@ private extension PaywallListSubscriptionCell {
         var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
                                                  savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
         
-
-        
         if let badge = settings {
             savedMoneyView.isHidden = false
             
