@@ -9,7 +9,7 @@ import UIKit
 
 final class SavedMoneyView: UIView {
     
-    private var label: UILabel!
+    var label: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)

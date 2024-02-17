@@ -240,6 +240,20 @@ extension BaseText {
     
 }
 
+extension Badge {
+    
+    func textByLocale() -> String {
+        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
+        
+        return valueByLocale
+    }
+    
+    func textColor() -> UIColor {
+        return (self.styles.color ?? "#FFFFFF").hexStringToColor
+    }
+    
+}
+
 extension String {
     
     func applyWith(product: StoreKitProduct) -> String {
@@ -408,6 +422,68 @@ extension LabelBlock {
     }
 }
 
+
+extension BadgeBlock {
+    
+    func fontWeight(weight: Double) -> UIFont.Weight {
+        switch weight {
+        case 0...100.0:
+            return .ultraLight
+        case 100...200.0:
+            return .thin
+        case 200...300.0:
+            return .light
+        case 300...400.0:
+            return .regular
+        case 400...500.0:
+            return .medium
+        case 500...600.0:
+            return .semibold
+        case 600...700.0:
+            return .bold
+        case 700...800.0:
+            return .heavy
+        case 800...900.0:
+            return .black
+            
+        default:
+            return .regular
+        }
+    }
+    
+    func getFontSettings() -> UIFont? {
+        
+        let text = self
+        
+        if let fontSize = text.fontSize?.cgFloatValue {
+            var labelFont: UIFont
+
+            if let fontWeightRaw = text.fontWeight {
+                let fontWeght =  self.fontWeight(weight: fontWeightRaw)
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: fontWeght)
+            } else {
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: .regular)
+            }
+            
+            if let fontFamile = text.fontFamily {
+                switch fontFamile {
+                case .sfPro:
+                    break
+                case .sfProrounded:
+                    labelFont = labelFont.rounded()
+                case .sfMono:
+                    labelFont = labelFont.monospaced()
+                case .newYork:
+                    labelFont = labelFont.newYorked()
+                }
+            }
+            return  labelFont
+        }
+        
+        return nil
+    }
+}
+
 extension LabelPosition {
 
     func alignment() -> NSTextAlignment {
@@ -511,6 +587,37 @@ extension UILabel  {
         }
         
         self.apply(text: text.styles)
+    }
+    
+    func apply(badge: Badge?) {
+        guard let badge = badge else {
+            self.isHidden = true
+            return
+        }
+        
+        let titleLabelKey = badge.textByLocale()
+        
+        self.text = titleLabelKey
+        
+        if titleLabelKey.isEmpty {
+            self.isHidden = true
+        }
+        
+        self.apply(text: badge.styles)
+    }
+    
+    func apply(text: BadgeBlock?) {
+        guard let text = text else {
+            self.isHidden = true
+            return
+        }
+        
+        if let alignment = text.textAlign {
+            self.textAlignment = alignment.alignment()
+        }
+        
+        self.font = text.getFontSettings()
+        self.textColor = text.color?.hexStringToColor
     }
     
      public func apply(text: BaseText?) {

@@ -37,19 +37,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 // MARK: - Open methods
 extension PaywallListSubscriptionCell {
     
-//    func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
-//                 isSelected: Bool) {
-//        setBadgePosition(configuration.badgePosition)
-//        setSelected(isSelected)
-//
-//        let subscriptionDescription = configuration.subscriptionDescription
-//        let periodUnitName = subscriptionDescription.periodLocalizedUnitName
-//        let price = subscriptionDescription.localizedPrice
-//
-//        durationLabel.text = periodUnitName
-//        priceLabel.text = price
-//    }
-    
     func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
                     isSelected: Bool,
                  subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList, product: StoreKitProduct) {
@@ -118,12 +105,16 @@ private extension PaywallListSubscriptionCell {
         var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
                                                  savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
         
+
+        
         if let badge = settings {
             savedMoneyView.isHidden = false
             
+            savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor
             savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
             savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
 
+            savedMoneyView.label.apply(badge: settings)
             switch badge.styles.position {
             case .topleft:
                 constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
