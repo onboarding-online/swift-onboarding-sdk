@@ -52,10 +52,6 @@ extension PaywallHeaderCell {
     func setWith(configuration: PaywallVC.HeaderCellConfiguration) {
         setWithStyle(configuration.style)
         load(image: screenData.image, in: imageView)
-
-//        Task { @MainActor in
-//            imageView.image = await AssetsLoadingService.shared.loadImage(from: configuration.imageURL.absoluteString)
-//        }
     }
     
     func setWith(configuration: PaywallVC.HeaderCellConfiguration, paywallData: ScreenBasicPaywall) {
@@ -63,9 +59,6 @@ extension PaywallHeaderCell {
         setWithStyle(configuration.style)
         
         load(image: screenData.image, in: imageView)
-//        Task { @MainActor in
-//                imageView.image = await screenData.image?.loadImage()
-//        }
     }
     
     func setScrollOffset(_ offset: CGPoint) {
