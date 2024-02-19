@@ -32,8 +32,8 @@
                         <constraint firstAttribute="height" constant="24" id="YSG-mc-Hw9"/>
                     </constraints>
                 </view>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="591"/>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="610"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y0e-4e-Mzq">
                         <size key="itemSize" width="128" height="128"/>
@@ -65,10 +65,10 @@
                     </constraints>
                 </view>
                 <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="752" verticalCompressionResistancePriority="752" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="BUv-x5-exQ">
-                    <rect key="frame" x="0.0" y="724" width="393" height="128"/>
+                    <rect key="frame" x="0.0" y="618" width="393" height="200"/>
                     <subviews>
-                        <view contentMode="scaleToFill" verticalHuggingPriority="252" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="128" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="128"/>
+                        <view contentMode="scaleToFill" verticalHuggingPriority="252" horizontalCompressionResistancePriority="752" verticalCompressionResistancePriority="752" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="200" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="200"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
                     </subviews>
@@ -87,7 +87,7 @@
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="8" symbolic="YES" id="biI-RB-wC1"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cMD-Ky-5vG"/>
                 <constraint firstItem="M66-6a-djW" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="ckc-W0-CgR"/>
-                <constraint firstAttribute="bottom" secondItem="BUv-x5-exQ" secondAttribute="bottom" id="wwi-8G-ScX"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="BUv-x5-exQ" secondAttribute="bottom" id="wwi-8G-ScX"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="xp1-E2-FFV"/>
                 <constraint firstItem="M66-6a-djW" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="zGq-i8-QiL"/>
             </constraints>

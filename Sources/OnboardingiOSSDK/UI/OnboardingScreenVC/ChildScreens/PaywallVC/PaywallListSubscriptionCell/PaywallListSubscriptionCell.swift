@@ -41,6 +41,13 @@ extension PaywallListSubscriptionCell {
                     isSelected: Bool,
                  subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList, product: StoreKitProduct) {
         
+//        checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
+
+        if isSelected {
+            checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
+        } else {
+            checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
+        }
         
         self.item = subscriptionItem
         
@@ -73,7 +80,6 @@ private extension PaywallListSubscriptionCell {
     
     func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
         checkbox.isOn = isSelected
-        
         if isSelected {
             setSelected(selectedBlock: listWithStyles.selectedBlock)
         } else {
@@ -93,7 +99,6 @@ private extension PaywallListSubscriptionCell {
         contentContainerView.layer.borderWidth = selectedBlock.styles.borderWidth ?? 0
         contentContainerView.layer.borderColor = selectedBlock.styles.borderColor?.hexStringToColor.cgColor
         contentContainerView.backgroundColor = selectedBlock.styles.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
-        
         contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
     }
     

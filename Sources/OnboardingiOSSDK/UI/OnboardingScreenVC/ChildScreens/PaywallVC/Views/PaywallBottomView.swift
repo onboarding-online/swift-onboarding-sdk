@@ -128,8 +128,6 @@ private extension PaywallBottomView {
 //        buyButtonWithInfoStack.spacing = UIScreen.isIphoneSE1 ? 8 : 16
         
         buyButtonWithInfoStack.spacing = 0
-        buyButtonWithInfoStack.backgroundColor = .red
-        self.backgroundColor = .blue
         addSubview(buyButtonWithInfoStack)
         
         NSLayoutConstraint.activate([
@@ -175,11 +173,13 @@ private extension PaywallBottomView {
     
     func add(boxConstraint: BoxBlock?, containerView: UIView, subView: UIView) {
         let top = boxConstraint?.paddingTop ?? 0
-        let bottom = boxConstraint?.paddingBottom ?? 0
+        var bottom = boxConstraint?.paddingBottom ?? 0
         let leading = boxConstraint?.paddingLeft ?? 0
         var trailing = boxConstraint?.paddingRight ?? 0
 
         trailing = trailing * -1
+        bottom = bottom * -1
+
         
         NSLayoutConstraint.activate([
             subView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
@@ -211,7 +211,7 @@ private extension PaywallBottomView {
         stack.spacing = 8
         stack.distribution = .fillEqually
         
-        buyButtonWithInfoStack.addArrangedSubview(stack)
+//        buyButtonWithInfoStack.addArrangedSubview(stack)
         
         buttonsContainer.addSubview(stack)
         add(boxConstraint: footer.restore?.box.styles, containerView: buttonsContainer, subView: stack)

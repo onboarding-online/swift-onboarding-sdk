@@ -670,16 +670,19 @@ extension PaywallVC {
     
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
-//        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
-//        static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
+        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
+        static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
         
         
-        static let sectionsSpacing: CGFloat = { 0 }()
+//        static let sectionsSpacing: CGFloat = { 0 }()
+//
+//        static let listItemsSpacing: CGFloat = { 0 }()
 
-        static let listItemsSpacing: CGFloat = { 0 }()
-
         
-        static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
+//        static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
+        
+        static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 120 }()
+
         static let subscriptionTileItemSize: CGSize = {
             UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 150)
         }()
