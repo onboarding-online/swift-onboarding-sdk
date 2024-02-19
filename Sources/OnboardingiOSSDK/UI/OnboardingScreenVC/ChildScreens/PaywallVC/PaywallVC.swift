@@ -16,11 +16,6 @@ final class PaywallVC: BaseScreenGraphViewController {
 
      var transitionKind: ScreenTransitionKind?
      
-    public static func instantiate(paymentService: OnboardingPaymentServiceProtocol) -> PaywallVC {
-        let paywallVC = PaywallVC.nibInstance()
-        paywallVC.paymentService = paymentService
-        return paywallVC
-    }
      
     public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screen: Screen, screenData: ScreenBasicPaywall, videoPreparationService: VideoPreparationService) -> PaywallVC {
         let paywallVC = PaywallVC.nibInstance()
@@ -675,8 +670,15 @@ extension PaywallVC {
     
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
-        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
-        static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
+//        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
+//        static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
+        
+        
+        static let sectionsSpacing: CGFloat = { 0 }()
+
+        static let listItemsSpacing: CGFloat = { 0 }()
+
+        
         static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
         static let subscriptionTileItemSize: CGSize = {
             UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 150)
@@ -701,14 +703,14 @@ extension PaywallVC {
 //    }
 //}
 
-func createPreviewVC() -> UIViewController {
-    let paymentService = PreviewPaymentService()
-    let vc = PaywallVC.instantiate(paymentService: paymentService)
-    vc.productIds = ["1", "2"]
-    let nav = UINavigationController(rootViewController: vc)
-    
-    return nav
-}
+//func createPreviewVC() -> UIViewController {
+//    let paymentService = PreviewPaymentService()
+//    let vc = PaywallVC.instantiate(paymentService: paymentService)
+//    vc.productIds = ["1", "2"]
+//    let nav = UINavigationController(rootViewController: vc)
+//    
+//    return nav
+//}
 
 final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
     var canMakePayments: Bool { true }

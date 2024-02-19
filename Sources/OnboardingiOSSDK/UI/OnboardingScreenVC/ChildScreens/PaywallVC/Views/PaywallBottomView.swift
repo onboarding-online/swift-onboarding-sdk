@@ -20,11 +20,18 @@ final class PaywallBottomView: UIView {
     private let sideOffset: CGFloat = { UIScreen.isIphoneSE1 ? 12 : 24 }()
 
     private var buyButtonWithInfoStack: UIStackView!
+    
     private var buyButton: UIButton!
+    var buyButtonContainer = UIView.init()
+
+    
     private var ppButton: UIButton!
     private var tacButton: UIButton!
     private var restoreButton: UIButton!
+    
     var additionalInfoLabel: UILabel!
+    var additionalInfoLabelContainer = UIView.init()
+
     
     weak var delegate: PaywallBottomViewDelegate?
     
@@ -33,16 +40,19 @@ final class PaywallBottomView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        setup()
+//        setup()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        setup()
     }
     
     func setup(footer: PaywallFooter) {
+        self.footer = footer
+
+        setup()
+
         buyButton.apply(button: footer.purchase)
         
         restoreButton.apply(button: footer.restore)
@@ -51,7 +61,6 @@ final class PaywallBottomView: UIView {
         ppButton.apply(navLink: footer.privacyPolicy)
 
         additionalInfoLabel.apply(text: footer.autoRenewLabel)
-        self.footer = footer
     }
     
     func setupPaymentDetailsLabel(content: String) {
@@ -114,7 +123,11 @@ private extension PaywallBottomView {
         buyButtonWithInfoStack = createView()
         buyButtonWithInfoStack.axis = .vertical
         buyButtonWithInfoStack.alignment = .fill
-        buyButtonWithInfoStack.spacing = UIScreen.isIphoneSE1 ? 8 : 16
+//        buyButtonWithInfoStack.spacing = UIScreen.isIphoneSE1 ? 8 : 16
+        
+        buyButtonWithInfoStack.spacing = 0
+        buyButtonWithInfoStack.backgroundColor = .red
+        self.backgroundColor = .blue
         addSubview(buyButtonWithInfoStack)
         
         NSLayoutConstraint.activate([
@@ -133,6 +146,25 @@ private extension PaywallBottomView {
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
         let buttonHeight: CGFloat = UIScreen.isIphoneSE1 ? 44 : 56
         buyButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        
+        buyButtonContainer.addSubview(buyButton)
+        
+        let top = footer.purchase?.box.styles.paddingTop ?? 0
+        let bottom = footer.purchase?.box.styles.paddingBottom ?? 0
+        let leading = footer.purchase?.box.styles.paddingLeft ?? 0
+        var trailing = footer.purchase?.box.styles.paddingRight ?? 0
+
+        trailing = trailing * -1
+        
+        NSLayoutConstraint.activate([
+            buyButton.leadingAnchor.constraint(equalTo: buyButtonContainer.leadingAnchor, constant: leading),
+            buyButton.trailingAnchor.constraint(equalTo: buyButtonContainer.trailingAnchor, constant: trailing),
+            buyButton.topAnchor.constraint(equalTo: buyButtonContainer.topAnchor, constant: top),
+            buyButton.bottomAnchor.constraint(equalTo: buyButtonContainer.bottomAnchor, constant: bottom),
+        ])
+        
+        buyButtonWithInfoStack.addArrangedSubview(buyButtonContainer)
+        
     }
     
     func addInfoLabel() {
@@ -142,7 +174,25 @@ private extension PaywallBottomView {
         additionalInfoLabel.textAlignment = .center
         additionalInfoLabel.adjustsFontSizeToFitWidth = true
         additionalInfoLabel.text = "7 days free, then $39.99/year. Auto-renewable."
-        buyButtonWithInfoStack.addArrangedSubview(additionalInfoLabel)
+        
+        additionalInfoLabelContainer.addSubview(additionalInfoLabel)
+        
+        let top = footer.autoRenewLabel?.box.styles.paddingTop ?? 0
+        let bottom = footer.autoRenewLabel?.box.styles.paddingBottom ?? 0
+        let leading = footer.autoRenewLabel?.box.styles.paddingLeft ?? 0
+        var trailing = footer.autoRenewLabel?.box.styles.paddingRight ?? 0
+
+        trailing = trailing * -1
+        
+        NSLayoutConstraint.activate([
+            additionalInfoLabel.leadingAnchor.constraint(equalTo: additionalInfoLabelContainer.leadingAnchor, constant: leading),
+            additionalInfoLabel.trailingAnchor.constraint(equalTo: additionalInfoLabelContainer.trailingAnchor, constant: trailing),
+            additionalInfoLabel.topAnchor.constraint(equalTo: additionalInfoLabelContainer.topAnchor, constant: top),
+            additionalInfoLabel.bottomAnchor.constraint(equalTo: additionalInfoLabelContainer.bottomAnchor, constant: bottom),
+        ])
+        
+        buyButtonWithInfoStack.addArrangedSubview(additionalInfoLabelContainer)
+
     }
     
     func addEssentialButtonsStack() {
@@ -166,6 +216,9 @@ private extension PaywallBottomView {
         stack.axis = .horizontal
         stack.spacing = 8
         stack.distribution = .fillEqually
+        
+//        buyButtonWithInfoStack.addArrangedSubview(stack)
+
         addSubview(stack)
         
         let bottomOffset: CGFloat = UIScreen.isIphoneSE1 ? 8 : 16
