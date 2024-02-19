@@ -25,8 +25,15 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="678"/>
+                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aik-Mc-8uZ" customClass="GradientView" customModule="OnboardingiOSSDK">
+                    <rect key="frame" x="0.0" y="414" width="393" height="24"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="24" id="YSG-mc-Hw9"/>
+                    </constraints>
+                </view>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="591"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y0e-4e-Mzq">
                         <size key="itemSize" width="128" height="128"/>
@@ -36,23 +43,6 @@
                     </collectionViewFlowLayout>
                     <cells/>
                 </collectionView>
-                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="BUv-x5-exQ">
-                    <rect key="frame" x="0.0" y="666" width="393" height="152"/>
-                    <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aik-Mc-8uZ" customClass="GradientView" customModule="OnboardingiOSSDK">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="24"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="24" id="YSG-mc-Hw9"/>
-                            </constraints>
-                        </view>
-                        <view contentMode="scaleToFill" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="128" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
-                            <rect key="frame" x="0.0" y="24" width="393" height="128"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </view>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                </stackView>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="AhR-je-0Lz">
                     <rect key="frame" x="178" y="407.66666666666669" width="37" height="37"/>
                 </activityIndicatorView>
@@ -74,20 +64,30 @@
                         <constraint firstItem="l7h-OY-I3d" firstAttribute="centerY" secondItem="M66-6a-djW" secondAttribute="centerY" id="NsL-jI-PMn"/>
                     </constraints>
                 </view>
+                <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="752" verticalCompressionResistancePriority="752" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="BUv-x5-exQ">
+                    <rect key="frame" x="0.0" y="724" width="393" height="128"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" verticalHuggingPriority="252" placeholderIntrinsicWidth="393" placeholderIntrinsicHeight="128" translatesAutoresizingMaskIntoConstraints="NO" id="W64-mO-hfO" customClass="PaywallBottomView" customModule="OnboardingiOSSDK">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="128"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="M66-6a-djW" secondAttribute="trailing" id="3hc-Zd-Xvi"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="4Pr-j2-hP0"/>
-                <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="-12" id="Cjy-w8-G4J"/>
-                <constraint firstItem="BUv-x5-exQ" firstAttribute="bottom" secondItem="i5M-Pr-FkT" secondAttribute="bottom" constant="-34" id="GaN-z7-99S"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="JDq-Np-HSu"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Mfv-JL-kyM"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Nl5-fF-wOR"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="aKB-Gw-uGh"/>
+                <constraint firstItem="BUv-x5-exQ" firstAttribute="top" secondItem="znm-pk-GdZ" secondAttribute="bottom" constant="8" symbolic="YES" id="biI-RB-wC1"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cMD-Ky-5vG"/>
                 <constraint firstItem="M66-6a-djW" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="ckc-W0-CgR"/>
+                <constraint firstAttribute="bottom" secondItem="BUv-x5-exQ" secondAttribute="bottom" id="wwi-8G-ScX"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="xp1-E2-FFV"/>
                 <constraint firstItem="M66-6a-djW" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="zGq-i8-QiL"/>
             </constraints>

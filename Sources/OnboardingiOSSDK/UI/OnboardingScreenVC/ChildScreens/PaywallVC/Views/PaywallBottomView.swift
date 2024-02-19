@@ -28,6 +28,8 @@ final class PaywallBottomView: UIView {
     private var ppButton: UIButton!
     private var tacButton: UIButton!
     private var restoreButton: UIButton!
+    var buttonsContainer = UIView.init()
+
     
     var additionalInfoLabel: UILabel!
     var additionalInfoLabelContainer = UIView.init()
@@ -133,7 +135,9 @@ private extension PaywallBottomView {
         NSLayoutConstraint.activate([
             buyButtonWithInfoStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: sideOffset),
             buyButtonWithInfoStack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: 0)
+            buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            buyButtonWithInfoStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+
         ])
     }
     
@@ -149,22 +153,9 @@ private extension PaywallBottomView {
         
         buyButtonContainer.addSubview(buyButton)
         
-        let top = footer.purchase?.box.styles.paddingTop ?? 0
-        let bottom = footer.purchase?.box.styles.paddingBottom ?? 0
-        let leading = footer.purchase?.box.styles.paddingLeft ?? 0
-        var trailing = footer.purchase?.box.styles.paddingRight ?? 0
-
-        trailing = trailing * -1
-        
-        NSLayoutConstraint.activate([
-            buyButton.leadingAnchor.constraint(equalTo: buyButtonContainer.leadingAnchor, constant: leading),
-            buyButton.trailingAnchor.constraint(equalTo: buyButtonContainer.trailingAnchor, constant: trailing),
-            buyButton.topAnchor.constraint(equalTo: buyButtonContainer.topAnchor, constant: top),
-            buyButton.bottomAnchor.constraint(equalTo: buyButtonContainer.bottomAnchor, constant: bottom),
-        ])
+        add(boxConstraint: footer.purchase?.box.styles, containerView: buyButtonContainer, subView: buyButton)
         
         buyButtonWithInfoStack.addArrangedSubview(buyButtonContainer)
-        
     }
     
     func addInfoLabel() {
@@ -177,22 +168,25 @@ private extension PaywallBottomView {
         
         additionalInfoLabelContainer.addSubview(additionalInfoLabel)
         
-        let top = footer.autoRenewLabel?.box.styles.paddingTop ?? 0
-        let bottom = footer.autoRenewLabel?.box.styles.paddingBottom ?? 0
-        let leading = footer.autoRenewLabel?.box.styles.paddingLeft ?? 0
-        var trailing = footer.autoRenewLabel?.box.styles.paddingRight ?? 0
+        add(boxConstraint: footer.autoRenewLabel?.box.styles, containerView: additionalInfoLabelContainer, subView: additionalInfoLabel)
+        
+        buyButtonWithInfoStack.addArrangedSubview(additionalInfoLabelContainer)
+    }
+    
+    func add(boxConstraint: BoxBlock?, containerView: UIView, subView: UIView) {
+        let top = boxConstraint?.paddingTop ?? 0
+        let bottom = boxConstraint?.paddingBottom ?? 0
+        let leading = boxConstraint?.paddingLeft ?? 0
+        var trailing = boxConstraint?.paddingRight ?? 0
 
         trailing = trailing * -1
         
         NSLayoutConstraint.activate([
-            additionalInfoLabel.leadingAnchor.constraint(equalTo: additionalInfoLabelContainer.leadingAnchor, constant: leading),
-            additionalInfoLabel.trailingAnchor.constraint(equalTo: additionalInfoLabelContainer.trailingAnchor, constant: trailing),
-            additionalInfoLabel.topAnchor.constraint(equalTo: additionalInfoLabelContainer.topAnchor, constant: top),
-            additionalInfoLabel.bottomAnchor.constraint(equalTo: additionalInfoLabelContainer.bottomAnchor, constant: bottom),
+            subView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
+            subView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing),
+            subView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
+            subView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
         ])
-        
-        buyButtonWithInfoStack.addArrangedSubview(additionalInfoLabelContainer)
-
     }
     
     func addEssentialButtonsStack() {
@@ -217,17 +211,12 @@ private extension PaywallBottomView {
         stack.spacing = 8
         stack.distribution = .fillEqually
         
-//        buyButtonWithInfoStack.addArrangedSubview(stack)
-
-        addSubview(stack)
+        buyButtonWithInfoStack.addArrangedSubview(stack)
         
-        let bottomOffset: CGFloat = UIScreen.isIphoneSE1 ? 8 : 16
-        NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: sideOffset),
-            stack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stack.topAnchor.constraint(equalTo: buyButtonWithInfoStack.bottomAnchor, constant: sideOffset),
-            bottomAnchor.constraint(equalTo: stack.bottomAnchor, constant: bottomOffset)
-        ])
+        buttonsContainer.addSubview(stack)
+        add(boxConstraint: footer.restore?.box.styles, containerView: buttonsContainer, subView: stack)
+        
+        buyButtonWithInfoStack.addArrangedSubview(buttonsContainer)
     }
     
     func createView<T: UIView>() -> T {
