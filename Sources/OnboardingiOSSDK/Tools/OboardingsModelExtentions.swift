@@ -1287,3 +1287,21 @@ extension Screen {
     }
     
 }
+
+extension ScreensGraph {
+    
+    func allPurchaseProductIds() -> Set<String> {
+        var ids = [String]()
+        let paywalls = self.screens.compactMap({ $0.value.paywallScreenValue()?.subscriptions.items })
+       
+        for items in paywalls {
+            let oneScreenIds = items.compactMap({$0.subscriptionId})
+            ids.append(contentsOf: oneScreenIds)
+        }
+        
+        let setIds = Set(ids.map({$0}))
+
+        return setIds
+    }
+
+}

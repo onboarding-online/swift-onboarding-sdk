@@ -45,8 +45,14 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
         clipsToBounds = false
         
         gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.9).isActive = true
-
-//        titlesLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
+        
+//        imageView
+        
+        if let imageVerticalPosition = screenData.styles.imageVerticalPosition, imageVerticalPosition == .headerListTop {
+            imageView.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: 16).isActive = true
+        } else {
+            imageView.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+        }
     }
 
 }

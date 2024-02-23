@@ -167,6 +167,8 @@ private extension PaywallListSubscriptionCell {
             savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor
             savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
             savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
+            savedMoneyView.layer.borderColor = badge.styles.borderColor?.hexStringToColor.cgColor
+
 
             savedMoneyView.label.apply(badge: settings)
             switch badge.styles.position {

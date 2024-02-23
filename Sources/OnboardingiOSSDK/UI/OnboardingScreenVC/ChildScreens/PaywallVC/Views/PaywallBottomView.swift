@@ -113,6 +113,7 @@ private extension PaywallBottomView {
 
 // MARK: - Setup methods
 private extension PaywallBottomView {
+    
     func setup() {
 //        backgroundColor = .white
         addBuyButtonWithInfoStack()
@@ -176,7 +177,7 @@ private extension PaywallBottomView {
         buyButtonWithInfoStack.addArrangedSubview(additionalInfoLabelContainer)
     }
     
-    func add(boxConstraint: BoxBlock?, containerView: UIView, subView: UIView) {
+    func add(boxConstraint: Paddings?, containerView: UIView, subView: UIView) {
         let top = boxConstraint?.paddingTop ?? 0
         var bottom = boxConstraint?.paddingBottom ?? 0
         let leading = boxConstraint?.paddingLeft ?? 0
@@ -215,11 +216,9 @@ private extension PaywallBottomView {
         stack.axis = .horizontal
         stack.spacing = 8
         stack.distribution = .fillEqually
-        
-//        buyButtonWithInfoStack.addArrangedSubview(stack)
-        
+                
         buttonsContainer.addSubview(stack)
-        add(boxConstraint: footer.bottomContainer.restore?.box.styles, containerView: buttonsContainer, subView: stack)
+        add(boxConstraint: footer.bottomContainer.styles, containerView: buttonsContainer, subView: stack)
         
         buyButtonWithInfoStack.addArrangedSubview(buttonsContainer)
     }
@@ -231,3 +230,18 @@ private extension PaywallBottomView {
         return view
     }
 }
+
+protocol Paddings {
+    /** Padding left for container */
+    var paddingLeft: Double? { get }
+    /** Padding right for container */
+    var paddingRight: Double? { get }
+    /** Padding top for container */
+    var paddingTop: Double? { get }
+    /** Padding bottom for container */
+    var paddingBottom: Double? { get }
+}
+
+extension BoxBlock: Paddings {}
+
+extension PaywallFooterBottomContainerBlock: Paddings {}

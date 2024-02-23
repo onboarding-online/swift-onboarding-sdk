@@ -132,33 +132,30 @@ extension PaywallVC: UICollectionViewDataSource {
         switch row {
         case .header(let configuration):
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
-//            cell.setWith(configuration: configuration)
             cell.setWith(configuration: configuration, paywallData: screenData)
             
             return cell
         case .separator:
             let cell = collectionView.dequeueCellOfType(PaywallSeparatorCell.self, at: indexPath)
+            
             return cell
         case .loading:
             let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
+            
             return cell
         case .listSubscription(let configuration):
             let index = indexPath.row
             let isSelected = selectedIndex == index
-            
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            
             let item = screenData.subscriptions.items[index]
-            
             let currentProduct = self.products[index]
-
+            
             cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
     
             return cell
         case .oneTimePurchase(let configuration):
             let index = indexPath.row
             let isSelected = selectedIndex == index
-            
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
             cell.setWith(configuration: configuration, isSelected: isSelected)
             
@@ -167,8 +164,8 @@ extension PaywallVC: UICollectionViewDataSource {
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let item = screenData.subscriptions.items[index]
-
             let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
+            
             cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions)
             
             return cell
@@ -309,8 +306,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         } else {
                             itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }
-                        
-                        
                     }
 
 //                    let itemsHeight: CGFloat = CGFloat(numberOfItems) * Constants.subscriptionListItemHeight
