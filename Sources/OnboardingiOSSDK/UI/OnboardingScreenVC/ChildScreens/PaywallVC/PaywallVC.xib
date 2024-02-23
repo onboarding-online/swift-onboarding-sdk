@@ -15,7 +15,6 @@
                 <outlet property="bottomView" destination="W64-mO-hfO" id="yYf-0B-DiB"/>
                 <outlet property="closeButton" destination="l7h-OY-I3d" id="mdY-Ea-UPa"/>
                 <outlet property="collectionView" destination="znm-pk-GdZ" id="nhD-iE-CsL"/>
-                <outlet property="gradientView" destination="aik-Mc-8uZ" id="Lol-MJ-kX7"/>
                 <outlet property="headerView" destination="M66-6a-djW" id="V6a-kM-1mu"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -25,13 +24,6 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aik-Mc-8uZ" customClass="GradientView" customModule="OnboardingiOSSDK">
-                    <rect key="frame" x="0.0" y="414" width="393" height="24"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="24" id="YSG-mc-Hw9"/>
-                    </constraints>
-                </view>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="znm-pk-GdZ">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="610"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -80,7 +72,7 @@
             <constraints>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="M66-6a-djW" secondAttribute="trailing" id="3hc-Zd-Xvi"/>
                 <constraint firstItem="znm-pk-GdZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="4Pr-j2-hP0"/>
-                <constraint firstItem="znm-pk-GdZ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="JDq-Np-HSu"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="znm-pk-GdZ" secondAttribute="trailing" id="6qY-xf-wCu"/>
                 <constraint firstItem="BUv-x5-exQ" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Mfv-JL-kyM"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Nl5-fF-wOR"/>
                 <constraint firstItem="AhR-je-0Lz" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="aKB-Gw-uGh"/>

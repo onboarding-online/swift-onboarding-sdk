@@ -49,6 +49,8 @@ final class PaywallVC: BaseScreenGraphViewController {
     public var dismissalHandler: (() -> ())!
 
     @IBOutlet private weak var backgroundContainerView: UIView!
+    
+    let cellConfigurator =  PaywallCellWithBorderConfigurator()
 
     
     public override func viewDidLoad() {
@@ -64,6 +66,9 @@ final class PaywallVC: BaseScreenGraphViewController {
         super.viewWillAppear(animated)
         
         setup()
+        
+        
+        cellConfigurator.checkboxSize = 24
         
         navigationController?.isNavigationBarHidden = true
     }
@@ -265,10 +270,15 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             height = collectionView.bounds.height - calculateHeaderSize(in: sections) - sectionsSpacing
         case .tileSubscription:
             return Constants.subscriptionTileItemSize
+        case .listSubscription:
+            let item = screenData.subscriptions.items[indexPath.row]
+            let currentProduct = self.products[indexPath.row]
+
+            height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
         default:
             height = row.height
         }
-        return .init(width: view.bounds.width, height: height)
+        return .init(width: collectionView.bounds.width, height: height)
     }
     
     func calculateHeaderSize(in sections: [SectionType]) -> CGFloat {
@@ -287,7 +297,23 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         let items = rowsFor(section: section)
                         numberOfItems = items.count
                     }
-                    let itemsHeight: CGFloat = CGFloat(numberOfItems) * Constants.subscriptionListItemHeight
+                    
+                    var itemsHeight: CGFloat = 0.0
+                    
+                    for (index, item) in screenData.subscriptions.items.enumerated() {
+//                        let item = screenData.subscriptions.items[index]
+                        
+                        if self.products.count - 1 >= index {
+                            let currentProduct = self.products[index]
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+                        } else {
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
+                        }
+                        
+                        
+                    }
+
+//                    let itemsHeight: CGFloat = CGFloat(numberOfItems) * Constants.subscriptionListItemHeight
                     let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing
                     contentSize += (itemsHeight + spacingHeight)
                 case .subscriptionsTiles:
@@ -553,9 +579,9 @@ private extension PaywallVC {
     }
     
     func setupGradientView() {
-        gradientView.gradientColors = [.white.withAlphaComponent(0.01),
-                                       .white]
-        gradientView.gradientDirection = .topToBottom
+//        gradientView.gradientColors = [.white.withAlphaComponent(0.01),
+//                                       .white]
+//        gradientView.gradientDirection = .topToBottom
     }
     
 }
@@ -750,4 +776,75 @@ private extension PaywallVC.HeaderCellConfiguration {
                                                   "Just ask it to"])
         )
     }
+}
+
+
+final class PaywallCellWithBorderConfigurator: CellConfigurator {
+    
+    
+    func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
+        
+        let rightPadding = screenData.subscriptions.styles.paddingRight ?? 0
+        let leftPadding = screenData.subscriptions.styles.paddingLeft ?? 0
+
+        
+        let containerWidthWithoutPaddings: CGFloat = containerWidth - rightPadding - leftPadding
+        
+        let titleText = item.price
+        let subtitleText = item.period
+
+        
+        // Calculate effective width for labels heights calculation
+        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing - 8
+        
+        if !isImageHiddenFor(item: item) {
+            labelWidth -= (imageWidth + allItemsHorizontalStackViewSpacing)
+        } else {
+            self.imageWidth = 0
+            self.imageHeigh = 0
+        }
+        
+        if !isCheckboxHiddenFor(item: item) {
+            labelWidth -= (checkboxSize + allItemsHorizontalStackViewSpacing)
+        }
+        
+        //Calculate labels height
+        var totalLabelsBlockHeight = 0.0
+        var subtitleHeight: CGFloat = 0.0
+        
+        let titleHeight = titleText.textHeightBy(textWidth: labelWidth)
+
+        totalLabelsBlockHeight += titleHeight > 0.0 ? titleHeight : 0
+        
+//        if !isSubtitleHiddenFor(item: item) {
+        subtitleHeight = subtitleText.textHeightBy(textWidth: labelWidth)
+            totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
+//        }
+
+        //Add gap between labels if there are 2 labels
+        if titleHeight > 0.0 && subtitleHeight > 0.0 {
+            totalLabelsBlockHeight += labelsVerticalStackViewSpacing
+        }
+                
+        //Get max elemets height for cell height
+        var maxHeight = totalLabelsBlockHeight > imageHeigh ? totalLabelsBlockHeight : imageHeigh
+        maxHeight = maxHeight > checkboxSize ? maxHeight : checkboxSize
+        
+        let cellHeight = maxHeight + containerTop + containerBottom
+        
+        return cellHeight
+    }
+    
+    
+    
+    func isCheckboxHiddenFor(item: ItemTypeSubscription) -> Bool {
+        
+        return false
+    }
+    
+    func isImageHiddenFor(item: ItemTypeSubscription) -> Bool {
+        
+        return true
+    }
+    
 }

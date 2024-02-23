@@ -27,6 +27,8 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
     @IBOutlet private weak var listItemTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var listItemBottomConstraint: NSLayoutConstraint!
 
+    @IBOutlet private weak var gradientHeightConstraint: NSLayoutConstraint!
+
     
     @IBOutlet private weak var listBackground: UIView!
 
@@ -41,6 +43,9 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
         gradientView.gradientColors = [.clear, .white]
         gradientView.gradientDirection = .topToBottom
         clipsToBounds = false
+        
+        gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.9).isActive = true
+
 //        titlesLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
     }
 
@@ -97,8 +102,8 @@ private extension PaywallHeaderCell {
             contentStackView.addArrangedSubview(titleLabel)
             contentStackView.addArrangedSubview(subtitleLabel)
 
-//            var gradientColors: [UIColor] = [.clear, .white]
-            var gradientColors: [UIColor] = [.clear]
+            var gradientColors: [UIColor] = [.clear, .blue]
+//            var gradientColors: [UIColor] = [.clear]
 
             applyListSettings()
             

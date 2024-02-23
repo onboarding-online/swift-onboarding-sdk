@@ -19,11 +19,11 @@
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </imageView>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
-                        <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
+                        <rect key="frame" x="0.0" y="167" width="346" height="100"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KAh-zU-tV3">
                         <rect key="frame" x="24" y="159" width="298" height="84"/>
@@ -66,7 +66,6 @@
                 <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="Rl5-7v-cD6"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="Ru8-Zz-dn8"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="Xe1-UD-mxL"/>
-                <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zkp-tp-u61"/>
                 <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="ag1-M3-WDm"/>
                 <constraint firstAttribute="bottom" secondItem="KAh-zU-tV3" secondAttribute="bottom" constant="24" id="gqG-wD-Dfa"/>
                 <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="kzy-HL-aaH"/>

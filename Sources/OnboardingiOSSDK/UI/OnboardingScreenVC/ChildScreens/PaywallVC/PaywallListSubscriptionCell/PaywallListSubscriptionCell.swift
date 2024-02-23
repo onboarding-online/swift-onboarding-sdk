@@ -17,6 +17,30 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var pricePerMonthLabel: UILabel!
     @IBOutlet private weak var contentLeadingConstraint: NSLayoutConstraint!
     
+    @IBOutlet private weak var mainContainerLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var mainContainerTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var mainContainerTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var mainContainerBottomConstraint: NSLayoutConstraint!
+    
+    
+    @IBOutlet private weak var cellLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var cellTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var cellTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var cellBottomConstraint: NSLayoutConstraint!
+    
+    @IBOutlet private weak var checkBoxHeight: NSLayoutConstraint!
+    @IBOutlet private weak var checkBoxWidth: NSLayoutConstraint!
+    
+    @IBOutlet private weak var checkBoxLeading: NSLayoutConstraint!
+    @IBOutlet private weak var checkBoxTrailing: NSLayoutConstraint!
+    @IBOutlet private weak var checkBoxBot: NSLayoutConstraint!
+    @IBOutlet private weak var checkBoxTop: NSLayoutConstraint!
+
+    @IBOutlet private weak var containerStack: UIStackView!
+    @IBOutlet private weak var leftStack: UIStackView!
+    @IBOutlet private weak var rightStack: UIStackView!
+
+    
     @IBOutlet private weak var savedMoneyView: SavedMoneyView!
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
     
@@ -29,7 +53,23 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
         contentContainerView.layer.cornerRadius = 16
         contentContainerView.layer.borderColor = UIColor.blue.cgColor
-        contentLeadingConstraint.constant = UIScreen.isIphoneSE1 ? 12 : 24
+        
+        checkBoxHeight.constant = 24
+        checkBoxWidth.constant = 24
+        checkBoxTrailing.constant = 16
+        
+        mainContainerBottomConstraint.constant = 16
+        mainContainerTopConstraint.constant = 16
+        mainContainerTrailingConstraint.constant = 16
+        mainContainerLeadingConstraint.constant = 16
+
+        cellLeadingConstraint.constant = 16
+        cellTrailingConstraint.constant = 16
+        
+        leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: 0.5).isActive = true
+        rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: 0.5).isActive = true
+//        leftStack.backgroundColor = .red
+//        rightStack.backgroundColor = .blue
     }
 
 }
