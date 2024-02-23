@@ -12,16 +12,19 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 
     @IBOutlet private weak var contentContainerView: UIView!
     @IBOutlet private weak var checkbox: PaywallCheckboxView!
-    @IBOutlet private weak var durationLabel: UILabel!
-    @IBOutlet private weak var priceLabel: UILabel!
-    @IBOutlet private weak var pricePerMonthLabel: UILabel!
+    
+    @IBOutlet private weak var leftLabelTop: UILabel!
+    @IBOutlet private weak var leftLabelBottom: UILabel!
+    
+    @IBOutlet private weak var rightLabelTop: UILabel!
+    @IBOutlet private weak var rightLabelBottom: UILabel!
+
     @IBOutlet private weak var contentLeadingConstraint: NSLayoutConstraint!
     
     @IBOutlet private weak var mainContainerLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var mainContainerTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var mainContainerTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var mainContainerBottomConstraint: NSLayoutConstraint!
-    
     
     @IBOutlet private weak var cellLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var cellTrailingConstraint: NSLayoutConstraint!
@@ -66,10 +69,16 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         cellLeadingConstraint.constant = 16
         cellTrailingConstraint.constant = 16
         
-        leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: 0.5).isActive = true
-        rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: 0.5).isActive = true
-//        leftStack.backgroundColor = .red
-//        rightStack.backgroundColor = .blue
+        let leftColumnSize = item.styles.leftLabelColumnWidthPercentage ?? 0.6
+        let rightColumnSize = 1 - leftColumnSize
+        
+        leftStack.spacing = item.styles.columnVerticalPadding ?? 4
+        rightStack.spacing = item.styles.columnVerticalPadding ?? 4
+        
+        containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
+
+        leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
+        rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
     }
 
 }
@@ -98,13 +107,15 @@ extension PaywallListSubscriptionCell {
     }
     
     func setupLabels(subscriptionItem: ItemTypeSubscription, product: StoreKitProduct) {
-        durationLabel.apply(text: subscriptionItem.period)
-        priceLabel.apply(text: subscriptionItem.price)
-        pricePerMonthLabel.apply(text: subscriptionItem.description)
-        
-        durationLabel.text =  subscriptionItem.period.textFor(product: product)
-        priceLabel.text = subscriptionItem.price.textFor(product: product)
-        pricePerMonthLabel.text = subscriptionItem.description.textFor(product: product)
+        leftLabelTop.apply(text: subscriptionItem.leftLabelTop)
+        leftLabelBottom.apply(text: subscriptionItem.leftLabelBottom)
+        rightLabelTop.apply(text: subscriptionItem.rightLabelTop)
+        rightLabelBottom.apply(text: subscriptionItem.rightLabelBottom)
+
+        leftLabelTop.text =  subscriptionItem.leftLabelTop.textFor(product: product)
+        leftLabelBottom.text = subscriptionItem.leftLabelBottom.textFor(product: product)
+        rightLabelTop.text = subscriptionItem.rightLabelTop.textFor(product: product)
+        rightLabelBottom.text = subscriptionItem.rightLabelBottom.textFor(product: product)
     }
     
     func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,

@@ -57,10 +57,10 @@ final class PaywallBottomView: UIView {
 
         buyButton.apply(button: footer.purchase)
         
-        restoreButton.apply(button: footer.restore)
-        
-        tacButton.apply(navLink: footer.termsOfUse)
-        ppButton.apply(navLink: footer.privacyPolicy)
+        restoreButton.apply(textLabel: footer.bottomContainer.restore)
+                                        
+        tacButton.apply(navLink: footer.bottomContainer.termsOfUse)
+        ppButton.apply(navLink: footer.bottomContainer.privacyPolicy)
 
         additionalInfoLabel.apply(text: footer.autoRenewLabel)
     }
@@ -98,11 +98,11 @@ private extension PaywallBottomView {
     }
     
     @objc func ppButtonPressed() {
-        delegate?.paywallBottomViewPPButtonPressed(self, url: footer.privacyPolicy?.uri ?? "")
+        delegate?.paywallBottomViewPPButtonPressed(self, url: footer.bottomContainer.privacyPolicy?.uri ?? "")
     }
     
     @objc func tacButtonPressed() {
-        delegate?.paywallBottomViewTACButtonPressed(self, url: footer.privacyPolicy?.uri ?? "")
+        delegate?.paywallBottomViewTACButtonPressed(self, url: footer.bottomContainer.termsOfUse?.uri ?? "")
     }
     
     @objc func restoreButtonPressed() {
@@ -116,8 +116,14 @@ private extension PaywallBottomView {
     func setup() {
 //        backgroundColor = .white
         addBuyButtonWithInfoStack()
-        addBuyButton()
-        addInfoLabel()
+        if let order =  footer.styles.elementsOrder, order == .autoRenewLabelFirst {
+            addInfoLabel()
+            addBuyButton()
+        } else {
+            addBuyButton()
+            addInfoLabel()
+        }
+
         addEssentialButtonsStack()
     }
     
@@ -135,7 +141,6 @@ private extension PaywallBottomView {
             buyButtonWithInfoStack.centerXAnchor.constraint(equalTo: centerXAnchor),
             buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             buyButtonWithInfoStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
-
         ])
     }
     
@@ -214,7 +219,7 @@ private extension PaywallBottomView {
 //        buyButtonWithInfoStack.addArrangedSubview(stack)
         
         buttonsContainer.addSubview(stack)
-        add(boxConstraint: footer.restore?.box.styles, containerView: buttonsContainer, subView: stack)
+        add(boxConstraint: footer.bottomContainer.restore?.box.styles, containerView: buttonsContainer, subView: stack)
         
         buyButtonWithInfoStack.addArrangedSubview(buttonsContainer)
     }

@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onboarding-online/swift-screens-graph",
       "state" : {
-        "revision" : "02387c99118ae79cf3ff05572e2d57d713550171",
-        "version" : "1.1.0"
+        "branch" : "feature/basic-paywalls",
+        "revision" : "b06f8c8278da5263496fb865498e54c34e37b259"
       }
     }
   ],

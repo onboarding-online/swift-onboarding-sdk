@@ -784,15 +784,16 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     
     func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
         
+        ///cell size
         let rightPadding = screenData.subscriptions.styles.paddingRight ?? 0
         let leftPadding = screenData.subscriptions.styles.paddingLeft ?? 0
-
-        
         let containerWidthWithoutPaddings: CGFloat = containerWidth - rightPadding - leftPadding
         
-        let titleText = item.price
-        let subtitleText = item.period
-
+        ///cell content size
+        containerLeading = item.box.styles.paddingLeft ?? 16
+        containerTrailing = item.box.styles.paddingRight ?? 16
+        
+        labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
         
         // Calculate effective width for labels heights calculation
         var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing - 8
@@ -812,14 +813,33 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         var totalLabelsBlockHeight = 0.0
         var subtitleHeight: CGFloat = 0.0
         
+        let titleText: Text
+        let subtitleText: Text
+        
+        ///size of columns
+        let leftColumnSize = item.styles.leftLabelColumnWidthPercentage ?? 0.6
+        let rightColumnSize = 1 - leftColumnSize
+        
+        let leftColumnSizeValue = labelWidth * leftColumnSize
+        let rightColumnSizeValue = labelWidth * rightColumnSize
+
+        let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue)
+        let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue)
+        
+        if leftColumnHeight > rightColumnHeight {
+            titleText = item.leftLabelTop
+            subtitleText  = item.leftLabelBottom
+        } else {
+            titleText = item.rightLabelTop
+            subtitleText  = item.rightLabelBottom
+        }
+
         let titleHeight = titleText.textHeightBy(textWidth: labelWidth)
 
         totalLabelsBlockHeight += titleHeight > 0.0 ? titleHeight : 0
         
-//        if !isSubtitleHiddenFor(item: item) {
         subtitleHeight = subtitleText.textHeightBy(textWidth: labelWidth)
-            totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
-//        }
+        totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
 
         //Add gap between labels if there are 2 labels
         if titleHeight > 0.0 && subtitleHeight > 0.0 {

@@ -135,14 +135,15 @@
                 <outlet property="checkbox" destination="1Ep-Wc-ZXG" id="9dx-VZ-3kv"/>
                 <outlet property="containerStack" destination="QUJ-zw-9BT" id="HPR-lX-77r"/>
                 <outlet property="contentContainerView" destination="S5s-Dr-Ix9" id="NwN-Ks-NdX"/>
-                <outlet property="durationLabel" destination="eCw-jb-GHp" id="W79-bv-5Od"/>
+                <outlet property="leftLabelBottom" destination="dP7-pD-jZa" id="iUs-Wk-9Cm"/>
+                <outlet property="leftLabelTop" destination="eCw-jb-GHp" id="bPh-8O-qDJ"/>
                 <outlet property="leftStack" destination="6Dg-FU-sgv" id="11n-Cp-Ekr"/>
                 <outlet property="mainContainerBottomConstraint" destination="PRH-n7-0ms" id="fih-Me-xEI"/>
                 <outlet property="mainContainerLeadingConstraint" destination="eju-DF-MFa" id="P1n-fB-sO0"/>
                 <outlet property="mainContainerTopConstraint" destination="idU-Xf-CQq" id="7ug-hb-Gbb"/>
                 <outlet property="mainContainerTrailingConstraint" destination="PB9-JT-8Nb" id="OLu-It-236"/>
-                <outlet property="priceLabel" destination="nh0-fV-a0E" id="vMb-yF-UPk"/>
-                <outlet property="pricePerMonthLabel" destination="dP7-pD-jZa" id="ax9-8L-nVK"/>
+                <outlet property="rightLabelBottom" destination="dun-H3-aEi" id="yJT-XJ-2S7"/>
+                <outlet property="rightLabelTop" destination="nh0-fV-a0E" id="kei-BM-1HK"/>
                 <outlet property="rightStack" destination="zo4-a7-Dq4" id="O4U-7m-2MS"/>
                 <outlet property="savedMoneyView" destination="9jQ-Tk-hac" id="8ZS-2c-BZE"/>
             </connections>

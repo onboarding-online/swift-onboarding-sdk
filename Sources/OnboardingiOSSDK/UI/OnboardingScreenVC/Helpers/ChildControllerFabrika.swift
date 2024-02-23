@@ -25,10 +25,6 @@ class ChildControllerFabrika {
         case .typeScreenBasicPaywall(_):
             return nil
             
-        case .typeScreenScalableImageTextSelection(let value):
-            
-            baseScreen = saveMainScreenDataFor(value: value)
-            childController = ScreenScaledImageTitleSubtitleMultiSelectionListVC.instantiate(screenData: value)
         case .typeScreenImageTitleSubtitles(let value):
             
             baseScreen = saveMainScreenDataFor(value: value)
@@ -103,8 +99,6 @@ class ChildControllerFabrika {
     static func background(screen: Screen) -> BackgroundStyle? {
         switch screen._struct {
         case .typeScreenBasicPaywall(let value):
-            return value.styles.background
-        case .typeScreenScalableImageTextSelection(let value):
             return value.styles.background
         case .typeScreenImageTitleSubtitles(let value):
             return value.styles.background

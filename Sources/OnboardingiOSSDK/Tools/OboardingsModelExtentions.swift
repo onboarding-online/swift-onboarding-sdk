@@ -762,6 +762,22 @@ extension UIButton: UIImageLoader {
         self.layer.borderColor = (button.styles.borderColor ?? "").hexStringToColor.cgColor
     }
     
+    func apply(textLabel: Text?) {
+        guard let textLabel = textLabel else {
+            self.isHidden = true
+            return
+        }
+        
+        let text = textLabel.textByLocale()
+        
+        self.titleLabel?.font = textLabel.styles.getFontSettings()
+        self.setTitle(text, for: .normal)
+        
+        if let color = textLabel.styles.color?.hexStringToColor {
+            self.setTitleColor(color, for: .normal)
+        }
+    }
+    
     func apply(button: Button?, product: StoreKitProduct) {
         guard let button = button else {
             self.isHidden = true
@@ -1235,7 +1251,7 @@ extension Screen {
     
     func screenValueType() -> ValueTypes  {
         switch self._struct {
-        case .typeScreenBasicPaywall(_), .typeScreenScalableImageTextSelection(_):
+        case .typeScreenBasicPaywall(_):
             return ValueTypes.none
         case .typeScreenImageTitleSubtitles(_):
             return ValueTypes.none
