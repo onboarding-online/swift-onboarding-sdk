@@ -14,7 +14,7 @@ public typealias OPSProductsRequestCompletion = (OPSProductsRequestResult)->()
 
 final class OPSSKProductsFetcher: NSObject {
         
-    private var completion: OPSProductsRequestCompletion?
+    private var completions: [OPSProductsRequestCompletion] = []
     
 }
 
@@ -24,7 +24,7 @@ extension OPSSKProductsFetcher: SKProductsFetcher {
     func fetch(productIds: Set<String>,
                completion: @escaping OPSProductsRequestCompletion) {
         OPSLogger.logEvent("Did start fetching products with ids \(productIds)")
-        self.completion = completion
+        self.completions.append(completion)
 
         let request = SKProductsRequest(productIdentifiers: productIds)
         request.delegate = self
@@ -44,11 +44,21 @@ extension OPSSKProductsFetcher: SKProductsFetcher {
 extension OPSSKProductsFetcher: SKProductsRequestDelegate {
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         OPSLogger.logEvent("Did receive products response with\nProducts: \(response.products.map({ $0.productIdentifier }))\nInvalid product identifiers: \(response.invalidProductIdentifiers)")
-        completion?(.success(OPSProductsResponse(skProductResponse: response)))
+        completeWith(result: .success(OPSProductsResponse(skProductResponse: response)))
     }
     
     func request(_ request: SKRequest, didFailWithError error: Error) {
         OPSLogger.logError(error)
-        completion?(.failure(error))
+        completeWith(result: .failure(error))
+    }
+}
+
+// MARK: - Private methods
+private extension OPSSKProductsFetcher {
+    func completeWith(result: OPSProductsRequestResult) {
+        completions.forEach { completion in
+            completion(result)
+        }
+        completions.removeAll()
     }
 }
