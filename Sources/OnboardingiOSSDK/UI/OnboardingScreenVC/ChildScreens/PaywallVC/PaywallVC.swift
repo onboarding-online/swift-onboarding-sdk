@@ -67,15 +67,11 @@ final class PaywallVC: BaseScreenGraphViewController {
         
         setup()
         
-        
-        cellConfigurator.checkboxSize = 24
-        
         navigationController?.isNavigationBarHidden = true
     }
     
     func setup() {
         setup(navigationBar: screenData.navigationBar)
-        setupCollectionView()
         setup(footer: screenData.footer)
         setupGradientView()
         
@@ -461,6 +457,8 @@ private extension PaywallVC {
     
     func didLoadProducts() {
         self.isLoadingProducts = false
+        setupCollectionView()
+
         let sections = allSections()
         
         if products.count - 1 >= selectedIndex {
@@ -783,6 +781,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let rightPadding = screenData.subscriptions.styles.paddingRight ?? 0
         let leftPadding = screenData.subscriptions.styles.paddingLeft ?? 0
         let containerWidthWithoutPaddings: CGFloat = containerWidth - rightPadding - leftPadding
+        allItemsHorizontalStackViewSpacing = 0
         
         ///cell content size
         containerLeading = item.box.styles.paddingLeft ?? 16
@@ -790,8 +789,9 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         
         labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
         
+        
         // Calculate effective width for labels heights calculation
-        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing - 8
+        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing
         
         if !isImageHiddenFor(item: item) {
             labelWidth -= (imageWidth + allItemsHorizontalStackViewSpacing)
@@ -818,22 +818,33 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let leftColumnSizeValue = labelWidth * leftColumnSize
         let rightColumnSizeValue = labelWidth * rightColumnSize
 
-        let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue)
-        let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue)
+        let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product)
+        let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
         
+        
+        print("\(item.leftLabelTop.textFor(product: product!))")
+        print("\(item.leftLabelBottom.textFor(product: product!))")
+
+        print("\(item.rightLabelTop.textFor(product: product!))")
+        print("\(item.rightLabelBottom.textFor(product: product!))")
+
+        let floatMaxHeightColumnWidth: Double
         if leftColumnHeight > rightColumnHeight {
             titleText = item.leftLabelTop
             subtitleText  = item.leftLabelBottom
+            floatMaxHeightColumnWidth = leftColumnSizeValue
         } else {
             titleText = item.rightLabelTop
             subtitleText  = item.rightLabelBottom
+            floatMaxHeightColumnWidth = rightColumnSizeValue
+
         }
 
-        let titleHeight = titleText.textHeightBy(textWidth: labelWidth)
+        let titleHeight = titleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
 
         totalLabelsBlockHeight += titleHeight > 0.0 ? titleHeight : 0
         
-        subtitleHeight = subtitleText.textHeightBy(textWidth: labelWidth)
+        subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
         totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
 
         //Add gap between labels if there are 2 labels
@@ -843,6 +854,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
                 
         //Get max elemets height for cell height
         var maxHeight = totalLabelsBlockHeight > imageHeigh ? totalLabelsBlockHeight : imageHeigh
+        
         maxHeight = maxHeight > checkboxSize ? maxHeight : checkboxSize
         
         let cellHeight = maxHeight + containerTop + containerBottom

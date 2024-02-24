@@ -332,6 +332,20 @@ extension Text {
         return ceil(boundingBox.height)
     }
     
+    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?) -> CGFloat {
+        guard let product = product else {
+            return textHeightBy(textWidth: textWidth)
+        }
+        
+        let labelKey = self.textByLocale().applyWith(product: product)
+        let font: UIFont = self.textFont()
+        
+        let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+        let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+        
+        return ceil(boundingBox.height)
+    }
+    
 }
 
 extension Date {

@@ -152,11 +152,14 @@ private extension PaywallBottomView {
         buyButton.layer.cornerRadius = 12
         buyButton.addTarget(self, action: #selector(buyButtonPressed), for: .touchUpInside)
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
-        let buttonHeight: CGFloat = UIScreen.isIphoneSE1 ? 44 : 56
+        
+        let defaultHeight =  UIScreen.isIphoneSE1 ? 44.0 : 56.0
+        let buttonHeight: CGFloat = footer.purchase?.styles.height ?? defaultHeight
         buyButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         
         buyButtonContainer.addSubview(buyButton)
         
+
         add(boxConstraint: footer.purchase?.box.styles, containerView: buyButtonContainer, subView: buyButton)
         
         buyButtonWithInfoStack.addArrangedSubview(buyButtonContainer)

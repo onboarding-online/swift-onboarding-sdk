@@ -68,7 +68,9 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 
         cellLeadingConstraint.constant = 16
         cellTrailingConstraint.constant = 16
-        
+    }
+    
+    func setupSizes() {
         let leftColumnSize = item.styles.leftLabelColumnWidthPercentage ?? 0.6
         let rightColumnSize = 1 - leftColumnSize
         
@@ -99,7 +101,7 @@ extension PaywallListSubscriptionCell {
         }
         
         self.item = subscriptionItem
-        
+        setupSizes()
         setBadgePosition(configuration.badgePosition, settings: item.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         

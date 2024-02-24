@@ -39,7 +39,7 @@
                                                         </constraints>
                                                     </view>
                                                 </subviews>
-                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstItem="1Ep-Wc-ZXG" firstAttribute="leading" secondItem="Keo-f3-Pv3" secondAttribute="leading" id="AWJ-aO-beJ"/>
                                                     <constraint firstAttribute="trailing" secondItem="1Ep-Wc-ZXG" secondAttribute="trailing" id="CXP-KB-tNN"/>

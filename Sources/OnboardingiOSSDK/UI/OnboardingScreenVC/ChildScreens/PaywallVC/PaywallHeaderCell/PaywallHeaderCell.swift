@@ -47,18 +47,20 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
         gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.9).isActive = true
         
 //        imageView
-        
-        if let imageVerticalPosition = screenData.styles.imageVerticalPosition, imageVerticalPosition == .headerListTop {
-            imageView.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: 16).isActive = true
-        } else {
-            imageView.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
-        }
     }
 
 }
 
 // MARK: - Open methods
 extension PaywallHeaderCell {
+    
+    func imageHeaderSetup() {
+        if let verticalPosition = screenData.styles.imageVerticalPosition, verticalPosition == .headerListTop {
+            imageView.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: 16).isActive = true
+        } else {
+            imageView.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+        }
+    }
     
     func setWith(configuration: PaywallVC.HeaderCellConfiguration) {
         setWithStyle(configuration.style)
@@ -68,6 +70,7 @@ extension PaywallHeaderCell {
     func setWith(configuration: PaywallVC.HeaderCellConfiguration, paywallData: ScreenBasicPaywall) {
         screenData = paywallData
         setWithStyle(configuration.style)
+        imageHeaderSetup()
         
         load(image: screenData.image, in: imageView)
     }
