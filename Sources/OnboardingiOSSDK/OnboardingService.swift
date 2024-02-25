@@ -73,6 +73,10 @@ extension OnboardingService {
         self.appearance = configuration.appearance
         self.launchWithAnimation = configuration.launchWithAnimation
         
+        if paymentService != nil {
+            loadProductFor(screenGraph:self.screenGraph )
+        }
+        
         if let prefetchService {
             self.prefetchService = prefetchService
             showOnboardingFlowViewController(nextScreenId: screenGraph.launchScreenId, transitionKind: ._default)
@@ -93,6 +97,15 @@ extension OnboardingService {
             case .waitForScreenToLoad:
                 prefetchService.startLazyPrefetching()
                 showOnboardingFlowViewControllerWhenReady(nextScreenId: screenGraph.launchScreenId)
+            }
+        }
+    }
+    
+    func loadProductFor(screenGraph: ScreensGraph?) {
+        if let screenGraph = screenGraph, paymentService != nil {
+            let products = screenGraph.allPurchaseProductIds()
+            Task {
+                try await paymentService?.fetchProductsWith(ids: products)
             }
         }
     }

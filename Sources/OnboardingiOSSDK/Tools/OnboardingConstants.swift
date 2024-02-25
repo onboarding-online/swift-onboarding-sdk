@@ -123,8 +123,6 @@ extension ScreenTwoColumnMultipleSelection: BaseScreenProtocol { }
 
 extension ScreenTwoColumnSingleSelection: BaseScreenProtocol { }
 
-extension ScreenScalableImageTextSelection: Assetable { }
-
 extension ScreenBasicPaywall: ImageOptionalProtocol, PaywallBaseScreenStyleProtocol { }
 
 

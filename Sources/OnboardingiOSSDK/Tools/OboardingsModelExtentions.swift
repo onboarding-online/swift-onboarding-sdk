@@ -332,6 +332,20 @@ extension Text {
         return ceil(boundingBox.height)
     }
     
+    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?) -> CGFloat {
+        guard let product = product else {
+            return textHeightBy(textWidth: textWidth)
+        }
+        
+        let labelKey = self.textByLocale().applyWith(product: product)
+        let font: UIFont = self.textFont()
+        
+        let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+        let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+        
+        return ceil(boundingBox.height)
+    }
+    
 }
 
 extension Date {
@@ -760,6 +774,22 @@ extension UIButton: UIImageLoader {
         self.layer.cornerRadius = button.styles.borderRadiusFloat()
         self.layer.borderWidth = button.styles.borderWidthFloat()
         self.layer.borderColor = (button.styles.borderColor ?? "").hexStringToColor.cgColor
+    }
+    
+    func apply(textLabel: Text?) {
+        guard let textLabel = textLabel else {
+            self.isHidden = true
+            return
+        }
+        
+        let text = textLabel.textByLocale()
+        
+        self.titleLabel?.font = textLabel.styles.getFontSettings()
+        self.setTitle(text, for: .normal)
+        
+        if let color = textLabel.styles.color?.hexStringToColor {
+            self.setTitleColor(color, for: .normal)
+        }
     }
     
     func apply(button: Button?, product: StoreKitProduct) {
@@ -1235,7 +1265,7 @@ extension Screen {
     
     func screenValueType() -> ValueTypes  {
         switch self._struct {
-        case .typeScreenBasicPaywall(_), .typeScreenScalableImageTextSelection(_):
+        case .typeScreenBasicPaywall(_):
             return ValueTypes.none
         case .typeScreenImageTitleSubtitles(_):
             return ValueTypes.none
@@ -1270,4 +1300,22 @@ extension Screen {
         }
     }
     
+}
+
+extension ScreensGraph {
+    
+    func allPurchaseProductIds() -> Set<String> {
+        var ids = [String]()
+        let paywalls = self.screens.compactMap({ $0.value.paywallScreenValue()?.subscriptions.items })
+       
+        for items in paywalls {
+            let oneScreenIds = items.compactMap({$0.subscriptionId})
+            ids.append(contentsOf: oneScreenIds)
+        }
+        
+        let setIds = Set(ids.map({$0}))
+
+        return setIds
+    }
+
 }
