@@ -60,7 +60,11 @@ final class PaywallVC: BaseScreenGraphViewController {
         productIds = ids
         
         loadProducts()
+//        add selected product to parameters
+        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
+
     }
+    
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -68,6 +72,12 @@ final class PaywallVC: BaseScreenGraphViewController {
         setup()
         
         navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
     func setup() {
@@ -188,6 +198,9 @@ extension PaywallVC: UICollectionViewDelegate {
                 let currentProduct = self.products[selectedIndex]
                 bottomView.setupPaymentDetailsLabel(content: currentProduct)
 
+                OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
+                OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
+
 //                delegate?.onboardingChildScreenUpdate(value: indexPath.row,
 //                                                      description: products[selectedIndex].id,
 //                                                      logAnalytics: true)
@@ -215,25 +228,20 @@ extension PaywallVC: UICollectionViewDelegate {
 extension PaywallVC: PaywallBottomViewDelegate {
     
     func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Buy",
-//                                              logAnalytics: true)
         purchaseSelectedProduct()
     }
   
     func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Privacy Policy",
-//                                              logAnalytics: true)
+        OnboardingService.shared.eventRegistered(event: .ppButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .url: url])
+
         if let url = URL.init(string: url) {
             showSafariWith(url: url)
         }
     }
     
     func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Terms and conditions",
-//                                              logAnalytics: true)
+        OnboardingService.shared.eventRegistered(event: .tcButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .url: url])
+
         if let url = URL.init(string: url) {
             showSafariWith(url: url)
         }
@@ -397,23 +405,24 @@ private extension PaywallVC {
     
     func restoreProducts() {
         setViewBusy(true)
+        OnboardingService.shared.eventRegistered(event: .restorePurchaseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name])
+
         Task {
             do {
                 try await paymentService?.restorePurchases()
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did restore purchases",
-//                                                      logAnalytics: true)
                 let hasActiveSubscription = try await paymentService?.hasActiveSubscription()
+                
+                OnboardingService.shared.eventRegistered(event: .productRestored, params: [.hasActiveSubscription: hasActiveSubscription ?? false, .screenName: screen.name, .screenID: screen.id,])
+
                 if hasActiveSubscription == true {
-//                    delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                          description: "User has active subscription",
-//                                                          logAnalytics: true)
+                    
+                    OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
+
                     close()
                 }
             } catch {
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did fail to restore purchases: \(error.localizedDescription)",
-//                                                      logAnalytics: true)
+                OnboardingService.shared.eventRegistered(event: .productRestored, params: [.error: error.localizedDescription, .screenName: screen.name, .screenID: screen.id,])
+
                 handleError(error, message: "Failed to restore purchases") { [weak self] in
                     self?.restoreProducts()
                 }
@@ -424,22 +433,23 @@ private extension PaywallVC {
     
     func purchaseSelectedProduct() {
         guard selectedIndex < products.count else { return }
-        
+
         let selectedProduct = products[selectedIndex]
+        OnboardingService.shared.eventRegistered(event: .purchaseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: selectedProduct.id])
+
         setViewBusy(true)
         Task {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did purchase product: \(selectedProduct.id)",
-//                                                      logAnalytics: true)
-                // TODO: - Finish
-                //                onboardingChildScreenPerform
+
+                OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
+                
+                self.value = selectedProduct.id
+                
                 finishWith(action: screenData.footer.purchase?.action)
             } catch OnboardingPaywallError.cancelled {
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Cancelled purchase",
-//                                                      logAnalytics: true)
+                OnboardingService.shared.eventRegistered(event: .purchaseCanceled, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
+
                 if shouldCloseOnPurchaseCancel {
                     close()
                 }
@@ -447,9 +457,9 @@ private extension PaywallVC {
                 handleError(error, message: "Failed to purchase", retryAction: { [weak self] in
                     self?.purchaseSelectedProduct()
                 })
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did fail to purchase: \(error.localizedDescription)",
-//                                                      logAnalytics: true)
+
+                OnboardingService.shared.eventRegistered(event: .purchaseFailed, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .error: error.localizedDescription])
+
             }
             setViewBusy(false)
         }
@@ -479,6 +489,8 @@ private extension PaywallVC {
 //                                              description: "Close",
 //                                              logAnalytics: true)
         
+        OnboardingService.shared.eventRegistered(event: .paywallCloseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name])
+
         finishWith(action: screenData.navigationBar.close?.action)
     }
     
@@ -734,29 +746,29 @@ extension PaywallVC {
 //    return nav
 //}
 
-final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
-    var canMakePayments: Bool { true }
-  
-    func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        
-        return SKProduct.mock(productIds: ids)
-    }
-    
-    func restorePurchases() async throws {
-        try? await Task.sleep(nanoseconds: 5_000_000_000)
-    }
-    
-    func purchaseProduct(_ product: SKProduct) async throws {
-        try? await Task.sleep(nanoseconds: 5_000_000_000)
-//        throw NSError(domain: "com", code: 12)
-    }
-    
-    func hasActiveSubscription() async throws -> Bool {
-        false
-    }
-    
-}
+//final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
+//    var canMakePayments: Bool { true }
+//
+//    func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
+//        try? await Task.sleep(nanoseconds: 1_000_000_000)
+//
+//        return SKProduct.mock(productIds: ids)
+//    }
+//
+//    func restorePurchases() async throws {
+//        try? await Task.sleep(nanoseconds: 5_000_000_000)
+//    }
+//
+//    func purchaseProduct(_ product: SKProduct) async throws {
+//        try? await Task.sleep(nanoseconds: 5_000_000_000)
+////        throw NSError(domain: "com", code: 12)
+//    }
+//
+//    func hasActiveSubscription() async throws -> Bool {
+//        false
+//    }
+//
+//}
 
 private extension PaywallVC.HeaderCellConfiguration {
     static func mock() -> PaywallVC.HeaderCellConfiguration {

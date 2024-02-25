@@ -131,6 +131,64 @@ public enum AnalyticsEvent: String {
     //    assetsLoadedSuccess
     case allAssetsLoaded = "all assets loaded"
     
+    /// Paywalls
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case paywallAppeared
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case paywallDisappeared
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case paywallCloseButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    
+    case restorePurchaseButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    url
+    case tcButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    url
+    case ppButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case productSelected
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    selectedProductId
+    case purchaseButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    case productPurchased
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    case purchaseCanceled
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    case purchaseFailed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    case productRestored
+    
 // System events
     
     //    Parameters:
@@ -218,5 +276,12 @@ public enum AnalyticsEventParams: String {
     case pushNotificationPermission = "pushNotificationPermission"
     
     case permissionGranted = "permissionGranted"
+    
+    
+    case selectedProductId
+    
+    case productId
+    
+    case hasActiveSubscription
 
 }
