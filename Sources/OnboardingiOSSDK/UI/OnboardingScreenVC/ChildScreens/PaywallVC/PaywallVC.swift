@@ -504,10 +504,7 @@ private extension PaywallVC {
                      retryAction: @escaping EmptyCallback) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
-//            self?.delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                        description: "Restore",
-//                                                        logAnalytics: true)
+        alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { _ in
             retryAction()
         }))
         present(alert, animated: true)
