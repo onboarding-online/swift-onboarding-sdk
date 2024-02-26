@@ -64,6 +64,15 @@ extension OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         }
     }
     
+    public func activeSubscriptionReceipt() async throws -> OnboardingPaymentReceipt? {
+        let validatedReceipt = try await validateReceipt(sharedSecret: sharedSecret)
+        if let appStoreReceipt = validatedReceipt.activeSubscriptionReceipt() {
+            let onboardingReceipt = transformAppStoreReceiptToOnboardingReceipt(appStoreReceipt)
+            return onboardingReceipt
+        }
+        return nil
+    }
+    
     public func hasActiveSubscription() async throws -> Bool {
         let receipt = try await validateReceipt(sharedSecret: sharedSecret)
         let subStatuses = receipt.subscriptionsStatuses()
@@ -120,5 +129,22 @@ private extension OnboardingPaymentService {
     
     func setSKTransactionsDelegate(_ delegate: OPSTransactionsManagerDelegate) {
         transactionsManager.delegate = delegate
+    }
+}
+
+// MARK: - Private methods
+private extension OnboardingPaymentService {
+    func transformAppStoreReceiptToOnboardingReceipt(_ appStoreReceipt: AppStoreReceiptInApp) -> OnboardingPaymentReceipt {
+        OnboardingPaymentReceipt(productId: appStoreReceipt.productId,
+                                 quantity: appStoreReceipt.quantity,
+                                 transactionId: appStoreReceipt.transactionId,
+                                 originalTransactionId: appStoreReceipt.originalTransactionId,
+                                 purchaseDate: appStoreReceipt.purchaseDate,
+                                 originalPurchaseDate: appStoreReceipt.originalPurchaseDate,
+                                 isTrialPeriod: appStoreReceipt.isTrialPeriod,
+                                 expiresDate: appStoreReceipt.expiresDate,
+                                 isInIntroOfferPeriod: appStoreReceipt.isInIntroOfferPeriod,
+                                 webOrderLineItemId: appStoreReceipt.webOrderLineItemId,
+                                 cancellationDate: appStoreReceipt.cancellationDate)
     }
 }
