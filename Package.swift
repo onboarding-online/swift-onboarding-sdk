@@ -18,7 +18,7 @@ let package = Package(
             targets: ["OnboardingPaymentKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/onboarding-online/swift-screens-graph", from: "1.1.0-alpha.0"),
+        .package(url: "https://github.com/onboarding-online/swift-screens-graph", exact: "1.1.0-alpha.0"),
 //        .package(url: "https://github.com/onboarding-online/swift-screens-graph", branch: "1.1.0-alpha.0"),
         
     ],
