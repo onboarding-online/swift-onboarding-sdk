@@ -30,6 +30,7 @@ public extension OnboardingService {
                                           finishedCallback: @escaping OnboardingFinishResult) {
         let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: env)
         
+        self.projectId = projectId
         //print("------- onboarding assets loading state \(preparationState)")
         func startNew() {
             startOnboarding(projectId: projectId,

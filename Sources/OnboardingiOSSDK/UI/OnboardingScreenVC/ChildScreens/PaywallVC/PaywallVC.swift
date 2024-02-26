@@ -440,7 +440,11 @@ private extension PaywallVC {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
 
-                OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : "uniqueTransactionId"])
+                Task {
+                    if let transaction = try await paymentService.activeSubscriptionReceipt() {
+                        OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
+                    }
+                }
                 
                 self.value = selectedProduct.id
                 
@@ -460,6 +464,23 @@ private extension PaywallVC {
 
             }
             setViewBusy(false)
+        }
+    }
+    
+    
+    func sendToServer(transactionId: String) {
+        OnboardingLoadingService.sendPaymentInfo(transactionId: transactionId, projectId: "") { result in
+
+            
+//            switch result {
+//            case .success(let screenGraph):
+//
+//
+//            case .failure(let error):
+//                OnboardingService.shared.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: error.localizedDescription])
+//
+//                finishedCallback(.failure(error))
+//            }
         }
     }
     

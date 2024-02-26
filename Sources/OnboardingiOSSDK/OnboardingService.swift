@@ -40,6 +40,9 @@ public final class OnboardingService {
     private var onboardingUserData: OnboardingData = [:]
     private var onboardingFinishedCallback: OnboardingFinishResult?
     
+    public var projectId: String = ""
+
+    
     init(windowManager: OnboardingWindowManagerProtocol = OnboardingWindowManager.shared) {
         self.windowManager = windowManager
         BackgroundTasksService.shared.startTrackAppState()

@@ -17,10 +17,22 @@
                 <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </imageView>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
+                                <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="9Y9-FC-FrS"/>
+                            <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="SpB-KJ-J8U"/>
+                            <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="lQu-pz-ELc"/>
+                            <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="woF-nx-oRb"/>
+                        </constraints>
+                    </view>
                     <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
                         <rect key="frame" x="0.0" y="167" width="346" height="100"/>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -60,16 +72,16 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="KAh-zU-tV3" secondAttribute="trailing" constant="24" id="5E7-Xa-Myk"/>
+                <constraint firstItem="qbw-eF-EJ0" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Bse-nB-VKD"/>
                 <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="E6W-pI-TQp"/>
                 <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Inw-Nc-nzE"/>
-                <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="Jaj-pK-fbx"/>
-                <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" priority="500" id="Rl5-7v-cD6"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="Ru8-Zz-dn8"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="Xe1-UD-mxL"/>
+                <constraint firstItem="qbw-eF-EJ0" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zfx-Jb-9IW"/>
                 <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="ag1-M3-WDm"/>
                 <constraint firstAttribute="bottom" secondItem="KAh-zU-tV3" secondAttribute="bottom" constant="24" id="gqG-wD-Dfa"/>
-                <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="kzy-HL-aaH"/>
-                <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="zYm-A4-zOD"/>
+                <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
+                <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" priority="500" id="zUk-u9-lGt"/>
             </constraints>
             <size key="customSize" width="346" height="267"/>
             <connections>
@@ -77,7 +89,11 @@
                 <outlet property="contentStackView" destination="jjj-3w-9m3" id="Ao3-kW-5Iz"/>
                 <outlet property="gradientView" destination="Jze-sG-Veo" id="e6w-Lj-w5z"/>
                 <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
-                <outlet property="imageViewTopConstraint" destination="zYm-A4-zOD" id="TwS-0q-rA9"/>
+                <outlet property="imageViewContainer" destination="qbw-eF-EJ0" id="YYG-u0-TvD"/>
+                <outlet property="imageViewContainerBottomConstraint" destination="SpB-KJ-J8U" id="1NR-zh-ZpV"/>
+                <outlet property="imageViewContainerLeadingConstraint" destination="woF-nx-oRb" id="x2a-R3-wmf"/>
+                <outlet property="imageViewContainerTopConstraint" destination="9Y9-FC-FrS" id="qAA-s6-Y3I"/>
+                <outlet property="imageViewContainerTrailingConstraint" destination="lQu-pz-ELc" id="oX1-HJ-kBB"/>
                 <outlet property="listBackground" destination="KAh-zU-tV3" id="MfK-Es-4Eg"/>
                 <outlet property="listBottomConstraint" destination="gqG-wD-Dfa" id="giD-KQ-1qk"/>
                 <outlet property="listItemBottomConstraint" destination="Kjs-RK-K13" id="YOG-mr-skG"/>

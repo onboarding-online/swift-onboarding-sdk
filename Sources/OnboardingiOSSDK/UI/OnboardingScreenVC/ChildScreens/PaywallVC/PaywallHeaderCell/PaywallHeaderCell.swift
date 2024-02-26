@@ -10,7 +10,14 @@ import ScreensGraph
 
 final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
+    @IBOutlet private weak var imageViewContainer: UIView!
+    @IBOutlet private weak var imageViewContainerTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var imageViewContainerBottomConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var imageViewContainerLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var imageViewContainerTrailingConstraint: NSLayoutConstraint!
+
     @IBOutlet private weak var imageView: UIImageView!
+    
     @IBOutlet private weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var titlesLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var gradientView: GradientView!
@@ -55,10 +62,26 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 extension PaywallHeaderCell {
     
     func imageHeaderSetup() {
-        if let verticalPosition = screenData.styles.imageVerticalPosition, verticalPosition == .headerListTop {
-            imageView.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: 16).isActive = true
+        if let verticalPosition = screenData.styles.imageVerticalPosition {
+            if verticalPosition == .headerTop {
+                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: 0).isActive = true
+            } else {
+                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+            }
         } else {
-            imageView.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+            imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+        }
+        if let box = screenData.image?.box {
+            imageViewContainerTopConstraint.constant = box.styles.paddingTop ?? 0
+            imageViewContainerBottomConstraint.constant = box.styles.paddingBottom ?? 0
+            imageViewContainerTrailingConstraint.constant = box.styles.paddingRight ?? 0
+            imageViewContainerLeadingConstraint.constant = box.styles.paddingLeft ?? 0
+        }
+            
+        if let imageContentMode = screenData.image?.imageContentMode() {
+            imageView.contentMode = imageContentMode
+        } else {
+            imageView.contentMode = .scaleAspectFit
         }
     }
     
@@ -156,10 +179,6 @@ private extension PaywallHeaderCell {
         listLeadingConstraint.constant = screenData.list.box.styles.paddingLeft ?? 24
         listTrailingConstraint.constant = screenData.list.box.styles.paddingRight ?? 24
         listBottomConstraint.constant = screenData.list.box.styles.paddingBottom ?? 24
-        
-        
-//        screenData.list.items.first?.box.styles.paddingBottom
-//        screenData.list.styles.paddingLeft
         
         listItemLeadingConstraint.constant = screenData.list.styles.paddingLeft ?? 4
         listItemTrailingConstraint.constant = screenData.list.styles.paddingRight ?? 4

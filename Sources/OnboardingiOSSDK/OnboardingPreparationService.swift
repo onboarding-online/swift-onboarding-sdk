@@ -250,6 +250,8 @@ private extension OnboardingPreparationService {
         let runConfiguration = OnboardingService.RunConfiguration(screenGraph: screenGraph,
                                                                   appearance: OnboardingService.shared.appearance ?? .default,
                                                                   launchWithAnimation: true)
+        OnboardingService.shared.projectId = identifier
+
         OnboardingService.shared.startOnboarding(configuration: runConfiguration,
                                                  prefetchService: onboardingData.prefetchService,
                                                  finishedCallback: finishedCallback)

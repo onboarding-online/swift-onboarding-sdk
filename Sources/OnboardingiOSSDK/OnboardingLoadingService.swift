@@ -26,6 +26,17 @@ final class OnboardingLoadingService {
     }
     
     
+    static func buildURLForPaymentServer() -> String {
+        let sdkVersion = ScreensGraphVersion.value
+        let buildVersion = Bundle.main.releaseVersionNumber
+        
+        let baseURL = OnboardingServiceConfig.baseUrl
+        
+        var url = "\(baseURL)/v1/onboarding?schemaVersion=\(sdkVersion)&buildVersion=\(buildVersion)"
+       
+        return url
+    }
+    
     static func buildURL(for environment: OnboardingEnvironment) -> String {
         let sdkVersion = ScreensGraphVersion.value
         let buildVersion = Bundle.main.releaseVersionNumber
@@ -142,6 +153,28 @@ final class OnboardingLoadingService {
             case .success(let screenGraph):
                 cacheScreenGraph(screenGraph, for: projectId)
                 finishedCallback(.success(screenGraph))
+            case .failure(let failure):
+                let error = GenericError.init(errorCode: 1, localizedDescription: failure.errorDescription ?? " ")
+                finishedCallback(.failure(error))
+            }
+        }
+    }
+    
+    
+    static func sendPaymentInfo(transactionId: String, projectId: String,
+                                   env: OnboardingEnvironment = .prod,
+                                   finishedCallback: @escaping GenericResultCallback<Bool>) {
+        
+        
+        let url = buildURLForPaymentServer()
+        let headers  = ["X-API-Key" : projectId]
+        let request = ONetworkRequest(url: url, httpMethod: .GET, headers: headers)
+        
+        ONetworkManager.shared.makeNetworkDecodableRequest(request, ofType: Bool.self) { (result) in
+            switch result {
+            case .success(let isSucceess):
+//                cacheScreenGraph(screenGraph, for: projectId)
+                finishedCallback(.success(isSucceess))
             case .failure(let failure):
                 let error = GenericError.init(errorCode: 1, localizedDescription: failure.errorDescription ?? " ")
                 finishedCallback(.failure(error))
