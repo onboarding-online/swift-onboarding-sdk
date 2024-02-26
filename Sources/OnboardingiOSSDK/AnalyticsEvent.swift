@@ -220,8 +220,6 @@ public enum AnalyticsEvent: String {
     case nextScreenEdgeForWrongConditions = "there are no right conditions. Random edge for wrong condition used!!!"
     
     case paymentServiceNotFound = "paymentServiceNotFound"
-
-            
 }
 
 public enum AnalyticsEventParams: String {

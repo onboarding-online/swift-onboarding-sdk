@@ -104,8 +104,8 @@ final class OnboardingLoadingService {
         return error
     }
     
-    static func errorNoPaymentService() -> GenericError {
-        let error = GenericError.init(errorCode: 1, localizedDescription: "didn't find payment service")
+    static func errorPaymentServiceNotFound() -> GenericError {
+        let error = GenericError.init(errorCode: 4, localizedDescription: "didn't find payment service")
         systemEventRegistered(event: .paymentServiceNotFound, params: nil)
         return error
     }

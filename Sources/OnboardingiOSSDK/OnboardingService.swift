@@ -322,6 +322,8 @@ private extension OnboardingService {
                         showNextOnboardingController(controller, transitionKind: transitionKind)
                     }
                 } else {
+                    systemEventRegistered(event: .paymentServiceNotFound, params: nil)
+
                     finishOnboarding()
                 }
             } else {
