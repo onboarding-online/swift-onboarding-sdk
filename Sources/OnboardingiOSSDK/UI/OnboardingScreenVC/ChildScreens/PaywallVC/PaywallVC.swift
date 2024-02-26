@@ -440,7 +440,7 @@ private extension PaywallVC {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
 
-                OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
+                OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : "uniqueTransactionId"])
                 
                 self.value = selectedProduct.id
                 

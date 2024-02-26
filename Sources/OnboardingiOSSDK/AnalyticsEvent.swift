@@ -177,6 +177,7 @@ public enum AnalyticsEvent: String {
     //    screenID
     //    screenName
     //    productId
+    //    transactionId
     case purchaseCanceled
     //    Parameters:
     //    screenID
@@ -283,6 +284,8 @@ public enum AnalyticsEventParams: String {
     
     case productId
     
+    case transactionId
+
     case hasActiveSubscription
 
 }
