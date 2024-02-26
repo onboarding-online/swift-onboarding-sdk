@@ -218,6 +218,9 @@ public enum AnalyticsEvent: String {
     //    Parameters:
     //    edge
     case nextScreenEdgeForWrongConditions = "there are no right conditions. Random edge for wrong condition used!!!"
+    
+    case paymentServiceNotFound = "didn't find json file"
+
             
 }
 

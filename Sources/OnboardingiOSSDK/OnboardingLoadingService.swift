@@ -104,6 +104,12 @@ final class OnboardingLoadingService {
         return error
     }
     
+    static func errorNoPaymentService() -> GenericError {
+        let error = GenericError.init(errorCode: 1, localizedDescription: "didn't find payment service")
+        systemEventRegistered(event: .paymentServiceNotFound, params: nil)
+        return error
+    }
+    
     static func errorJSONWithBrokenStruct(jsonName: String) -> GenericError {
         let error = GenericError.init(errorCode: 3, localizedDescription: "could not decode json \(jsonName)")
         systemEventRegistered(event: .wrongJSONStruct, params: [.jsonName: jsonName])

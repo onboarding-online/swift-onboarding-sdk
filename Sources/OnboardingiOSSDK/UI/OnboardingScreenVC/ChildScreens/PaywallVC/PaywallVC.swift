@@ -302,7 +302,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     var itemsHeight: CGFloat = 0.0
                     
                     for (index, item) in screenData.subscriptions.items.enumerated() {
-//                        let item = screenData.subscriptions.items[index]
                         
                         if self.products.count - 1 >= index {
                             let currentProduct = self.products[index]
@@ -312,7 +311,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         }
                     }
 
-//                    let itemsHeight: CGFloat = CGFloat(numberOfItems) * Constants.subscriptionListItemHeight
                     let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing
                     contentSize += (itemsHeight + spacingHeight)
                 case .subscriptionsTiles:
@@ -476,7 +474,6 @@ private extension PaywallVC {
             bottomView.setupPaymentDetailsLabel(content: currentProduct)
         }
         
-        
         self.collectionView.performBatchUpdates {
             collectionView.reloadSections(IndexSet(0..<sections.count))
         }
@@ -484,11 +481,7 @@ private extension PaywallVC {
     
     @objc func closeButtonPressed() {
 //        guard !isBusy else { return }
-        
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Close",
-//                                              logAnalytics: true)
-        
+                
         OnboardingService.shared.eventRegistered(event: .paywallCloseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name])
 
         finishWith(action: screenData.navigationBar.close?.action)
@@ -829,13 +822,6 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
 
         let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product)
         let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
-        
-        
-        print("\(item.leftLabelTop.textFor(product: product!))")
-        print("\(item.leftLabelBottom.textFor(product: product!))")
-
-        print("\(item.rightLabelTop.textFor(product: product!))")
-        print("\(item.rightLabelBottom.textFor(product: product!))")
 
         let floatMaxHeightColumnWidth: Double
         if leftColumnHeight > rightColumnHeight {
