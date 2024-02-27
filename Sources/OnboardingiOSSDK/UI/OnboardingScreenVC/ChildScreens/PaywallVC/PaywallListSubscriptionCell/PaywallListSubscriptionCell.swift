@@ -58,33 +58,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         
         clipsToBounds = false
         savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
-        contentContainerView.layer.cornerRadius = 16
-        contentContainerView.layer.borderColor = UIColor.blue.cgColor
-        
-        checkBoxHeight.constant = 24
-        checkBoxWidth.constant = 24
-        checkBoxTrailing.constant = 16
-        
-        mainContainerBottomConstraint.constant = 16
-        mainContainerTopConstraint.constant = 16
-        mainContainerTrailingConstraint.constant = 16
-        mainContainerLeadingConstraint.constant = 16
-
-        cellLeadingConstraint.constant = 16
-        cellTrailingConstraint.constant = 16
-    }
-    
-    func setupSizes(subscriptionItem: ItemTypeSubscription) {
-        leftStack.spacing = item.styles.columnVerticalPadding ?? 4
-        rightStack.spacing = item.styles.columnVerticalPadding ?? 4
-        
-        containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
-        
-        let leftColumnSize = (subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
-        let rightColumnSize = 1 - leftColumnSize
-
-        leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
-        rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
     }
 
 }
@@ -97,7 +70,6 @@ extension PaywallListSubscriptionCell {
                  subscriptionItem: ItemTypeSubscription,
                  listWithStyles: SubscriptionList,
                  product: StoreKitProduct) {
-        
         if isSelected {
             checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
         } else {
@@ -105,7 +77,7 @@ extension PaywallListSubscriptionCell {
         }
         
         self.item = subscriptionItem
-        setupSizes(subscriptionItem: subscriptionItem)
+        setupSizes(subscriptionItem: subscriptionItem, list: listWithStyles)
         setBadgePosition(configuration.badgePosition, settings: item.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
@@ -174,7 +146,6 @@ private extension PaywallListSubscriptionCell {
         contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
     }
     
-    
     func setBadgePosition(_ position: SavedMoneyBadgePosition, settings: Badge?) {
        
         NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
@@ -189,7 +160,6 @@ private extension PaywallListSubscriptionCell {
             savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
             savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
             savedMoneyView.layer.borderColor = badge.styles.borderColor?.hexStringToColor.cgColor
-
 
             savedMoneyView.label.apply(badge: settings)
             switch badge.styles.position {
@@ -214,6 +184,41 @@ private extension PaywallListSubscriptionCell {
 
 // MARK: - Open methods
 extension PaywallListSubscriptionCell {
+    
+    func setupSizes(subscriptionItem: ItemTypeSubscription, list: SubscriptionList) {
+
+        setupCheckBoxSizes(subscriptionItem: subscriptionItem)
+        
+        mainContainerBottomConstraint.constant = subscriptionItem.box.styles.paddingBottom ?? 16
+        mainContainerTopConstraint.constant = subscriptionItem.box.styles.paddingTop ?? 16
+        mainContainerTrailingConstraint.constant = subscriptionItem.box.styles.paddingRight ?? 16
+        mainContainerLeadingConstraint.constant = subscriptionItem.box.styles.paddingLeft ?? 16
+
+        cellLeadingConstraint.constant = 16 + (list.box.styles.paddingLeft ?? 0)
+        cellTrailingConstraint.constant = 16 + (list.box.styles.paddingRight ?? 0)
+        
+        let leftColumnSize = (subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
+        let rightColumnSize = 1 - leftColumnSize
+        
+        leftStack.spacing = item.styles.columnVerticalPadding ?? 4
+        rightStack.spacing = item.styles.columnVerticalPadding ?? 4
+        
+        containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
+
+        leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
+        rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
+    }
+    
+    func setupCheckBoxSizes(subscriptionItem: ItemTypeSubscription) {
+        checkBoxHeight.constant = subscriptionItem.checkBox.styles.width ?? 24
+        checkBoxWidth.constant = subscriptionItem.checkBox.styles.height ?? 24
+        checkBoxTrailing.constant = subscriptionItem.checkBox.box.styles.paddingRight ?? 0
+        checkBoxLeading.constant = subscriptionItem.checkBox.box.styles.paddingLeft ?? 0
+        checkBoxTop.constant = subscriptionItem.checkBox.box.styles.paddingTop ?? 0
+        checkBoxBot.constant = subscriptionItem.checkBox.box.styles.paddingBottom ?? 0
+    }
+
+    
     enum SavedMoneyBadgePosition {
         case none, left, center, right
     }

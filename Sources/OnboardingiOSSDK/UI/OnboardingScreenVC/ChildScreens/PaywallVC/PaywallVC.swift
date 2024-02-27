@@ -805,8 +805,8 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
         
         ///cell size
-        let rightPadding = screenData.subscriptions.styles.paddingRight ?? 0
-        let leftPadding = screenData.subscriptions.styles.paddingLeft ?? 0
+        let rightPadding = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
+        let leftPadding = 16 + (screenData.subscriptions.box.styles.paddingLeft ?? 0)
         let containerWidthWithoutPaddings: CGFloat = containerWidth - rightPadding - leftPadding
         allItemsHorizontalStackViewSpacing = 0
         
