@@ -75,8 +75,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     }
     
     func setupSizes(subscriptionItem: ItemTypeSubscription) {
-
-        
         leftStack.spacing = item.styles.columnVerticalPadding ?? 4
         rightStack.spacing = item.styles.columnVerticalPadding ?? 4
         
@@ -116,14 +114,19 @@ extension PaywallListSubscriptionCell {
     }
     
     func setupCheckboxWith(list: SubscriptionList) {
-        checkBoxContainerView.removeFromSuperview()
-    
-        mainContainerStack.insertArrangedSubview(checkBoxContainerView, at: 1)
-//        allItemsHorizontalStackView.insertArrangedSubview(cellImage, at: 2)
-        
+        switch list.itemType {
+        case .checkboxLabels:
+            break
+        case .labelsCheckbox:
+            checkBoxContainerView.removeFromSuperview()
+            mainContainerStack.insertArrangedSubview(checkBoxContainerView, at: 1)
+        default:
+            checkBoxContainerView.isHidden = true
+        }
         mainContainerStack.setNeedsLayout()
         mainContainerStack.layoutIfNeeded()
     }
+    
     func setupLabels(subscriptionItem: ItemTypeSubscription, product: StoreKitProduct) {
         leftLabelTop.apply(text: subscriptionItem.leftLabelTop)
         leftLabelBottom.apply(text: subscriptionItem.leftLabelBottom)
