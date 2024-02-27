@@ -16,7 +16,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var checkbox: PaywallCheckboxView!
     @IBOutlet private weak var checkBoxContainerView: UIView!
 
-    
     @IBOutlet private weak var leftLabelTop: UILabel!
     @IBOutlet private weak var leftLabelBottom: UILabel!
     
@@ -134,6 +133,8 @@ private extension PaywallListSubscriptionCell {
     func setDefault(style: SubscriptionListBlock) {
         contentContainerView.layer.borderWidth = style.borderWidth ?? 0
         contentContainerView.layer.borderColor = style.borderColor?.hexStringToColor.cgColor
+        contentContainerView.layer.cornerRadius = style.borderRadius ?? 0
+
         contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
         
         contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
@@ -142,7 +143,10 @@ private extension PaywallListSubscriptionCell {
     func setSelected(selectedBlock: SelectedSubscriptionListItemBlock) {
         contentContainerView.layer.borderWidth = selectedBlock.styles.borderWidth ?? 0
         contentContainerView.layer.borderColor = selectedBlock.styles.borderColor?.hexStringToColor.cgColor
+        contentContainerView.layer.cornerRadius = selectedBlock.styles.borderRadius ?? 0
+
         contentContainerView.backgroundColor = selectedBlock.styles.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
+
         contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
     }
     
@@ -217,7 +221,6 @@ extension PaywallListSubscriptionCell {
         checkBoxTop.constant = subscriptionItem.checkBox.box.styles.paddingTop ?? 0
         checkBoxBot.constant = subscriptionItem.checkBox.box.styles.paddingBottom ?? 0
     }
-
     
     enum SavedMoneyBadgePosition {
         case none, left, center, right

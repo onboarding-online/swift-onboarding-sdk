@@ -24,18 +24,21 @@
                                 <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
+                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
+                                <rect key="frame" x="0.0" y="83" width="346" height="100"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="9Y9-FC-FrS"/>
                             <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="SpB-KJ-J8U"/>
+                            <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="Plq-34-e38" secondAttribute="leading" id="VfJ-UZ-7fv"/>
+                            <constraint firstItem="Jze-sG-Veo" firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="cLH-cI-mKM"/>
+                            <constraint firstItem="Jze-sG-Veo" firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="jas-b1-aj5"/>
                             <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="lQu-pz-ELc"/>
                             <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="woF-nx-oRb"/>
                         </constraints>
-                    </view>
-                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
-                        <rect key="frame" x="0.0" y="167" width="346" height="100"/>
-                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KAh-zU-tV3">
                         <rect key="frame" x="24" y="159" width="298" height="84"/>
@@ -73,12 +76,9 @@
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="KAh-zU-tV3" secondAttribute="trailing" constant="24" id="5E7-Xa-Myk"/>
                 <constraint firstItem="qbw-eF-EJ0" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Bse-nB-VKD"/>
-                <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="E6W-pI-TQp"/>
-                <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Inw-Nc-nzE"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="Ru8-Zz-dn8"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="Xe1-UD-mxL"/>
                 <constraint firstItem="qbw-eF-EJ0" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zfx-Jb-9IW"/>
-                <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="ag1-M3-WDm"/>
                 <constraint firstAttribute="bottom" secondItem="KAh-zU-tV3" secondAttribute="bottom" constant="24" id="gqG-wD-Dfa"/>
                 <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
                 <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" priority="500" id="zUk-u9-lGt"/>

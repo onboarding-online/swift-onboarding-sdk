@@ -816,7 +816,6 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         
         labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
         
-        
         // Calculate effective width for labels heights calculation
         var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing
         
