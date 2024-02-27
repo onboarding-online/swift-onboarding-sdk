@@ -6,12 +6,49 @@
 //
 
 import UIKit
+import ScreensGraph
+
 
 final class PaywallSeparatorCell: UICollectionViewCell {
+
+    @IBOutlet private weak var heightConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var separatorView: UIView!
+    
+    @IBOutlet private weak var separatorContainerTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var separatorContainerBottomConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var separatorContainerLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var separatorContainerTrailingConstraint: NSLayoutConstraint!
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+    }
+    
+    func setupCellWith(divider: Divider?) {
+        if let divider = divider {
+            separatorContainerTopConstraint.constant = divider.box.styles.paddingTop ?? 0
+            separatorContainerBottomConstraint.constant = divider.box.styles.paddingBottom ?? 0
+            separatorContainerLeadingConstraint.constant =  16 + (divider.box.styles.paddingRight ?? 0)
+            separatorContainerTrailingConstraint.constant = 16 + (divider.box.styles.paddingLeft ?? 0)
+            
+            separatorView.backgroundColor = divider.styles.color?.hexStringToColor  ?? .clear
+        } else {
+            separatorView.isHidden = true
+        }
+    }
+    
+    static func calculateHeightFor(divider: Divider?) -> Double {
+        if let divider = divider {
+            let top = divider.box.styles.paddingTop ?? 0
+            let bottom = divider.box.styles.paddingBottom ?? 0
+            let heigh = divider.styles.height ?? 0
+
+            let totalHeight = top + bottom + heigh
+            return totalHeight
+      
+        } else {
+            return 0.0
+        }
     }
 
 }

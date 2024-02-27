@@ -100,7 +100,7 @@ extension PaywallHeaderCell {
     
     func setScrollOffset(_ offset: CGPoint) {
         let offset = min(0, offset.y)
-        imageViewTopConstraint.constant = offset
+//        imageViewTopConstraint.constant = offset
     }
 }
 

@@ -143,7 +143,7 @@ extension PaywallVC: UICollectionViewDataSource {
             return cell
         case .separator:
             let cell = collectionView.dequeueCellOfType(PaywallSeparatorCell.self, at: indexPath)
-            
+            cell.setupCellWith(divider: screenData.divider)
             return cell
         case .loading:
             let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
@@ -276,6 +276,9 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             let currentProduct = self.products[indexPath.row]
 
             height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+        case .separator:
+            height = PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+
         default:
             height = row.height
         }
@@ -663,8 +666,9 @@ extension PaywallVC {
     
     func allSections() -> [SectionType] {
         var sections: [SectionType] = [.header]
-        
-        sections.append(.separator)
+        if screenData.divider != nil {
+            sections.append(.separator)
+        }
         sections.append(.items)
         return sections
     }
@@ -835,7 +839,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let subtitleText: Text
         
         ///size of columns
-        let leftColumnSize = item.styles.leftLabelColumnWidthPercentage ?? 0.6
+        let leftColumnSize = (item.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
         let rightColumnSize = 1 - leftColumnSize
         
         let leftColumnSizeValue = labelWidth * leftColumnSize
@@ -853,7 +857,6 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
             titleText = item.rightLabelTop
             subtitleText  = item.rightLabelBottom
             floatMaxHeightColumnWidth = rightColumnSizeValue
-
         }
 
         let titleHeight = titleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)

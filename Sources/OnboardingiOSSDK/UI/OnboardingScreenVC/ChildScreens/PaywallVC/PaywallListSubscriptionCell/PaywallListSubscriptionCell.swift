@@ -11,7 +11,11 @@ import ScreensGraph
 final class PaywallListSubscriptionCell: UICollectionViewCell {
 
     @IBOutlet private weak var contentContainerView: UIView!
+    @IBOutlet private weak var mainContainerStack: UIStackView!
+
     @IBOutlet private weak var checkbox: PaywallCheckboxView!
+    @IBOutlet private weak var checkBoxContainerView: UIView!
+
     
     @IBOutlet private weak var leftLabelTop: UILabel!
     @IBOutlet private weak var leftLabelBottom: UILabel!
@@ -70,14 +74,16 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         cellTrailingConstraint.constant = 16
     }
     
-    func setupSizes() {
-        let leftColumnSize = item.styles.leftLabelColumnWidthPercentage ?? 0.6
-        let rightColumnSize = 1 - leftColumnSize
+    func setupSizes(subscriptionItem: ItemTypeSubscription) {
+
         
         leftStack.spacing = item.styles.columnVerticalPadding ?? 4
         rightStack.spacing = item.styles.columnVerticalPadding ?? 4
         
         containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
+        
+        let leftColumnSize = (subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
+        let rightColumnSize = 1 - leftColumnSize
 
         leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
         rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
@@ -89,11 +95,11 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 extension PaywallListSubscriptionCell {
     
     func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
-                    isSelected: Bool,
-                 subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList, product: StoreKitProduct) {
+                 isSelected: Bool,
+                 subscriptionItem: ItemTypeSubscription,
+                 listWithStyles: SubscriptionList,
+                 product: StoreKitProduct) {
         
-//        checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
-
         if isSelected {
             checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
         } else {
@@ -101,13 +107,23 @@ extension PaywallListSubscriptionCell {
         }
         
         self.item = subscriptionItem
-        setupSizes()
+        setupSizes(subscriptionItem: subscriptionItem)
         setBadgePosition(configuration.badgePosition, settings: item.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
         setupLabels(subscriptionItem: subscriptionItem, product: product)
+        setupCheckboxWith(list: listWithStyles)
     }
     
+    func setupCheckboxWith(list: SubscriptionList) {
+        checkBoxContainerView.removeFromSuperview()
+    
+        mainContainerStack.insertArrangedSubview(checkBoxContainerView, at: 1)
+//        allItemsHorizontalStackView.insertArrangedSubview(cellImage, at: 2)
+        
+        mainContainerStack.setNeedsLayout()
+        mainContainerStack.layoutIfNeeded()
+    }
     func setupLabels(subscriptionItem: ItemTypeSubscription, product: StoreKitProduct) {
         leftLabelTop.apply(text: subscriptionItem.leftLabelTop)
         leftLabelBottom.apply(text: subscriptionItem.leftLabelBottom)
