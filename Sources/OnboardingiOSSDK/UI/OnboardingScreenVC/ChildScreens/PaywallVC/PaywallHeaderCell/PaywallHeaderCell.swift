@@ -47,14 +47,11 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-
         clipsToBounds = false
-        
-//        imageViewContainer.bringSubviewToFront(<#T##view: UIView##UIView#>)
-        self.bringSubviewToFront(imageViewContainer)
+        imageViewContainer.bringSubviewToFront(gradientView)
+
     }
     
-
 
 }
 
@@ -62,18 +59,22 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 extension PaywallHeaderCell {
     
     func imageHeaderSetup() {
+        var bottomPadding = screenData.image?.box.styles.paddingBottom ?? 0
+
         if let verticalPosition = screenData.styles.imageVerticalPosition {
             if verticalPosition == .headerTop {
-                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: 0).isActive = true
+                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: bottomPadding).isActive = true
             } else {
-                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+                bottomPadding *= -1
+                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: bottomPadding).isActive = true
             }
         } else {
-            imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: 16).isActive = true
+            bottomPadding *= -1
+            imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: bottomPadding).isActive = true
         }
+        
         if let box = screenData.image?.box {
             imageViewContainerTopConstraint.constant = box.styles.paddingTop ?? 0
-            imageViewContainerBottomConstraint.constant = box.styles.paddingBottom ?? 0
             imageViewContainerTrailingConstraint.constant = box.styles.paddingRight ?? 0
             imageViewContainerLeadingConstraint.constant = box.styles.paddingLeft ?? 0
         }
@@ -229,6 +230,8 @@ private extension PaywallHeaderCell {
 //                gradientView.isHidden = true
             }
         }
+        gradientView.gradientColors = [.clear, .blue]
+
     }
 }
 
