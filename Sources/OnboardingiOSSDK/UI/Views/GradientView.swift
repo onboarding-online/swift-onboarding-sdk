@@ -8,7 +8,7 @@
 import UIKit
 
 enum GradientDirection {
-    case topToBottom, leftToRight, topLeftToBottomRight, topRightToBottomLeft
+    case topToBottom, bottomToTop,leftToRight, topLeftToBottomRight, topRightToBottomLeft
 }
 
 class GradientView: UIView {
@@ -85,6 +85,9 @@ extension UIView {
         case .topRightToBottomLeft:
             gradient.startPoint = CGPoint(x: 1.0, y: 0.0)
             gradient.endPoint = CGPoint(x: 0.0, y: 1.0)
+        case .bottomToTop:
+            gradient.endPoint = CGPoint(x: 0.0, y: 0.0)
+            gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
         }
         
         gradient.name = "gradientSublayer"

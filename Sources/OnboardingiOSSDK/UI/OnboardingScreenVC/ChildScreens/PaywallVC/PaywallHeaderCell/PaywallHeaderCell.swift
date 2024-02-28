@@ -230,7 +230,12 @@ private extension PaywallHeaderCell {
 //                gradientView.isHidden = true
             }
         }
-        gradientView.gradientColors = [.clear, .blue]
+        
+        gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.2).isActive = true
+
+        gradientView.gradientDirection = .bottomToTop
+
+        gradientView.gradientColors = [.white, .init(white: 1, alpha: 0.1)]
 
     }
 }

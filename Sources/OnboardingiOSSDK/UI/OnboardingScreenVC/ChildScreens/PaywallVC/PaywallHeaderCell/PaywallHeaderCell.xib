@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -18,45 +17,44 @@
                 <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
                                 <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
                             <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
                                 <rect key="frame" x="0.0" y="0.0" width="346" height="267"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemPurpleColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="9Y9-FC-FrS"/>
                             <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" priority="900" id="SpB-KJ-J8U"/>
                             <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="Plq-34-e38" secondAttribute="trailing" constant="-346" id="UKl-CJ-hVW"/>
                             <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="Plq-34-e38" secondAttribute="leading" id="VfJ-UZ-7fv"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="cLH-cI-mKM"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="Plq-34-e38" secondAttribute="top" id="ff5-UV-gCn"/>
                             <constraint firstItem="Jze-sG-Veo" firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="jas-b1-aj5"/>
                             <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="lQu-pz-ELc"/>
+                            <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="qQs-r5-Mxz"/>
                             <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="woF-nx-oRb"/>
                         </constraints>
                     </view>
-                    <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KAh-zU-tV3">
-                        <rect key="frame" x="24" y="159" width="298" height="84"/>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KAh-zU-tV3">
+                        <rect key="frame" x="24" y="0.0" width="298" height="243"/>
                         <subviews>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5LR-dD-o6v">
-                                <rect key="frame" x="0.0" y="0.0" width="298" height="84"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="yuV-KL-dVm">
-                                    <rect key="frame" x="0.0" y="0.0" width="298" height="84"/>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5LR-dD-o6v">
+                                <rect key="frame" x="0.0" y="0.0" width="298" height="243"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="yuV-KL-dVm">
+                                    <rect key="frame" x="0.0" y="0.0" width="298" height="243"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <blurEffect style="light"/>
                             </visualEffectView>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
-                                <rect key="frame" x="8" y="8" width="282" height="68"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
+                                <rect key="frame" x="8" y="8" width="282" height="227"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </stackView>
                         </subviews>
@@ -82,8 +80,10 @@
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="24" id="Ru8-Zz-dn8"/>
                 <constraint firstItem="KAh-zU-tV3" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="Xe1-UD-mxL"/>
                 <constraint firstItem="qbw-eF-EJ0" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zfx-Jb-9IW"/>
+                <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" id="fgO-eO-XDn"/>
                 <constraint firstAttribute="bottom" secondItem="KAh-zU-tV3" secondAttribute="bottom" constant="24" id="gqG-wD-Dfa"/>
                 <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
+                <constraint firstItem="KAh-zU-tV3" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="trQ-14-pJc"/>
             </constraints>
             <size key="customSize" width="346" height="267"/>
             <connections>
@@ -108,9 +108,4 @@
             <point key="canvasLocation" x="271.75572519083971" y="-34.859154929577464"/>
         </collectionViewCell>
     </objects>
-    <resources>
-        <systemColor name="systemPurpleColor">
-            <color red="0.68627450980392157" green="0.32156862745098042" blue="0.87058823529411766" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-    </resources>
 </document>
