@@ -42,16 +42,14 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
     @IBOutlet weak var blurView: UIVisualEffectView!
     
     private var screenData: ScreenBasicPaywall! = nil
-
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         clipsToBounds = false
         imageViewContainer.bringSubviewToFront(gradientView)
-
+        self.sendSubviewToBack(imageViewContainer)
     }
-    
 
 }
 
@@ -63,14 +61,14 @@ extension PaywallHeaderCell {
 
         if let verticalPosition = screenData.styles.imageVerticalPosition {
             if verticalPosition == .headerTop {
-                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.topAnchor, constant: bottomPadding).isActive = true
+                imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.topAnchor, constant: bottomPadding).isActive = true
             } else {
                 bottomPadding *= -1
-                imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: bottomPadding).isActive = true
+                imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
             }
         } else {
             bottomPadding *= -1
-            imageViewContainer.bottomAnchor.constraint(equalTo: contentStackView.bottomAnchor, constant: bottomPadding).isActive = true
+            imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
         if let box = screenData.image?.box {
@@ -173,7 +171,7 @@ private extension PaywallHeaderCell {
         listLeadingConstraint.constant = screenData.list.box.styles.paddingLeft ?? 24
         listTrailingConstraint.constant = screenData.list.box.styles.paddingRight ?? 24
         listBottomConstraint.constant = screenData.list.box.styles.paddingBottom ?? 24
-        
+//
         listItemLeadingConstraint.constant = screenData.list.styles.paddingLeft ?? 4
         listItemTrailingConstraint.constant = screenData.list.styles.paddingRight ?? 4
         listItemTopConstraint.constant = screenData.list.styles.paddingTop ?? 8
