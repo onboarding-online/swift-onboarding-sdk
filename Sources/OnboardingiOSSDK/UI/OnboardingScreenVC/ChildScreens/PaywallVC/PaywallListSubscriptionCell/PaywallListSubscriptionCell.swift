@@ -209,8 +209,24 @@ extension PaywallListSubscriptionCell {
         
         containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
 
-        leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
-        rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
+//        let isLeftColumnEmpty = subscriptionItem.leftLabelBottom.textByLocale().isEmpty &&  subscriptionItem.leftLabelTop.textByLocale().isEmpty
+//
+//        let isRightColumnEmpty = subscriptionItem.rightLabelTop.textByLocale().isEmpty &&  subscriptionItem.rightLabelBottom.textByLocale().isEmpty
+//
+//        if  isLeftColumnEmpty ||  isRightColumnEmpty{
+//
+//        } else {
+//            leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
+//            rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
+//        }
+        
+        let widthConstraintLeft = leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize)
+        widthConstraintLeft.priority = .defaultHigh
+        widthConstraintLeft.isActive = true
+        
+        let widthConstraintRight = rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize)
+        widthConstraintRight.priority = .defaultHigh
+        widthConstraintRight.isActive = true
     }
     
     func setupCheckBoxSizes(subscriptionItem: ItemTypeSubscription) {
