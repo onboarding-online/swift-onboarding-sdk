@@ -193,10 +193,10 @@ extension PaywallListSubscriptionCell {
 
         setupCheckBoxSizes(subscriptionItem: subscriptionItem)
         
-        mainContainerBottomConstraint.constant = subscriptionItem.box.styles.paddingBottom ?? 16
-        mainContainerTopConstraint.constant = subscriptionItem.box.styles.paddingTop ?? 16
-        mainContainerTrailingConstraint.constant = subscriptionItem.box.styles.paddingRight ?? 16
-        mainContainerLeadingConstraint.constant = subscriptionItem.box.styles.paddingLeft ?? 16
+        mainContainerBottomConstraint.constant = list.styles.paddingBottom ?? 16
+        mainContainerTopConstraint.constant = list.styles.paddingTop ?? 16
+        mainContainerTrailingConstraint.constant = list.styles.paddingRight ?? 16
+        mainContainerLeadingConstraint.constant = list.styles.paddingLeft ?? 16
 
         cellLeadingConstraint.constant = 16 + (list.box.styles.paddingLeft ?? 0)
         cellTrailingConstraint.constant = 16 + (list.box.styles.paddingRight ?? 0)

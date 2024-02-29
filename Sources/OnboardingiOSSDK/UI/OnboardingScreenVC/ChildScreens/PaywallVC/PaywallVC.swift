@@ -800,19 +800,26 @@ private extension PaywallVC.HeaderCellConfiguration {
 
 
 final class PaywallCellWithBorderConfigurator: CellConfigurator {
-    
+    var cellLeading: CGFloat = 24
+    var cellTrailing: CGFloat = 24
+    var cellTop: CGFloat = 24
+    var cellBottom: CGFloat = 24
     
     func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
-        
         ///cell size
-        let rightPadding = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
-        let leftPadding = 16 + (screenData.subscriptions.box.styles.paddingLeft ?? 0)
-        let containerWidthWithoutPaddings: CGFloat = containerWidth - rightPadding - leftPadding
+        cellTrailing = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
+        cellLeading = 16 + (screenData.subscriptions.box.styles.paddingLeft ?? 0)
+        cellTop = 16 + (screenData.subscriptions.box.styles.paddingTop ?? 0)
+        cellBottom = 16 + (screenData.subscriptions.box.styles.paddingBottom ?? 0)
+
+        let containerWidthWithoutPaddings: CGFloat = containerWidth - cellTrailing - cellLeading
         allItemsHorizontalStackViewSpacing = 0
         
         ///cell content size
-        containerLeading = item.box.styles.paddingLeft ?? 16
-        containerTrailing = item.box.styles.paddingRight ?? 16
+        containerLeading = screenData.subscriptions.styles.paddingLeft ?? 16
+        containerTrailing = screenData.subscriptions.styles.paddingRight ?? 16
+        containerTop = screenData.subscriptions.styles.paddingTop ?? 16
+        containerBottom = screenData.subscriptions.styles.paddingBottom ?? 16
         
         labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
         
@@ -841,8 +848,16 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let leftColumnSize = (item.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
         let rightColumnSize = 1 - leftColumnSize
         
-        let leftColumnSizeValue = labelWidth * leftColumnSize
-        let rightColumnSizeValue = labelWidth * rightColumnSize
+        var leftColumnSizeValue = labelWidth * leftColumnSize
+        var rightColumnSizeValue = labelWidth * rightColumnSize
+        
+        /// If one column is empty then use all container width
+        if item.leftLabelTop.textByLocale().isEmpty &&  item.leftLabelBottom.textByLocale().isEmpty {
+            rightColumnSizeValue = labelWidth
+        }
+        if item.rightLabelTop.textByLocale().isEmpty &&  item.rightLabelBottom.textByLocale().isEmpty {
+            leftColumnSizeValue = labelWidth
+        }
 
         let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product)
         let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
@@ -869,7 +884,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         if titleHeight > 0.0 && subtitleHeight > 0.0 {
             totalLabelsBlockHeight += labelsVerticalStackViewSpacing
         }
-                
+                        
         //Get max elemets height for cell height
         var maxHeight = totalLabelsBlockHeight > imageHeigh ? totalLabelsBlockHeight : imageHeigh
         
