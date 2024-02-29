@@ -43,13 +43,15 @@
                         </constraints>
                     </view>
                     <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5LR-dD-o6v">
-                        <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+                        <rect key="frame" x="0.0" y="113" width="346" height="284"/>
                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="yuV-KL-dVm">
-                            <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+                            <rect key="frame" x="0.0" y="0.0" width="346" height="284"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </view>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <blurEffect style="light"/>
+                        <vibrancyEffect style="fill">
+                            <blurEffect style="prominent"/>
+                        </vibrancyEffect>
                     </visualEffectView>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Cii-tw-ukF">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
@@ -78,16 +80,16 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="qbw-eF-EJ0" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Bse-nB-VKD"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="trailing" secondItem="Cii-tw-ukF" secondAttribute="trailing" id="Eti-It-ywM"/>
                 <constraint firstItem="Cii-tw-ukF" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Ne4-yO-zkh"/>
                 <constraint firstAttribute="trailing" secondItem="Cii-tw-ukF" secondAttribute="trailing" id="Qiv-99-8HV"/>
                 <constraint firstAttribute="bottom" secondItem="Cii-tw-ukF" secondAttribute="bottom" id="Uno-hq-I1S"/>
                 <constraint firstItem="qbw-eF-EJ0" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zfx-Jb-9IW"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="bottom" secondItem="Cii-tw-ukF" secondAttribute="bottom" id="cWj-Pc-l1a"/>
                 <constraint firstItem="Cii-tw-ukF" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="chw-58-nS5"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="leading" secondItem="Cii-tw-ukF" secondAttribute="leading" id="fGz-HP-N7r"/>
                 <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" priority="10" id="fgO-eO-XDn"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="top" secondItem="Cii-tw-ukF" secondAttribute="top" id="l9x-ef-ljP"/>
+                <constraint firstItem="5LR-dD-o6v" firstAttribute="top" secondItem="Lag-yb-nxE" secondAttribute="top" id="gD2-IX-x3k"/>
+                <constraint firstItem="5LR-dD-o6v" firstAttribute="bottom" secondItem="Lag-yb-nxE" secondAttribute="bottom" id="hPS-Rj-quy"/>
+                <constraint firstItem="5LR-dD-o6v" firstAttribute="leading" secondItem="Lag-yb-nxE" secondAttribute="leading" id="lHk-RT-slY"/>
+                <constraint firstItem="5LR-dD-o6v" firstAttribute="trailing" secondItem="Lag-yb-nxE" secondAttribute="trailing" id="lOO-zI-Ks5"/>
                 <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
             </constraints>
             <size key="customSize" width="346" height="397"/>
