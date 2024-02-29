@@ -86,7 +86,7 @@
                 <constraint firstItem="5LR-dD-o6v" firstAttribute="bottom" secondItem="Cii-tw-ukF" secondAttribute="bottom" id="cWj-Pc-l1a"/>
                 <constraint firstItem="Cii-tw-ukF" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="chw-58-nS5"/>
                 <constraint firstItem="5LR-dD-o6v" firstAttribute="leading" secondItem="Cii-tw-ukF" secondAttribute="leading" id="fGz-HP-N7r"/>
-                <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" id="fgO-eO-XDn"/>
+                <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" priority="10" id="fgO-eO-XDn"/>
                 <constraint firstItem="5LR-dD-o6v" firstAttribute="top" secondItem="Cii-tw-ukF" secondAttribute="top" id="l9x-ef-ljP"/>
                 <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
             </constraints>
@@ -101,6 +101,7 @@
                 <outlet property="imageViewContainerLeadingConstraint" destination="woF-nx-oRb" id="x2a-R3-wmf"/>
                 <outlet property="imageViewContainerTopConstraint" destination="9Y9-FC-FrS" id="qAA-s6-Y3I"/>
                 <outlet property="imageViewContainerTrailingConstraint" destination="lQu-pz-ELc" id="oX1-HJ-kBB"/>
+                <outlet property="imageViewTopConstraint" destination="Zfx-Jb-9IW" id="ws2-6b-Lx7"/>
                 <outlet property="listBackground" destination="Lag-yb-nxE" id="CU5-M7-MBP"/>
                 <outlet property="listBottomConstraint" destination="Uno-hq-I1S" id="F79-zL-5Tx"/>
                 <outlet property="listItemBottomConstraint" destination="VPK-q7-Tuw" id="jCW-p2-m1d"/>
