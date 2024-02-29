@@ -30,21 +30,21 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Keo-f3-Pv3">
                                                 <rect key="frame" x="0.0" y="204.66666666666666" width="16" height="16"/>
                                                 <subviews>
-                                                    <view contentMode="scaleToFill" horizontalHuggingPriority="247" verticalHuggingPriority="249" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="1Ep-Wc-ZXG" customClass="PaywallCheckboxView" customModule="OnboardingiOSSDK">
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1hQ-Lh-rVr">
                                                         <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="16" id="8vV-NU-PAc"/>
-                                                            <constraint firstAttribute="width" constant="16" id="tpB-gg-sqL"/>
+                                                            <constraint firstAttribute="height" constant="16" id="Qbn-JO-aLu"/>
+                                                            <constraint firstAttribute="width" constant="16" id="e48-0D-Ikg"/>
                                                         </constraints>
-                                                    </view>
+                                                    </imageView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
-                                                    <constraint firstItem="1Ep-Wc-ZXG" firstAttribute="leading" secondItem="Keo-f3-Pv3" secondAttribute="leading" id="AWJ-aO-beJ"/>
-                                                    <constraint firstAttribute="trailing" secondItem="1Ep-Wc-ZXG" secondAttribute="trailing" id="CXP-KB-tNN"/>
-                                                    <constraint firstAttribute="bottom" secondItem="1Ep-Wc-ZXG" secondAttribute="bottom" id="Vga-VD-FiW"/>
-                                                    <constraint firstItem="1Ep-Wc-ZXG" firstAttribute="top" secondItem="Keo-f3-Pv3" secondAttribute="top" id="tKv-FC-54K"/>
+                                                    <constraint firstItem="1hQ-Lh-rVr" firstAttribute="top" secondItem="Keo-f3-Pv3" secondAttribute="top" id="70r-7f-VW6"/>
+                                                    <constraint firstItem="1hQ-Lh-rVr" firstAttribute="leading" secondItem="Keo-f3-Pv3" secondAttribute="leading" id="HXa-F3-arE"/>
+                                                    <constraint firstAttribute="trailing" secondItem="1hQ-Lh-rVr" secondAttribute="trailing" id="vG1-Y8-rZ6"/>
+                                                    <constraint firstAttribute="bottom" secondItem="1hQ-Lh-rVr" secondAttribute="bottom" id="w51-tG-vPf"/>
                                                 </constraints>
                                             </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" distribution="fillProportionally" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="QUJ-zw-9BT">
@@ -126,14 +126,14 @@
                 <outlet property="cellLeadingConstraint" destination="gIZ-O1-6Ar" id="QmW-GA-7uc"/>
                 <outlet property="cellTopConstraint" destination="PEn-vx-dI2" id="CT7-EF-gKn"/>
                 <outlet property="cellTrailingConstraint" destination="6Bo-sJ-00h" id="BYQ-z9-aGj"/>
-                <outlet property="checkBoxBot" destination="Vga-VD-FiW" id="3ex-fD-9YQ"/>
+                <outlet property="checkBoxBot" destination="w51-tG-vPf" id="t7V-bt-3y6"/>
                 <outlet property="checkBoxContainerView" destination="Keo-f3-Pv3" id="a5h-Jo-8Vf"/>
-                <outlet property="checkBoxHeight" destination="8vV-NU-PAc" id="ek2-fA-Jo1"/>
-                <outlet property="checkBoxLeading" destination="AWJ-aO-beJ" id="VPX-d3-k9s"/>
-                <outlet property="checkBoxTop" destination="tKv-FC-54K" id="WmU-WX-dpe"/>
-                <outlet property="checkBoxTrailing" destination="CXP-KB-tNN" id="tal-QU-Odw"/>
-                <outlet property="checkBoxWidth" destination="tpB-gg-sqL" id="eBm-xR-qWF"/>
-                <outlet property="checkbox" destination="1Ep-Wc-ZXG" id="9dx-VZ-3kv"/>
+                <outlet property="checkBoxHeight" destination="Qbn-JO-aLu" id="IiZ-1N-h8P"/>
+                <outlet property="checkBoxLeading" destination="HXa-F3-arE" id="9s7-S5-2wL"/>
+                <outlet property="checkBoxTop" destination="70r-7f-VW6" id="Vh3-GU-RrE"/>
+                <outlet property="checkBoxTrailing" destination="vG1-Y8-rZ6" id="Tpx-95-BFw"/>
+                <outlet property="checkBoxWidth" destination="e48-0D-Ikg" id="KQS-QH-gSD"/>
+                <outlet property="checkbox" destination="1hQ-Lh-rVr" id="Wil-mg-i2c"/>
                 <outlet property="containerStack" destination="QUJ-zw-9BT" id="HPR-lX-77r"/>
                 <outlet property="contentContainerView" destination="S5s-Dr-Ix9" id="NwN-Ks-NdX"/>
                 <outlet property="leftLabelBottom" destination="dP7-pD-jZa" id="iUs-Wk-9Cm"/>

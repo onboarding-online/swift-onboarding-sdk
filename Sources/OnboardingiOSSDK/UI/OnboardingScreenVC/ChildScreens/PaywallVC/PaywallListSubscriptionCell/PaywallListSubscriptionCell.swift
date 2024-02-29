@@ -13,7 +13,7 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var contentContainerView: UIView!
     @IBOutlet private weak var mainContainerStack: UIStackView!
 
-    @IBOutlet private weak var checkbox: PaywallCheckboxView!
+    @IBOutlet private weak var checkbox: UIImageView!
     @IBOutlet private weak var checkBoxContainerView: UIView!
 
     @IBOutlet private weak var leftLabelTop: UILabel!
@@ -69,11 +69,13 @@ extension PaywallListSubscriptionCell {
                  subscriptionItem: ItemTypeSubscription,
                  listWithStyles: SubscriptionList,
                  product: StoreKitProduct) {
-        if isSelected {
-            checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
-        } else {
-            checkbox.tintColor = subscriptionItem.checkBox.styles.color?.hexStringToColor
-        }
+        
+        checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
+//        if isSelected {
+//            checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
+//        } else {
+//            checkbox.tintColor = subscriptionItem.checkBox.styles.color?.hexStringToColor
+//        }
         
         self.item = subscriptionItem
         setupSizes(subscriptionItem: subscriptionItem, list: listWithStyles)
@@ -122,7 +124,7 @@ extension PaywallListSubscriptionCell {
 private extension PaywallListSubscriptionCell {
     
     func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
-        checkbox.isOn = isSelected
+//        checkbox.isOn = isSelected
         if isSelected {
             setSelected(selectedBlock: listWithStyles.selectedBlock)
         } else {
