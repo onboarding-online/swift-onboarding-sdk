@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ScreensGraph
 
 final class PaywallCheckboxView: UIView {
     
@@ -36,6 +37,11 @@ final class PaywallCheckboxView: UIView {
     override var intrinsicContentSize: CGSize {
         .init(width: 20, height: 20)
     }
+    
+    func apply(checkBox: CheckBox) {
+        
+    }
+    
 }
 
 // MARK: - Setup methods

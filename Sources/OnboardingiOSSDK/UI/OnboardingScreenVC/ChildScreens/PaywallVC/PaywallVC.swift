@@ -70,7 +70,11 @@ final class PaywallVC: BaseScreenGraphViewController {
         super.viewWillAppear(animated)
         
         setup()
-        
+        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
+//        OnboardingAnimation.runAnimationOfType(.moveAndFade(direction: .fromTopToBottom), in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton])
+        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
+
+
         navigationController?.isNavigationBarHidden = true
     }
     
@@ -79,6 +83,7 @@ final class PaywallVC: BaseScreenGraphViewController {
         
         OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
+    
     
     func setup() {
         setup(navigationBar: screenData.navigationBar)
@@ -716,7 +721,7 @@ extension PaywallVC {
     
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
-        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 12 :24 }()
+        static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 0 : 0 }()
         static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
         
         

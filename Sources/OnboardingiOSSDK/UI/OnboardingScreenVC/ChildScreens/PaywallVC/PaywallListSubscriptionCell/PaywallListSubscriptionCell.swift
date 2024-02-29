@@ -72,7 +72,7 @@ extension PaywallListSubscriptionCell {
         if isSelected {
             checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
         } else {
-            checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
+            checkbox.tintColor = subscriptionItem.checkBox.styles.color?.hexStringToColor
         }
         
         self.item = subscriptionItem

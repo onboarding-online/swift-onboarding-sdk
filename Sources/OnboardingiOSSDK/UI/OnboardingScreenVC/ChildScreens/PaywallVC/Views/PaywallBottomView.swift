@@ -21,7 +21,7 @@ final class PaywallBottomView: UIView {
 
     private var buyButtonWithInfoStack: UIStackView!
     
-    private var buyButton: UIButton!
+    public var buyButton: UIButton!
     var buyButtonContainer = UIView.init()
 
     

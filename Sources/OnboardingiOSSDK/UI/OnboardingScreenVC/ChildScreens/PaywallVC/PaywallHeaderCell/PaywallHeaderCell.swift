@@ -121,7 +121,7 @@ private extension PaywallHeaderCell {
 
             contentStackView.addArrangedSubview(titleLabel)
             contentStackView.addArrangedSubview(subtitleLabel)
-            gradientView.gradientColors = [.clear, .white]
+//            gradientView.gradientColors = [.clear, .white]
 
         case .titleBulletsList(let title, let bulletsList):
             let titleLabel = buildTitleLabel()
@@ -153,16 +153,16 @@ private extension PaywallHeaderCell {
     func applyListSettings() {
         blurView.isHidden = true
 
-        if let colorText = screenData.list.styles.backgroundColor {
-            if colorText == "#ffffff" {
-                blurView.isHidden = false
-            } else {
-                contentStackView.backgroundColor = colorText.hexStringToColor
-                blurView.isHidden = true
-            }
-        } else {
-            contentStackView.backgroundColor = .clear
-        }
+//        if let colorText = screenData.list.styles.backgroundColor {
+//            if colorText == "#ffffff" {
+//                blurView.isHidden = false
+//            } else {
+//                contentStackView.backgroundColor = colorText.hexStringToColor
+//                blurView.isHidden = true
+//            }
+//        } else {
+//            contentStackView.backgroundColor = .clear
+//        }
         
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
         listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
@@ -210,31 +210,29 @@ private extension PaywallHeaderCell {
         if let gradient = screenData.styles.bodyStyle {
             switch gradient {
             case .typeGradient(let gradient):
-                if let height = gradient.heightPercentage {
-                    gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier:  height/100).isActive = true
+                if var height = gradient.heightPercentage {
+                    height = height / 100
+                    gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier:  height).isActive = true
                 } else {
                     gradientView.isHidden = true
                 }
                 if let color = gradient.colors.first?.hexStringToColor {
-                    gradientView.gradientColors = [.clear, color]
-                    gradientView.gradientDirection = .topToBottom
+                    gradientView.gradientColors = [color, .init(white: 1, alpha: 0.001)]
+                    gradientView.gradientDirection = .bottomToTop
                 }
                
             default:
-                gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier:  0.9).isActive = true
+                gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier:  0.5).isActive = true
 
-                gradientView.gradientColors = [.clear, .white]
+                gradientView.gradientColors = [.white, .init(white: 1, alpha: 0.001)]
                 gradientView.gradientDirection = .topToBottom
-//                gradientView.isHidden = true
+                gradientView.isHidden = true
             }
+        } else {
+            gradientView.isHidden = true
         }
-        
-        gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.2).isActive = true
-
+    
         gradientView.gradientDirection = .bottomToTop
-
-        gradientView.gradientColors = [.white, .init(white: 1, alpha: 0.1)]
-
     }
 }
 
