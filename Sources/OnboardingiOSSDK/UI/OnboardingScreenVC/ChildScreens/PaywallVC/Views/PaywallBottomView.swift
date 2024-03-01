@@ -147,9 +147,9 @@ private extension PaywallBottomView {
     
     func addBuyButton() {
         buyButton = createView()
-        buyButton.backgroundColor = .blue
-        buyButton.setTitle("Buy Now", for: .normal)
-        buyButton.layer.cornerRadius = 12
+//        buyButton.backgroundColor = .blue
+//        buyButton.setTitle("Buy Now", for: .normal)
+//        buyButton.layer.cornerRadius = 12
         buyButton.addTarget(self, action: #selector(buyButtonPressed), for: .touchUpInside)
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
         

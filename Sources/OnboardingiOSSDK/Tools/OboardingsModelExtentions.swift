@@ -781,7 +781,7 @@ extension UIButton: UIImageLoader {
     
         self.layer.cornerRadius = button.styles.borderRadiusFloat()
         self.layer.borderWidth = button.styles.borderWidthFloat()
-        self.layer.borderColor = (button.styles.borderColor ?? "").hexStringToColor.cgColor
+        self.layer.borderColor = (button.styles.borderColor?.hexStringToColor ?? .clear).cgColor
     }
     
     func apply(textLabel: Text?) {

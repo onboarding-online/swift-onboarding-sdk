@@ -165,7 +165,7 @@ private extension PaywallHeaderCell {
         }
         
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
-        listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
+        listBackground.layer.borderColor = (screenData.list.styles.borderColor?.hexStringToColor ?? .clear).cgColor
         listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
         
         listLeadingConstraint.constant = screenData.list.box.styles.paddingLeft ?? 24
