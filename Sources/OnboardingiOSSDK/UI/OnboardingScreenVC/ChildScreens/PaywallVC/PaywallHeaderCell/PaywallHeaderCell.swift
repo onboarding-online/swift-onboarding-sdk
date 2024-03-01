@@ -153,16 +153,16 @@ private extension PaywallHeaderCell {
     func applyListSettings() {
         blurView.isHidden = true
 
-//        if let colorText = screenData.list.styles.backgroundColor {
+        if let colorText = screenData.list.styles.backgroundColor {
 //            if colorText == "#ffffff" {
 //                blurView.isHidden = false
 //            } else {
-//                contentStackView.backgroundColor = colorText.hexStringToColor
-//                blurView.isHidden = true
+                contentStackView.backgroundColor = colorText.hexStringToColor
+                blurView.isHidden = true
 //            }
-//        } else {
-//            contentStackView.backgroundColor = .clear
-//        }
+        } else {
+            contentStackView.backgroundColor = .clear
+        }
         
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
         listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
