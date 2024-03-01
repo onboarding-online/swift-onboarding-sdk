@@ -184,11 +184,10 @@ private extension PaywallHeaderCell {
        
         let imageView = UIImageView(image: .checkmark)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = .black
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
-        load(image: image, in: imageView)
+        applyScaleModeAndLoad(image: image, in: imageView)
         return imageView
     }
     
