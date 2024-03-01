@@ -9,6 +9,118 @@ import UIKit
 import ScreensGraph
 import StoreKit
 
+import AdSupport
+import AdServices
+import iAd
+
+public enum IntegrationType: String {
+    case appsflyer
+    case appleSearchAds
+    case adjust
+    case branch
+    case custom
+}
+
+class test {
+    
+    private(set) static var staticUuid = UUID().uuidString
+    
+    class func resetStaticUuid() {
+        staticUuid = UUID().uuidString
+    }
+    
+    static var uuid: String {
+        return UUID().uuidString
+    }
+    
+    static var idfa: String? {
+        // Get and return IDFA
+        return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+    }
+    
+    static var sdkVersion: String? {
+        return " "
+//        return Constants.Versions.SDKVersion
+    }
+    
+    static var sdkVersionBuild: Int {
+        return 1
+//        return Constants.Versions.SDKBuild
+    }
+    
+    static var appBuild: String? {
+        return Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+    }
+
+    static var appVersion: String? {
+        return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+    
+    static var device: String {
+        return ""
+//        return UIDevice.modelName
+    }
+    
+    static var locale: String {
+        return Locale.preferredLanguages.first ?? Locale.current.identifier
+    }
+    
+    static var OS: String {
+        return "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
+    }
+    
+    static var platform: String {
+        return UIDevice.current.systemName
+    }
+    
+    static var timezone: String {
+        return TimeZone.current.identifier
+    }
+    
+    static var deviceIdentifier: String? {
+        return UIDevice.current.identifierForVendor?.uuidString
+    }
+    
+    class func appleSearchAdsAttribution(completion: @escaping (OnboardingData?, Error?) -> Void) {
+        ADClient.shared().requestAttributionDetails { (attribution, error) in
+            if let attribution = attribution {
+                completion(attribution, error)
+            } else {
+                modernAppleSearchAdsAttribution(completion: completion)
+            }
+        }
+    }
+
+    private class func modernAppleSearchAdsAttribution(completion: @escaping (OnboardingData?, Error?) -> Void) {
+        if #available(iOS 14.3, *) {
+            do {
+                let attributionToken = try AAAttribution.attributionToken()
+                let request = NSMutableURLRequest(url: URL(string:"https://api-adservices.apple.com/api/v1/")!)
+                request.httpMethod = "POST"
+                request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
+                request.httpBody = Data(attributionToken.utf8)
+                let task = URLSession.shared.dataTask(with: request as URLRequest) { (data, _, error) in
+                    guard let data = data else {
+                        completion(nil, error)
+                        return
+                    }
+                    do {
+                        let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? OnboardingData
+                        completion(result, nil)
+                    } catch {
+                        completion(nil, error)
+                    }
+                }
+                task.resume()
+            } catch  {
+                completion(nil, error)
+            }
+        } else {
+            completion(nil, nil)
+        }
+    }
+}
+
 // TODO: - Check for canMakePayments before showing paywall 
 final class PaywallVC: BaseScreenGraphViewController {
     
