@@ -137,17 +137,17 @@ private extension PaywallListSubscriptionCell {
         contentContainerView.layer.borderColor = style.borderColor?.hexStringToColor.cgColor
         contentContainerView.layer.cornerRadius = style.borderRadius ?? 0
 
-        contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
+        contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .clear
         
         contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
     }
     
     func setSelected(selectedBlock: SelectedSubscriptionListItemBlock) {
         contentContainerView.layer.borderWidth = selectedBlock.styles.borderWidth ?? 0
-        contentContainerView.layer.borderColor = selectedBlock.styles.borderColor?.hexStringToColor.cgColor
+        contentContainerView.layer.borderColor = (selectedBlock.styles.borderColor?.hexStringToColor ?? .clear).cgColor
         contentContainerView.layer.cornerRadius = selectedBlock.styles.borderRadius ?? 0
 
-        contentContainerView.backgroundColor = selectedBlock.styles.backgroundColor?.hexStringToColor ?? .black.withAlphaComponent(0.05)
+        contentContainerView.backgroundColor = selectedBlock.styles.backgroundColor?.hexStringToColor ?? .clear
 
         contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
     }
