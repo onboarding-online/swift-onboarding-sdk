@@ -138,7 +138,7 @@ private extension PaywallBottomView {
         addSubview(buyButtonWithInfoStack)
         
         NSLayoutConstraint.activate([
-            buyButtonWithInfoStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: sideOffset),
+            buyButtonWithInfoStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             buyButtonWithInfoStack.centerXAnchor.constraint(equalTo: centerXAnchor),
             buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             buyButtonWithInfoStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
