@@ -162,10 +162,11 @@ private extension PaywallListSubscriptionCell {
         if let badge = settings {
             savedMoneyView.isHidden = false
             
-            savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor
+            savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
+            
             savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
             savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
-            savedMoneyView.layer.borderColor = badge.styles.borderColor?.hexStringToColor.cgColor
+            savedMoneyView.layer.borderColor = badge.styles.borderColor?.hexStringToColor.cgColor ?? UIColor.clear.cgColor
 
             savedMoneyView.label.apply(badge: settings)
             switch badge.styles.position {
