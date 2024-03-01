@@ -536,21 +536,19 @@ extension UIImageView  {
             } else {
                 imageName = "Circle_off"
             }
-//            imageName = isSelected ? "Circle_on" : "Circle_off"
         case .square:
             if isSelected {
                 imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "rounded_on_dark" : "Square_Rounded_on"
             } else {
                 imageName = "Square_Rounded_off"
             }
-//            imageName = isSelected ? "Square_Rounded_on" : "Square_Rounded_off"
         }
         
         if let image = UIImage.init(named: "\(imageName).png", in: .module, with: nil) {
             self.image = image.withRenderingMode(.alwaysTemplate)
             let tintColor = isSelected ? checkbox.selectedBlock.styles.color : checkbox.styles.color
             
-            self.tintColor = tintColor?.hexStringToColor
+            self.tintColor = tintColor?.hexStringToColor ?? .clear
         }
     }
     
