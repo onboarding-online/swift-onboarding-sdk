@@ -287,6 +287,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         default:
             height = row.height
         }
+        height = max(0, height)
         return .init(width: collectionView.bounds.width, height: height)
     }
     
