@@ -138,7 +138,7 @@ private extension PaywallBottomView {
         addSubview(buyButtonWithInfoStack)
         
         NSLayoutConstraint.activate([
-            buyButtonWithInfoStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: sideOffset),
+            buyButtonWithInfoStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             buyButtonWithInfoStack.centerXAnchor.constraint(equalTo: centerXAnchor),
             buyButtonWithInfoStack.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             buyButtonWithInfoStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
@@ -147,9 +147,9 @@ private extension PaywallBottomView {
     
     func addBuyButton() {
         buyButton = createView()
-        buyButton.backgroundColor = .blue
-        buyButton.setTitle("Buy Now", for: .normal)
-        buyButton.layer.cornerRadius = 12
+//        buyButton.backgroundColor = .blue
+//        buyButton.setTitle("Buy Now", for: .normal)
+//        buyButton.layer.cornerRadius = 12
         buyButton.addTarget(self, action: #selector(buyButtonPressed), for: .touchUpInside)
         buyButtonWithInfoStack.addArrangedSubview(buyButton)
         

@@ -26,7 +26,7 @@ final class SavedMoneyView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        layer.cornerRadius = bounds.height / 2
+//        layer.cornerRadius = bounds.height / 2
     }
     
     override var intrinsicContentSize: CGSize {
@@ -37,7 +37,6 @@ final class SavedMoneyView: UIView {
 // MARK: - Setup methods
 private extension SavedMoneyView {
     func setup() {
-        backgroundColor = .red
         addLabel()
     }
     

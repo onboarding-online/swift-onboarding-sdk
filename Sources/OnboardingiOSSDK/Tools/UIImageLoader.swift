@@ -23,6 +23,17 @@ extension UIImageLoader {
         }
     }
     
+    func applyScaleModeAndLoad(image: Image?, in imageView: UIImageView) {
+        Task { @MainActor in
+            self.load(image: image, in: imageView)
+            if let imageContentMode = image?.imageContentMode() {
+                imageView.contentMode = imageContentMode
+            } else {
+                imageView.contentMode = .scaleAspectFit
+            }
+        }
+    }
+    
     func load(image: BaseImage?, in button: UIButton) {
         Task { @MainActor in
             guard let image = await image?.loadImage() else {

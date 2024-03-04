@@ -399,6 +399,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         default:
             height = row.height
         }
+        height = max(0, height)
         return .init(width: collectionView.bounds.width, height: height)
     }
     
@@ -429,6 +430,11 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         } else {
                             itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }
+                    }
+                    
+                    itemsHeight += PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+                    if screenData.divider != nil {
+                        itemsHeight += Constants.sectionsSpacing
                     }
 
                     let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing

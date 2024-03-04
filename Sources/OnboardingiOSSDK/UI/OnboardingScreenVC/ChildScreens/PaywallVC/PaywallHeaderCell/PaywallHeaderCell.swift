@@ -153,19 +153,19 @@ private extension PaywallHeaderCell {
     func applyListSettings() {
         blurView.isHidden = true
 
-//        if let colorText = screenData.list.styles.backgroundColor {
+        if let colorText = screenData.list.styles.backgroundColor {
 //            if colorText == "#ffffff" {
 //                blurView.isHidden = false
 //            } else {
-//                contentStackView.backgroundColor = colorText.hexStringToColor
-//                blurView.isHidden = true
+                contentStackView.backgroundColor = colorText.hexStringToColor
+                blurView.isHidden = true
 //            }
-//        } else {
-//            contentStackView.backgroundColor = .clear
-//        }
+        } else {
+            contentStackView.backgroundColor = .clear
+        }
         
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
-        listBackground.layer.borderColor = screenData.list.styles.borderColor?.hexStringToColor.cgColor
+        listBackground.layer.borderColor = (screenData.list.styles.borderColor?.hexStringToColor ?? .clear).cgColor
         listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
         
         listLeadingConstraint.constant = screenData.list.box.styles.paddingLeft ?? 24
@@ -184,11 +184,10 @@ private extension PaywallHeaderCell {
        
         let imageView = UIImageView(image: .checkmark)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = .black
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
-        load(image: image, in: imageView)
+        applyScaleModeAndLoad(image: image, in: imageView)
         return imageView
     }
     
