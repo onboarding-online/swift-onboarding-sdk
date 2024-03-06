@@ -71,7 +71,6 @@ final class PaywallVC: BaseScreenGraphViewController {
         
         setup()
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
-//        OnboardingAnimation.runAnimationOfType(.moveAndFade(direction: .fromTopToBottom), in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton])
         OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
 
 
@@ -457,6 +456,11 @@ private extension PaywallVC {
                 Task {
                     if let transaction = try await paymentService.activeSubscriptionReceipt() {
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
+                        
+                        let purchase = PurchaseInfo.init(integrationType: .amplitude, userId: "", transactionId: transaction.originalTransactionId, amount: 20.0, currency: "usd")
+                        AttributionStorageManager.sendPurchaseWithAttributionData(purchaseInfo: purchase) { error in
+                            print(error?.localizedDescription)
+                        }
                     }
                 }
                 

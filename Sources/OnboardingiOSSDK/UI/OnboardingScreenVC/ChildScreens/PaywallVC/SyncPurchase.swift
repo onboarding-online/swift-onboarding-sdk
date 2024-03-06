@@ -15,34 +15,36 @@ import UIKit
 import AdSupport
 import iAd
 
-enum IntegrationType: String, Codable  {
+public enum IntegrationType: String, Codable, CaseIterable  {
     case appsflyer
     case appleSearchAds
     case adjust
     case branch
+    case amplitude
+
     case custom
-    
-    static func allCases() -> [IntegrationType] {
-        return [.custom]
-    }
 }
 
 struct AttributionData {
     let source: IntegrationType
-    let networkUserId: String?
+    let platformUserId: String?
     let attribution: [AnyHashable: Any]
 }
 
 
 import Foundation
 
-class AttributionStorageManager {
+public class AttributionStorageManager {
     
     // Сохранение данных атрибуции
-    static func saveAttributionData(_ data: [AnyHashable: Any], for source: IntegrationType) {
+    public static func saveAttributionData(userId: String?, data: [AnyHashable: Any]?, for source: IntegrationType) {
         let defaults = UserDefaults.standard
+        var params = data ?? ["":""]
+        if let userId = userId {
+            params["userId"] = userId
+        }
         let key = "AttributionData_\(source.rawValue)"
-        defaults.set(data, forKey: key)
+        defaults.set(params, forKey: key)
     }
     
     // Извлечение данных атрибуции для заданной системы
@@ -53,14 +55,15 @@ class AttributionStorageManager {
     }
     
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
-    static func sendPurchaseWithAttributionData(purchaseInfo: PurchaseInfo, completion: @escaping (Error?) -> Void) {
+    public static func sendPurchaseWithAttributionData(purchaseInfo: PurchaseInfo, completion: @escaping (Error?) -> Void) {
         let apiManager = APIManager()
         var allAttributionData: [AttributionData] = []
         
         // Проходим по всем типам атрибуции и собираем данные
-        IntegrationType.allCases().forEach { source in
+        IntegrationType.allCases.forEach { source in
             if let attributionData = getAttributionData(for: source) {
-                let attribution = AttributionData(source: source, networkUserId: nil, attribution: attributionData)
+                let userId = attributionData["userId"] as? String
+                let attribution = AttributionData(source: source, platformUserId: userId, attribution: attributionData)
                 allAttributionData.append(attribution)
             }
         }
@@ -74,7 +77,7 @@ class AttributionStorageManager {
         ]
         
         // Объединение данных покупки с атрибуционными данными для отправки
-        apiManager.updateAttributions(profileId: purchaseInfo.userId, attributions: allAttributionData, purchaseAttributes: purchaseAttributes) { error in
+        apiManager.updateAttributions(transactionId: purchaseInfo.transactionId, attributions: allAttributionData, purchaseAttributes: purchaseAttributes) { error in
             completion(error)
         }
     }
@@ -99,24 +102,26 @@ class APIManager {
 
 extension APIManager {
     
-    func updateAttributions(profileId: String, attributions: [AttributionData], purchaseAttributes: [String: Any], completion: @escaping (Error?) -> Void) {
+    func updateAttributions(transactionId: String, attributions: [AttributionData], purchaseAttributes: [String: Any], completion: @escaping (Error?) -> Void) {
         // Адрес сервера и настройка запроса
-        let url = URL(string: "https://yourserver.com/api/purchases")!
+        
+        let url = URL(string: APIManager.buildURL())!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+        request.addValue("2370dbee-0b62-49ea-8ccb-ef675c6dd1f9", forHTTPHeaderField: "X-API-Key")
+
+        let attribution =  attributions.map { attributionData -> [String : Any] in
+            [
+                "platform": attributionData.source.rawValue,
+                "data": attributionData.attribution
+            ]
+        }
         // Формирование тела запроса
         let payload: [String: Any] = [
-            "profileId": profileId,
-            "purchase": purchaseAttributes,
-            "attributions": attributions.map { attributionData -> [String: Any] in
-                [
-                    "source": attributionData.source.rawValue,
-                    "attribution": attributionData.attribution,
-                    "networkUserId": attributionData.networkUserId ?? ""
-                ]
-            }
+//            "transactionId": transactionId,
+            "transactionId": "1",
+            "userAnalyticsData": attribution
         ]
         
         do {
@@ -125,11 +130,20 @@ extension APIManager {
             
             // Отправка запроса
             URLSession.shared.dataTask(with: request) { data, response, error in
+                print(response)
                 completion(error)
             }.resume()
         } catch {
             completion(error)
         }
+    }
+    
+    
+    static func buildURL() -> String {
+        let host = "dev.api.onboarding.online"
+        let baseURL = "https://\(host)/paywall-service/v1/app-store-transaction"
+                
+        return baseURL
     }
 }
 
@@ -151,7 +165,7 @@ class DefaultsManager {
 }
 
 
-struct PurchaseInfo: Codable {
+public struct PurchaseInfo: Codable {
     var uuid: String
     var idfa: String?
     var appVersion: String?
@@ -171,7 +185,7 @@ struct PurchaseInfo: Codable {
         case uuid, idfa, appVersion, appBuild, osVersion, deviceModel, locale, timezone, integrationType, appleSearchAdsAttribution, userId, transactionId, amount, currency
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         uuid = try container.decode(String.self, forKey: .uuid)
         idfa = try container.decodeIfPresent(String.self, forKey: .idfa)
@@ -189,7 +203,7 @@ struct PurchaseInfo: Codable {
         currency = try container.decode(String.self, forKey: .currency)
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(uuid, forKey: .uuid)
         try container.encodeIfPresent(idfa, forKey: .idfa)
@@ -208,7 +222,7 @@ struct PurchaseInfo: Codable {
     }
     
     // Инициализатор для создания нового экземпляра PurchaseInfo
-        init(uuid: String = UUID().uuidString,
+    public init(uuid: String = UUID().uuidString,
              idfa: String? = nil,
              appVersion: String? = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
              appBuild: String? = Bundle.main.infoDictionary?["CFBundleVersion"] as? String,
