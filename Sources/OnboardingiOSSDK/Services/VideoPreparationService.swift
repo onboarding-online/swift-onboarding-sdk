@@ -79,7 +79,8 @@ private extension VideoPreparationService {
             guard let video = ChildControllerFabrika.videos(screen: screen) else { continue }
             let baseVideo = BaseVideo.init(l10n: video.l10n, styles: video.styles)
             let player = createNewPlayer()
-            screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player,
+            let screenIdWithType = screenId + "paywall"
+            screenIdToPlayerDict[screenIdWithType] = PlayerPreparationDetails(player: player,
                                                                     video: baseVideo)
         }
         

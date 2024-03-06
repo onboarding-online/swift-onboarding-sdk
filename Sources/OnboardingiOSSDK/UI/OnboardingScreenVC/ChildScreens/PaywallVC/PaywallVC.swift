@@ -489,16 +489,6 @@ private extension PaywallVC {
     func sendToServer(transactionId: String) {
         OnboardingLoadingService.sendPaymentInfo(transactionId: transactionId, projectId: "") { result in
 
-            
-//            switch result {
-//            case .success(let screenGraph):
-//
-//
-//            case .failure(let error):
-//                OnboardingService.shared.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: error.localizedDescription])
-//
-//                finishedCallback(.failure(error))
-//            }
         }
     }
     
