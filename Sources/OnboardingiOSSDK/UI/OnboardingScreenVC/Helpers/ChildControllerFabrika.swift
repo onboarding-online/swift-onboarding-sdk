@@ -130,9 +130,16 @@ class ChildControllerFabrika {
             return value.styles.background
         case .typeScreenTitleSubtitlePicker(let value):
             return value.styles.background
+        }        
+    }
+    
+    static func videos(screen: Screen) -> Video? {
+        switch screen._struct {
+        case .typeScreenBasicPaywall(let value):
+            return value.video
+        default:
+            return nil
         }
-        
-        return nil
     }
     
     static func saveMainScreenDataFor(value: BaseScreenProtocol) -> BaseScreenProtocol? {
