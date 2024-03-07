@@ -230,7 +230,7 @@ private extension PaywallHeaderCell {
         let width = image.styles.width ?? 24
         let height = image.styles.height ?? 24
        
-        let imageView = UIImageView(image: .checkmark)
+        let imageView = UIImageView.init()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
