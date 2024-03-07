@@ -161,11 +161,12 @@ extension PaywallVC: UICollectionViewDataSource {
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            let item = screenData.subscriptions.items[index]
-            let currentProduct = self.products[index]
             
-            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
-    
+            let currentProduct = self.products[index]
+
+            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+                cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+            }
             return cell
         case .oneTimePurchase(let configuration):
             let index = indexPath.row
@@ -280,10 +281,12 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         case .tileSubscription:
             return Constants.subscriptionTileItemSize
         case .listSubscription:
-            let item = screenData.subscriptions.items[indexPath.row]
+//            let item = screenData.subscriptions.items[indexPath.row]
             let currentProduct = self.products[indexPath.row]
-
-            height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+            
+            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+                height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+            }
         case .separator:
             height = PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
 
@@ -313,14 +316,21 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     
                     var itemsHeight: CGFloat = 0.0
                     
-                    for (index, item) in screenData.subscriptions.items.enumerated() {
-                        
-                        if self.products.count - 1 >= index {
-                            let currentProduct = self.products[index]
-                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
-                        } else {
+                    for (index, item) in  self.products.enumerated() {
+                        let currentProduct = self.products[index]
+                        if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
                             itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }
+                        
+//                        if self.products.count - 1 >= index {
+//                            let currentProduct = self.products[index]
+//                            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+//                                                            
+//                            }
+//                           
+//                        } else {
+//                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
+//                        }
                     }
                     
                     itemsHeight += PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
