@@ -154,12 +154,13 @@ private extension PaywallListSubscriptionCell {
     
     func setBadgePosition(_ position: SavedMoneyBadgePosition, settings: Badge?) {
        
-        NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
 
-        var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
-                                                 savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
         
         if let badge = settings {
+            NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
+
+            var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
+                                                     savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
             savedMoneyView.isHidden = false
             
             savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
@@ -179,12 +180,15 @@ private extension PaywallListSubscriptionCell {
             default:
                 constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
             }
+            NSLayoutConstraint.activate(constraints)
+            currentSavedMoneyViewConstraints = constraints
         } else {
+//            savedMoneyView.removeFromSuperview()
+
             savedMoneyView.isHidden = true
         }
         
-        NSLayoutConstraint.activate(constraints)
-        currentSavedMoneyViewConstraints = constraints
+
     }
     
 }
@@ -223,13 +227,6 @@ extension PaywallListSubscriptionCell {
             rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
         }
         
-//        let widthConstraintLeft = leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize)
-//        widthConstraintLeft.priority = .defaultHigh
-//        widthConstraintLeft.isActive = true
-//        
-//        let widthConstraintRight = rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize)
-//        widthConstraintRight.priority = .defaultHigh
-//        widthConstraintRight.isActive = true
     }
     
     func setupCheckBoxSizes(subscriptionItem: ItemTypeSubscription) {

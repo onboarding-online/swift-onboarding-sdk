@@ -823,6 +823,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     var cellTrailing: CGFloat = 24
     var cellTop: CGFloat = 24
     var cellBottom: CGFloat = 24
+    var labelHorizontalSpacing: CGFloat = 4
     
     func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
         ///cell size
@@ -841,9 +842,10 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         containerBottom = screenData.subscriptions.styles.paddingBottom ?? 16
         
         labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
+        labelHorizontalSpacing = item.styles.columnHorizontalPadding ?? 4
         
         // Calculate effective width for labels heights calculation
-        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing
+        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing - labelHorizontalSpacing
         
         if !isImageHiddenFor(item: item) {
             labelWidth -= (imageWidth + allItemsHorizontalStackViewSpacing)
@@ -852,8 +854,10 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
             self.imageHeigh = 0
         }
         
+
         if !isCheckboxHiddenFor(item: item) {
-            labelWidth -= (checkboxSize + allItemsHorizontalStackViewSpacing)
+            let checkBoxContainer = (item.checkBox.styles.width ?? 24.0) + (item.checkBox.box.styles.paddingLeft ?? 0.0) + (item.checkBox.box.styles.paddingRight ?? 0.0)
+            labelWidth = labelWidth - checkBoxContainer
         }
         
         //Calculate labels height
@@ -899,8 +903,13 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
         totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
 
+//        //Add gap between labels if there are 2 labels
+//        if titleHeight > 0.0 && subtitleHeight > 0.0 {
+//            totalLabelsBlockHeight += labelsVerticalStackViewSpacing
+//        }
+        
         //Add gap between labels if there are 2 labels
-        if titleHeight > 0.0 && subtitleHeight > 0.0 {
+        if !titleText.textByLocale().isEmpty && !subtitleText.textByLocale().isEmpty {
             totalLabelsBlockHeight += labelsVerticalStackViewSpacing
         }
                         
