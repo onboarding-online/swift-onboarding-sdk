@@ -205,7 +205,7 @@ private extension PaywallHeaderCell {
 //            if colorText == "#ffffff" {
 //                blurView.isHidden = false
 //            } else {
-                contentStackView.backgroundColor = colorText.hexStringToColor
+                listBackground.backgroundColor = colorText.hexStringToColor
                 blurView.isHidden = true
 //            }
         } else {
