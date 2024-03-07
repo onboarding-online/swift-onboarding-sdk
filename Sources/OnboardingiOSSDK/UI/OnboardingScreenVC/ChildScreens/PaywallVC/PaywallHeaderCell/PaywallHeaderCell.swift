@@ -36,7 +36,7 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
     @IBOutlet private weak var gradientHeightConstraint: NSLayoutConstraint!
 
-    private var videoBackground: VideoBackground?
+    private var videoBackground: VideoBackground? = nil
 
     @IBOutlet private weak var listBackground: UIView!
 
@@ -87,15 +87,18 @@ extension PaywallHeaderCell {
     
     func setWith(configuration: PaywallVC.HeaderCellConfiguration) {
         setWithStyle(configuration.style)
-        load(image: screenData.image, in: imageView)
+        if screenData.video == nil {
+            load(image: screenData.image, in: imageView)
+        }
     }
     
     func setWith(configuration: PaywallVC.HeaderCellConfiguration, paywallData: ScreenBasicPaywall) {
         screenData = paywallData
         setWithStyle(configuration.style)
         imageHeaderSetup()
-        
-        load(image: screenData.image, in: imageView)
+        if screenData.video == nil {
+            load(image: screenData.image, in: imageView)
+        }
     }
     
     func setupBackgroundFor(screenId: String,
@@ -116,16 +119,21 @@ extension PaywallHeaderCell {
     
 
     func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
-        let videoBackgroundHandler: VideoBackground
-        if let videoBackground = self.videoBackground {
-            videoBackgroundHandler = videoBackground
-        } else {
-            videoBackgroundHandler = VideoBackground()
-            self.videoBackground = videoBackgroundHandler
+//        let videoBackgroundHandler: VideoBackground
+//        if let videoBackground = self.videoBackground {
+//            videoBackgroundHandler = videoBackground
+//        } else {
+//            videoBackgroundHandler = VideoBackground()
+//            self.videoBackground = videoBackgroundHandler
+//        }
+        
+        if self.videoBackground == nil {
+            self.videoBackground = VideoBackground()
+            self.videoBackground!.play(in: self.imageViewContainer,
+                                        using: preparedData)
         }
         
-        videoBackgroundHandler.play(in: self.imageViewContainer,
-                                    using: preparedData)
+
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 //            UIView.animate(withDuration: 0.5) {
 //                self.backgroundImageView?.alpha = 0

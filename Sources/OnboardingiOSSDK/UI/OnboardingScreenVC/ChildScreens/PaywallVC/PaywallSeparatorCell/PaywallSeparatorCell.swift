@@ -32,7 +32,7 @@ final class PaywallSeparatorCell: UICollectionViewCell {
             separatorContainerTrailingConstraint.constant = 16 + (divider.box.styles.paddingLeft ?? 0)
 //
             heightConstraint.constant = divider.styles.height ?? 1
-//            separatorView.backgroundColor = divider.styles.color?.hexStringToColor  ?? .clear
+            separatorView.backgroundColor = divider.styles.color?.hexStringToColor  ?? .clear
         } else {
             separatorView.isHidden = true
         }
