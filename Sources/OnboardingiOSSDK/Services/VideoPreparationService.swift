@@ -70,18 +70,16 @@ private extension VideoPreparationService {
             case .typeBackgroundStyleVideo(let value):
                 let video = value.video
                 let player = createNewPlayer()
-                screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player,
-                                                                          video: video)
+                screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player, video: video)
             }
         }
         
-        for (screenId, screen) in screenGraph.screens {
-            guard let video = ChildControllerFabrika.videos(screen: screen) else { continue }
-            let baseVideo = BaseVideo.init(l10n: video.l10n, styles: video.styles)
-            let player = createNewPlayer()
-            let screenIdWithType = screenId + "paywall"
-            screenIdToPlayerDict[screenIdWithType] = PlayerPreparationDetails(player: player,
-                                                                    video: baseVideo)
+        for (_, screen) in screenGraph.screens {
+            let videoStruct = ChildControllerFabrika.videos(screen: screen)
+            if let video = videoStruct.video  {
+                let player = createNewPlayer()
+                screenIdToPlayerDict[videoStruct.screenIdWithElementType] = PlayerPreparationDetails(player: player, video: video)
+            }
         }
         
         preparePlayers()

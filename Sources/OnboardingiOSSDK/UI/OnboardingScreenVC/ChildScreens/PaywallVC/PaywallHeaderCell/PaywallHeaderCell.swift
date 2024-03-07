@@ -36,7 +36,8 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
     @IBOutlet private weak var gradientHeightConstraint: NSLayoutConstraint!
 
-    
+    private var videoBackground: VideoBackground?
+
     @IBOutlet private weak var listBackground: UIView!
 
     @IBOutlet weak var blurView: UIVisualEffectView!
@@ -96,6 +97,45 @@ extension PaywallHeaderCell {
         
         load(image: screenData.image, in: imageView)
     }
+    
+    func setupBackgroundFor(screenId: String,
+                            using preparationService: VideoPreparationService) {
+        preparationService.observeScreenId(screenId) { [weak self] status in
+            DispatchQueue.main.async {
+                switch status {
+                case .undefined, .preparing:
+                    return
+                case .failed:
+                    break
+                case .ready(let preparedData):
+                    self?.playVideoBackgroundWith(preparedData: preparedData)
+                }
+            }
+        }
+    }
+    
+
+    func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
+        let videoBackgroundHandler: VideoBackground
+        if let videoBackground = self.videoBackground {
+            videoBackgroundHandler = videoBackground
+        } else {
+            videoBackgroundHandler = VideoBackground()
+            self.videoBackground = videoBackgroundHandler
+        }
+        
+        videoBackgroundHandler.play(in: self.imageViewContainer,
+                                    using: preparedData)
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//            UIView.animate(withDuration: 0.5) {
+//                self.backgroundImageView?.alpha = 0
+//            } completion: { _ in
+//                self.backgroundImageView?.removeFromSuperview()
+//                self.backgroundImageView?.alpha = 1
+//            }
+//        }
+    }
+    
     
     func setScrollOffset(_ offset: CGPoint) {
         let offset = min(0, offset.y)

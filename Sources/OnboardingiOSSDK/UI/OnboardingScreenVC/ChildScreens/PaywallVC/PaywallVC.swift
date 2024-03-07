@@ -143,7 +143,11 @@ extension PaywallVC: UICollectionViewDataSource {
         case .header(let configuration):
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
             cell.setWith(configuration: configuration, paywallData: screenData)
-            
+            if screenData.video != nil {
+                let screenID = screen.id + screenData.paywallHeaderVideoKeyConstant
+                cell.setupBackgroundFor(screenId: screenID, using: videoPreparationService)
+            }
+
             return cell
         case .separator:
             let cell = collectionView.dequeueCellOfType(PaywallSeparatorCell.self, at: indexPath)
