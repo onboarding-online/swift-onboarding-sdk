@@ -471,10 +471,10 @@ private extension PaywallVC {
                     if let transaction = try await paymentService.activeSubscriptionReceipt() {
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
                         
-                        let purchase = PurchaseInfo.init(integrationType: .amplitude, userId: "", transactionId: transaction.originalTransactionId, amount: 20.0, currency: "usd")
-                        AttributionStorageManager.sendPurchaseWithAttributionData(purchaseInfo: purchase) { error in
-                            print(error?.localizedDescription)
-                        }
+//                        let purchase = PurchaseInfo.init(integrationType: .amplitude, userId: "", transactionId: transaction.originalTransactionId, amount: 20.0, currency: "usd")
+//                        AttributionStorageManager.sendPurchaseWithAttributionData(transactionId: transaction.originalTransactionId, purchaseInfo: purchase) { error in
+//                            print(error?.localizedDescription)
+//                        }
                     }
                 }
                 

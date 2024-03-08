@@ -16,11 +16,11 @@ import AdSupport
 import iAd
 
 public enum IntegrationType: String, Codable, CaseIterable  {
-    case appsflyer
-    case appleSearchAds
-    case adjust
-    case branch
-    case amplitude
+    case AppsFlyer
+    case AppleSearchAds
+    case Adjust
+    case Branch
+    case Amplitude
 
     case custom
 }
@@ -47,6 +47,23 @@ public class AttributionStorageManager {
         defaults.set(params, forKey: key)
     }
     
+    // Сохранение данных атрибуции
+    public static func createAndSaveOnceOnboarding(userId: String? = UUID.init().uuidString) -> String {
+        if AttributionStorageManager.getOnboardingUserId() == nil {
+            let defaults = UserDefaults.standard
+            let key = "onboardingUserId"
+            defaults.set(userId, forKey: key)
+        }
+        return getOnboardingUserId() ?? ""
+    }
+    
+    // Извлечение данных атрибуции для заданной системы
+    static func getOnboardingUserId() -> String? {
+        let defaults = UserDefaults.standard
+        let key = "onboardingUserId"
+        return defaults.string(forKey: key)
+    }
+    
     // Извлечение данных атрибуции для заданной системы
     static func getAttributionData(for source: IntegrationType) -> [AnyHashable: Any]? {
         let defaults = UserDefaults.standard
@@ -55,8 +72,29 @@ public class AttributionStorageManager {
     }
     
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
-    public static func sendPurchaseWithAttributionData(purchaseInfo: PurchaseInfo, completion: @escaping (Error?) -> Void) {
+    public static func sendPurchase(transactionId: String,  purchaseInfo: PurchaseInfo, completion: @escaping (Error?) -> Void) {
         let apiManager = APIManager()
+        let userID =  AttributionStorageManager.createAndSaveOnceOnboarding()
+                
+        // Подготовка данных покупки
+        let purchaseAttributes: [String: Any] = [
+            "userId": purchaseInfo.userId,
+            "transactionId": purchaseInfo.transactionId,
+            "amount": purchaseInfo.amount,
+            "currency": purchaseInfo.currency
+        ]
+        
+        // Объединение данных покупки с атрибуционными данными для отправки
+        apiManager.update(transactionId: transactionId, userId: userID, purchaseAttributes: purchaseAttributes) { error in
+            completion(error)
+        }
+    }
+    
+    // Отправка информации о покупке вместе с атрибуционными данными на сервер
+    public static func sendIntegrationsDetails(completion: @escaping (Error?) -> Void) {
+        let apiManager = APIManager()
+        let userID =  AttributionStorageManager.createAndSaveOnceOnboarding()
+        
         var allAttributionData: [AttributionData] = []
         
         // Проходим по всем типам атрибуции и собираем данные
@@ -68,41 +106,15 @@ public class AttributionStorageManager {
             }
         }
         
-        // Подготовка данных покупки
-        let purchaseAttributes: [String: Any] = [
-            "userId": purchaseInfo.userId,
-            "transactionId": purchaseInfo.transactionId,
-            "amount": purchaseInfo.amount,
-            "currency": purchaseInfo.currency
-        ]
-        
-        // Объединение данных покупки с атрибуционными данными для отправки
-        apiManager.updateAttributions(transactionId: purchaseInfo.transactionId, attributions: allAttributionData, purchaseAttributes: purchaseAttributes) { error in
+        apiManager.updateAttributions(userId: userID, attributions: allAttributionData) { error in
             completion(error)
         }
     }
 }
 
-
-// Менеджер для ведения логов
-class LoggerManager {
-    static func logMessage(_ message: String) {
-        print(message) // Пример, используйте вашу систему логирования
-    }
-}
-
-
-// API менеджер для взаимодействия с сервером (заглушка)
 class APIManager {
-    func updateAttribution(profileId: String, params: [String: Any], completion: @escaping (Error?) -> Void) {
-        // Реализуйте отправку данных на ваш сервер
-        completion(nil)
-    }
-}
-
-extension APIManager {
     
-    func updateAttributions(transactionId: String, attributions: [AttributionData], purchaseAttributes: [String: Any], completion: @escaping (Error?) -> Void) {
+    func update(transactionId: String, userId: String, purchaseAttributes: [String: Any], completion: @escaping (Error?) -> Void) {
         // Адрес сервера и настройка запроса
         
         let url = URL(string: APIManager.buildURL())!
@@ -111,17 +123,11 @@ extension APIManager {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("2370dbee-0b62-49ea-8ccb-ef675c6dd1f9", forHTTPHeaderField: "X-API-Key")
 
-        let attribution =  attributions.map { attributionData -> [String : Any] in
-            [
-                "platform": attributionData.source.rawValue,
-                "data": attributionData.attribution
-            ]
-        }
         // Формирование тела запроса
         let payload: [String: Any] = [
-//            "transactionId": transactionId,
-            "transactionId": "1",
-            "userAnalyticsData": attribution
+            "transactionId": transactionId,
+            "userId": userId,
+            "transactionDetails" : purchaseAttributes
         ]
         
         do {
@@ -138,10 +144,53 @@ extension APIManager {
         }
     }
     
+    func updateAttributions(userId: String, attributions: [AttributionData], completion: @escaping (Error?) -> Void) {
+        // Адрес сервера и настройка запроса
+        
+//        var rawUrl = APIManager.buildURlForAttributionSync() + "/\(userId)"
+        let rawUrl = APIManager.buildURlForAttributionSync()
+
+        let url = URL(string: rawUrl)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("2370dbee-0b62-49ea-8ccb-ef675c6dd1f9", forHTTPHeaderField: "X-API-Key")
+
+        var platformDict = Dictionary<String, Any>()
+        for platform in attributions {
+            platformDict[platform.source.rawValue] = ["platformUserId" : platform.platformUserId]
+        }
+        
+        let payload: Dictionary<String, Any> = ["userId": userId, "userAnalyticsData" : platformDict]
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    print(jsonString)
+            }
+            request.httpBody = jsonData
+            
+            // Отправка запроса
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                print(response)
+                completion(error)
+            }.resume()
+        } catch {
+            completion(error)
+        }
+    }
+    
     
     static func buildURL() -> String {
         let host = "dev.api.onboarding.online"
         let baseURL = "https://\(host)/paywall-service/v1/app-store-transaction"
+                
+        return baseURL
+    }
+    
+    static func buildURlForAttributionSync() -> String {
+        let host = "dev.api.onboarding.online"
+        let baseURL = "https://\(host)/paywall-service/v1/user"
                 
         return baseURL
     }
