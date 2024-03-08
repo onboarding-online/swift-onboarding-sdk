@@ -20,6 +20,7 @@ class OnboardingHeaderVC: UIViewController {
     @IBOutlet weak var parentProgressView: UIView!
 
 
+    @IBOutlet var dashProgressHeightConstraint: NSLayoutConstraint!
 
     
     @IBOutlet var backButtonWidthConstraint: NSLayoutConstraint!
@@ -85,23 +86,28 @@ private extension OnboardingHeaderVC {
         dashesProgressView.isHidden = true
         dashesTitle.isHidden = true
         
-        if let progres  = navigationBar.pageIndicator, let progressView = progressView {
-            let value = (progres.value / 100.0).floatValue
-            let filledColor = progres.styles.color?.hexStringToColor ?? .clear
-            let notFilledColor = progres.styles.trackColor?.hexStringToColor ?? .lightGray
+        if let progress  = navigationBar.pageIndicator, let progressView = progressView {
+            let value = (progress.value / 100.0).floatValue
+            let filledColor = progress.styles.color?.hexStringToColor ?? .clear
+            let notFilledColor = progress.styles.trackColor?.hexStringToColor ?? .lightGray
             
-            if navigationBar.pageIndicator?.styles.trackColor == nil {
-                dashesProgressView.isHidden = false
-                dashesTitle.isHidden = false
-                progressView.isHidden = true
-                parentProgressView.layoutIfNeeded()
-                let config = DashesProgressView.Configuration.init(notFilledColor: notFilledColor, filledColor: filledColor, numberOfDashes: 5)
-                
-                dashesProgressView.setWith(configuration: config)
-                dashesProgressView.setProgress(value.doubleValue)
-            } else {
-                dashesProgressView.isHidden = true
-                dashesTitle.isHidden = true
+            if let navigationBarLind = navigationBar.pageIndicatorKind {
+                switch navigationBarLind {
+                case .dashesWithTitle:
+                    if let config = DashesProgressView.Configuration.initWith(navigationBar: navigationBar) {
+                        dashesProgressView.isHidden = false
+                        dashesTitle.isHidden = false
+                        progressView.isHidden = true
+                        parentProgressView.layoutIfNeeded()
+                        
+                        dashProgressHeightConstraint.constant = navigationBar.dashesPageIndicator?.styles.dashHeight ?? 2
+                        dashesProgressView.setWith(configuration: config)
+                        dashesProgressView.setProgress(value.doubleValue)
+                        dashesTitle.apply(text: navigationBar.dashesPageIndicator?.title)
+                    }
+                default:
+                    break
+                }
             }
             
             progressView.tintColor = filledColor

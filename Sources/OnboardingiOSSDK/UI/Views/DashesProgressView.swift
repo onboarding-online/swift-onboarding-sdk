@@ -2,6 +2,7 @@
 //  DashesProgressView.swift
 
 import UIKit
+import ScreensGraph
 
 @IBDesignable
 final class DashesProgressView: UIView {
@@ -120,5 +121,29 @@ extension DashesProgressView {
                           filledColor: .gray,
                           numberOfDashes: numberOfDashes)
         }
+        
+        static func initWith(navigationBar: NavigationBar) -> Configuration? {
+            if let progress  = navigationBar.pageIndicator {
+                if let navigationBarLind = navigationBar.pageIndicatorKind {
+                    switch navigationBarLind {
+                    case .dashesWithTitle, .dashes, .dashesWithImage, .dashesWithTitleImage:
+                        if let dashes = navigationBar.dashesPageIndicator {
+                            let filledColorDashes = dashes.styles.filledColor?.hexStringToColor ?? .clear
+                            let notFilledColorDashes = dashes.styles.notFilledColor?.hexStringToColor ?? .lightGray
+                            let numberOfDashes = dashes.numberOfDashes.intValue
+                            let dashesHeight  = dashes.styles.dashHeight?.cgFloatValue ?? 1.0
+                            let dashesSpacing  = dashes.styles.dashesSpacing?.cgFloatValue ?? 1.0
+                            
+                            let config = DashesProgressView.Configuration.init(notFilledColor: notFilledColorDashes, filledColor: filledColorDashes, numberOfDashes: numberOfDashes, dashHeight: dashesHeight, dashesSpacing: dashesSpacing)
+                            return config
+                        }
+                    default:
+                        return nil
+                    }
+                }
+            }
+            return nil
+        }
     }
+    
 }
