@@ -855,7 +855,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         }
         
 
-        if !isCheckboxHiddenFor(item: item) {
+        if !isCheckboxHiddenFor(list: screenData.subscriptions) {
             let checkBoxContainer = (item.checkBox.styles.width ?? 24.0) + (item.checkBox.box.styles.paddingLeft ?? 0.0) + (item.checkBox.box.styles.paddingRight ?? 0.0)
             labelWidth = labelWidth - checkBoxContainer
         }
@@ -925,9 +925,13 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     
     
     
-    func isCheckboxHiddenFor(item: ItemTypeSubscription) -> Bool {
-        
-        return false
+    func isCheckboxHiddenFor(list: SubscriptionList) -> Bool {
+        switch list.itemType {
+        case .checkboxLabels, .labelsCheckbox:
+            return false
+        default:
+            return true
+        }
     }
     
     func isImageHiddenFor(item: ItemTypeSubscription) -> Bool {
