@@ -109,6 +109,7 @@ private extension DashesProgressView {
 
 // MARK: - Open methods
 extension DashesProgressView {
+    
     struct Configuration {
         var notFilledColor = UIColor.red
         var filledColor = UIColor.blue
@@ -129,7 +130,7 @@ extension DashesProgressView {
                     case .dashesWithTitle, .dashes, .dashesWithImage, .dashesWithTitleImage:
                         if let dashes = navigationBar.dashesPageIndicator {
                             let filledColorDashes = dashes.styles.filledColor?.hexStringToColor ?? .clear
-                            let notFilledColorDashes = dashes.styles.notFilledColor?.hexStringToColor ?? .lightGray
+                            let notFilledColorDashes = dashes.styles.notFilledColor?.hexStringToColor ?? .clear
                             let numberOfDashes = dashes.numberOfDashes.intValue
                             let dashesHeight  = dashes.styles.dashHeight?.cgFloatValue ?? 1.0
                             let dashesSpacing  = dashes.styles.dashesSpacing?.cgFloatValue ?? 1.0

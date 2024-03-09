@@ -88,9 +88,7 @@ private extension OnboardingHeaderVC {
         
         if let progress  = navigationBar.pageIndicator, let progressView = progressView {
             let value = (progress.value / 100.0).floatValue
-            let filledColor = progress.styles.color?.hexStringToColor ?? .clear
-            let notFilledColor = progress.styles.trackColor?.hexStringToColor ?? .lightGray
-            
+
             if let navigationBarLind = navigationBar.pageIndicatorKind {
                 switch navigationBarLind {
                 case .dashesWithTitle:
@@ -110,9 +108,10 @@ private extension OnboardingHeaderVC {
                 }
             }
             
+            let filledColor = progress.styles.color?.hexStringToColor ?? .clear
+            let notFilledColor = progress.styles.trackColor?.hexStringToColor ?? .lightGray
             progressView.tintColor = filledColor
             progressView.trackTintColor = notFilledColor
-
             progressView.setProgress(value, animated: false)
         } else {
             progressView.isHidden = true

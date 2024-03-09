@@ -886,7 +886,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
 
         let floatMaxHeightColumnWidth: Double
-        if leftColumnHeight > rightColumnHeight {
+        if leftColumnHeight >= rightColumnHeight {
             titleText = item.leftLabelTop
             subtitleText  = item.leftLabelBottom
             floatMaxHeightColumnWidth = leftColumnSizeValue
@@ -933,6 +933,19 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     func isImageHiddenFor(item: ItemTypeSubscription) -> Bool {
         
         return true
+    }
+    
+}
+extension ItemTypeSubscription {
+    
+    func isLeftColumnEmpty() -> Bool {
+        let isEmpty = self.leftLabelTop.textByLocale().isEmpty && self.leftLabelBottom.textByLocale().isEmpty
+        return isEmpty
+    }
+    
+    func isRightColumnEmpty() -> Bool {
+        let isEmpty = self.rightLabelTop.textByLocale().isEmpty && self.rightLabelBottom.textByLocale().isEmpty
+        return isEmpty
     }
     
 }

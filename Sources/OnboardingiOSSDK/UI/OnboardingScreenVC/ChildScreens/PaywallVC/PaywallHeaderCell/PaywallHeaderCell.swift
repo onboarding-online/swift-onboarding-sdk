@@ -119,29 +119,12 @@ extension PaywallHeaderCell {
     
 
     func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
-//        let videoBackgroundHandler: VideoBackground
-//        if let videoBackground = self.videoBackground {
-//            videoBackgroundHandler = videoBackground
-//        } else {
-//            videoBackgroundHandler = VideoBackground()
-//            self.videoBackground = videoBackgroundHandler
-//        }
-        
+
         if self.videoBackground == nil {
             self.videoBackground = VideoBackground()
             self.videoBackground!.play(in: self.imageViewContainer,
                                         using: preparedData)
         }
-        
-
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            UIView.animate(withDuration: 0.5) {
-//                self.backgroundImageView?.alpha = 0
-//            } completion: { _ in
-//                self.backgroundImageView?.removeFromSuperview()
-//                self.backgroundImageView?.alpha = 1
-//            }
-//        }
     }
     
     
@@ -183,6 +166,12 @@ private extension PaywallHeaderCell {
 
             applyListSettings()
             
+//            hStack.spacing =  screenData.list.styles.itemsSpacing ??
+
+            let bulletStackView = UIStackView()
+            bulletStackView.axis = .vertical
+            bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
+            
             for item in screenData.list.items {
                 let label = buildLabel()
                 label.apply(text: item.title)
@@ -192,8 +181,10 @@ private extension PaywallHeaderCell {
                 hStack.axis = .horizontal
                 hStack.spacing = 16
                 
-                contentStackView.addArrangedSubview(hStack)
+                bulletStackView.addArrangedSubview(hStack)
             }
+            contentStackView.addArrangedSubview(bulletStackView)
+
         }
         setupGradient()
     }
