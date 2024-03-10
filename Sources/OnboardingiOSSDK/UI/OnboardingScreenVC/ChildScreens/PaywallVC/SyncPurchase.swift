@@ -26,15 +26,18 @@ public enum IntegrationType: String, Codable, CaseIterable  {
 }
 
 struct AttributionData {
-    let source: IntegrationType
+    let platform: IntegrationType
     let platformUserId: String?
-    let attribution: [AnyHashable: Any]
+    let deviceUserId: String?
+
+    let attribution: [AnyHashable: Any]?
 }
 
 
 import Foundation
 
 public class AttributionStorageManager {
+    static let syncDate = "syncDate"
     
     // Сохранение данных атрибуции
     public static func saveAttributionData(userId: String?, data: [AnyHashable: Any]?, for source: IntegrationType) {
@@ -43,12 +46,13 @@ public class AttributionStorageManager {
         if let userId = userId {
             params["userId"] = userId
         }
+
         let key = "AttributionData_\(source.rawValue)"
         defaults.set(params, forKey: key)
     }
     
     // Сохранение данных атрибуции
-    public static func createAndSaveOnceOnboarding(userId: String? = UUID.init().uuidString) -> String {
+    public static func createAndSaveOnceOnboarding(userId: String) -> String {
         if AttributionStorageManager.getOnboardingUserId() == nil {
             let defaults = UserDefaults.standard
             let key = "onboardingUserId"
@@ -58,7 +62,7 @@ public class AttributionStorageManager {
     }
     
     // Извлечение данных атрибуции для заданной системы
-    static func getOnboardingUserId() -> String? {
+    public static func getOnboardingUserId() -> String? {
         let defaults = UserDefaults.standard
         let key = "onboardingUserId"
         return defaults.string(forKey: key)
@@ -71,10 +75,20 @@ public class AttributionStorageManager {
         return defaults.dictionary(forKey: key)
     }
     
+    // Извлечение данных атрибуции для заданной системы
+    static func getSyncDate(for source: IntegrationType) -> Date? {
+        let defaults = UserDefaults.standard
+        let key = "AttributionData_\(source.rawValue)"
+        let params = defaults.dictionary(forKey: key)
+        
+        return params?[AttributionStorageManager.syncDate] as? Date
+        
+    }
+    
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
     public static func sendPurchase(transactionId: String,  purchaseInfo: PurchaseInfo, completion: @escaping (Error?) -> Void) {
         let apiManager = APIManager()
-        let userID =  AttributionStorageManager.createAndSaveOnceOnboarding()
+        let userID =  AttributionStorageManager.createAndSaveOnceOnboarding(userId: UUID.init().uuidString)
                 
         // Подготовка данных покупки
         let purchaseAttributes: [String: Any] = [
@@ -91,25 +105,45 @@ public class AttributionStorageManager {
     }
     
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
-    public static func sendIntegrationsDetails(completion: @escaping (Error?) -> Void) {
+    public static func sendIntegrationsDetails(projectId: String, completion: @escaping (Error?) -> Void) {
         let apiManager = APIManager()
-        let userID =  AttributionStorageManager.createAndSaveOnceOnboarding()
-        
         var allAttributionData: [AttributionData] = []
         
         // Проходим по всем типам атрибуции и собираем данные
         IntegrationType.allCases.forEach { source in
             if let attributionData = getAttributionData(for: source) {
-                let userId = attributionData["userId"] as? String
-                let attribution = AttributionData(source: source, platformUserId: userId, attribution: attributionData)
-                allAttributionData.append(attribution)
+                if AttributionStorageManager.getSyncDate(for: source) == nil {
+                    let userId = attributionData["userId"] as? String
+                    let deviceId = attributionData["deviceId"] as? String
+
+                    let attribution = AttributionData(platform: source, platformUserId: userId, deviceUserId: deviceId, attribution: attributionData)
+                    allAttributionData.append(attribution)
+                }
             }
         }
         
-        apiManager.updateAttributions(userId: userID, attributions: allAttributionData) { error in
+        apiManager.sendAttributions(projectId: projectId, attributions: allAttributionData) { (userID, error) in
+            AttributionStorageManager.updateSyncDate()
             completion(error)
         }
     }
+    
+    public static func updateSyncDate() {
+        let date = Date()
+        let defaults = UserDefaults.standard
+
+        // Проходим по всем типам атрибуции и собираем данные
+        IntegrationType.allCases.forEach { source in
+            if AttributionStorageManager.getSyncDate(for: source) == nil {
+                if var attributionData = AttributionStorageManager.getAttributionData(for: source) {
+                    attributionData[AttributionStorageManager.syncDate]  = date
+                    let key = "AttributionData_\(source.rawValue)"
+                    defaults.set(attributionData, forKey: key)
+                }
+            }
+        }
+    }
+    
 }
 
 class APIManager {
@@ -144,21 +178,27 @@ class APIManager {
         }
     }
     
-    func updateAttributions(userId: String, attributions: [AttributionData], completion: @escaping (Error?) -> Void) {
+    func sendAttributions(projectId: String, attributions: [AttributionData], completion: @escaping (String?, Error?) -> Void) {
+        if let userId = AttributionStorageManager.getOnboardingUserId() {
+            updateAttributions(userId: userId, projectId: projectId, attributions: attributions, completion: completion)
+        } else {
+            createAttributions(projectId: projectId, attributions: attributions, completion: completion)
+        }
+    }
+    
+    func updateAttributions(userId: String, projectId: String, attributions: [AttributionData], completion: @escaping (String?, Error?) -> Void) {
         // Адрес сервера и настройка запроса
-        
-//        var rawUrl = APIManager.buildURlForAttributionSync() + "/\(userId)"
-        let rawUrl = APIManager.buildURlForAttributionSync()
+        let rawUrl = APIManager.buildURlForAttributionSync() + "/\(userId)"
 
         let url = URL(string: rawUrl)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("2370dbee-0b62-49ea-8ccb-ef675c6dd1f9", forHTTPHeaderField: "X-API-Key")
+        request.addValue(projectId, forHTTPHeaderField: "X-API-Key")
 
         var platformDict = Dictionary<String, Any>()
         for platform in attributions {
-            platformDict[platform.source.rawValue] = ["platformUserId" : platform.platformUserId]
+            platformDict[platform.platform.rawValue] = ["platformUserId" : platform.platformUserId]
         }
         
         let payload: Dictionary<String, Any> = ["userId": userId, "userAnalyticsData" : platformDict]
@@ -173,10 +213,46 @@ class APIManager {
             // Отправка запроса
             URLSession.shared.dataTask(with: request) { data, response, error in
                 print(response)
-                completion(error)
+
+                completion(nil, error)
             }.resume()
         } catch {
-            completion(error)
+            completion(nil, error)
+        }
+    }
+    
+    func createAttributions(projectId: String, attributions: [AttributionData], completion: @escaping (String?, Error?) -> Void) {
+        // Адрес сервера и настройка запроса
+        let rawUrl = APIManager.buildURlForAttributionSync()
+
+        let url = URL(string: rawUrl)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue(projectId, forHTTPHeaderField: "X-API-Key")
+
+        var platformDict = Dictionary<String, Any>()
+        for platform in attributions {
+            platformDict[platform.platform.rawValue] = ["platformUserId" : platform.platformUserId]
+        }
+        
+//        let payload: Dictionary<String, Any> = ["userId": userId, "userAnalyticsData" : platformDict]
+        let payload: Dictionary<String, Any> = ["userAnalyticsData" : platformDict]
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    print(jsonString)
+            }
+            request.httpBody = jsonData
+            
+            // Отправка запроса
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                print(response)
+                completion(nil, error)
+            }.resume()
+        } catch {
+            completion(nil, error)
         }
     }
     
