@@ -338,12 +338,16 @@ extension Text {
         }
         
         let labelKey = self.textByLocale().applyWith(product: product)
-        let font: UIFont = self.textFont()
-        
-        let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
-        let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
-        
-        return ceil(boundingBox.height)
+        if labelKey.isEmpty {
+            return 0.0
+        } else {
+            let font: UIFont = self.textFont()
+            
+            let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+            let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+            
+            return ceil(boundingBox.height)
+        }
     }
     
 }

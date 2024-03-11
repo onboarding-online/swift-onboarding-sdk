@@ -50,13 +50,25 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var savedMoneyView: SavedMoneyView!
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
     
-    private var item: ItemTypeSubscription! = nil
+    private var item: ItemTypeSubscription? = nil
+    private var list: SubscriptionList? = nil
+
+    
 
     override func awakeFromNib() {
         super.awakeFromNib()
         
         clipsToBounds = false
         savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if let item = item, let list = list {
+            setupSizes(subscriptionItem: item, list: list)
+        }
+
     }
 
 }
@@ -78,8 +90,8 @@ extension PaywallListSubscriptionCell {
 //        }
         
         self.item = subscriptionItem
-        setupSizes(subscriptionItem: subscriptionItem, list: listWithStyles)
-        setBadgePosition(configuration.badgePosition, settings: item.badge)
+        self.list = listWithStyles
+        setBadgePosition(configuration.badgePosition, settings: subscriptionItem.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
         setupLabels(subscriptionItem: subscriptionItem, product: product)
@@ -208,21 +220,22 @@ extension PaywallListSubscriptionCell {
         cellLeadingConstraint.constant = 16 + (list.box.styles.paddingLeft ?? 0)
         cellTrailingConstraint.constant = 16 + (list.box.styles.paddingRight ?? 0)
         
-        let leftColumnSize = (subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
-        let rightColumnSize = 1 - leftColumnSize
+        let horizontalSpacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
+        //Percent for horizontal gap
+        let halfHorizontalSpacingInPercent = (horizontalSpacing / containerStack.frame.width) / 2
         
-        leftStack.spacing = item.styles.columnVerticalPadding ?? 4
-        rightStack.spacing = item.styles.columnVerticalPadding ?? 4
+        var leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
+        var rightColumnSize = 1 - leftColumnSize
+         
+        leftColumnSize -= halfHorizontalSpacingInPercent
+        rightColumnSize -= halfHorizontalSpacingInPercent
+
+        leftStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
+        rightStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         
-        containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
+        containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
 
-        let isLeftColumnEmpty = subscriptionItem.leftLabelBottom.textByLocale().isEmpty &&  subscriptionItem.leftLabelTop.textByLocale().isEmpty
-
-        let isRightColumnEmpty = subscriptionItem.rightLabelTop.textByLocale().isEmpty &&  subscriptionItem.rightLabelBottom.textByLocale().isEmpty
-
-        if  isLeftColumnEmpty ||  isRightColumnEmpty{
-
-        } else {
+        if !subscriptionItem.isOneColumn() {
             leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
             rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
         }

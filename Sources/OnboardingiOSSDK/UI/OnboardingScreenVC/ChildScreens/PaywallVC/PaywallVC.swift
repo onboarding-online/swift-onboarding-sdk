@@ -319,7 +319,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     for (index, item) in  self.products.enumerated() {
                         let currentProduct = self.products[index]
                         if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
-                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }
                         
 //                        if self.products.count - 1 >= index {
@@ -871,8 +871,8 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let leftColumnSize = (item.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
         let rightColumnSize = 1 - leftColumnSize
         
-        var leftColumnSizeValue = labelWidth * leftColumnSize
-        var rightColumnSizeValue = labelWidth * rightColumnSize
+        var leftColumnSizeValue = (labelWidth - labelHorizontalSpacing/2) * leftColumnSize
+        var rightColumnSizeValue = (labelWidth - labelHorizontalSpacing/2) * rightColumnSize
         
         /// If one column is empty then use all container width
         if item.leftLabelTop.textByLocale().isEmpty &&  item.leftLabelBottom.textByLocale().isEmpty {
@@ -950,6 +950,14 @@ extension ItemTypeSubscription {
     func isRightColumnEmpty() -> Bool {
         let isEmpty = self.rightLabelTop.textByLocale().isEmpty && self.rightLabelBottom.textByLocale().isEmpty
         return isEmpty
+    }
+    
+    func isOneColumn() -> Bool {
+        if isLeftColumnEmpty() || isRightColumnEmpty() {
+            return true
+
+        }
+        return false
     }
     
 }
