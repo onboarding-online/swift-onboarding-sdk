@@ -12,7 +12,12 @@ protocol UIImageLoader { }
 
 extension UIImageLoader {
     func load(image: Image?, in imageView: UIImageView) {
+        if let cornerRadius = image?.styles.mainCornerRadius {
+            imageView.layer.cornerRadius = cornerRadius
+        }
+
         Task { @MainActor in
+            
             guard let image = await image?.loadImage() else {
                 imageView.image = nil
                 return
