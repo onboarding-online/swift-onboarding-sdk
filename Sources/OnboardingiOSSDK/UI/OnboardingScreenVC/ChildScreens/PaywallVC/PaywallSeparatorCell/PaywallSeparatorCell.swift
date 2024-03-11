@@ -28,8 +28,8 @@ final class PaywallSeparatorCell: UICollectionViewCell {
         if let divider = divider {
             separatorContainerTopConstraint.constant = divider.box.styles.paddingTop ?? 8
             separatorContainerBottomConstraint.constant = divider.box.styles.paddingBottom ?? 8
-            separatorContainerLeadingConstraint.constant =  16 + (divider.box.styles.paddingRight ?? 0)
-            separatorContainerTrailingConstraint.constant = 16 + (divider.box.styles.paddingLeft ?? 0)
+            separatorContainerLeadingConstraint.constant =  16 + (divider.box.styles.paddingLeft ?? 0)
+            separatorContainerTrailingConstraint.constant = 16 + (divider.box.styles.paddingRight ?? 0)
 //
             heightConstraint.constant = divider.styles.height ?? 1
             separatorView.backgroundColor = divider.styles.color?.hexStringToColor  ?? .clear
