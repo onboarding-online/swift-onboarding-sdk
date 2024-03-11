@@ -199,8 +199,8 @@ fileprivate extension OnboardingScreenVC {
     func setupFooter() {
         if let footer = screenData?.footer, footer.isFooterAvailable()  {
             
-            if let footerWidth = footer.button1?.styles.width, footer.button2 != nil {
-                let footerController = OnboardingFooterHorisontalVC.instantiate(footer: footer)
+            if (footer.kind ?? BasicFooterKind.vertical) == BasicFooterKind.horizontal {
+                let footerController = OnboardingFooterHorizontalVC.instantiate(footer: footer)
                 addChildViewController(footerController, andEmbedToView: footerContainerView)
                 footerController.animationEnabled = screenData?.animationEnabled ?? true
 

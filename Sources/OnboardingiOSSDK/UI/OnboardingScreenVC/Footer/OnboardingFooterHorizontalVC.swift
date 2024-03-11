@@ -8,7 +8,7 @@
 import UIKit
 import ScreensGraph
 
-class OnboardingFooterHorisontalVC: UIViewController, FooterVCProtocol {
+class OnboardingFooterHorizontalVC: UIViewController, FooterVCProtocol {
 
     @IBOutlet weak var nextButton1: UIButton!
     @IBOutlet weak var containerButton1: UIView!
@@ -42,8 +42,8 @@ class OnboardingFooterHorisontalVC: UIViewController, FooterVCProtocol {
     var animationEnabled = false
 
     
-    static func instantiate(footer: Footer) -> OnboardingFooterHorisontalVC {
-        let footerVC = OnboardingFooterHorisontalVC.nibInstance()
+    static func instantiate(footer: Footer) -> OnboardingFooterHorizontalVC {
+        let footerVC = OnboardingFooterHorizontalVC.nibInstance()
         footerVC.footer = footer
         return footerVC
     }
@@ -55,6 +55,8 @@ class OnboardingFooterHorisontalVC: UIViewController, FooterVCProtocol {
         if animationEnabled {
             runInitialAnimation()
         }
+        
+        setupButtonOrientation()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -110,9 +112,31 @@ class OnboardingFooterHorisontalVC: UIViewController, FooterVCProtocol {
 
 }
 
-private extension OnboardingFooterHorisontalVC {
+private extension OnboardingFooterHorizontalVC {
+    
+    func setupButtonOrientation() {
+//        let leftColumnSize = (subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
+//        let rightColumnSize = 1 - leftColumnSize
+        
+//        leftStack.spacing = item.styles.columnVerticalPadding ?? 4
+//        rightStack.spacing = item.styles.columnVerticalPadding ?? 4
+//        
+//        containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
+//
+//        let isLeftColumnEmpty = subscriptionItem.leftLabelBottom.textByLocale().isEmpty &&  subscriptionItem.leftLabelTop.textByLocale().isEmpty
+//
+//        let isRightColumnEmpty = subscriptionItem.rightLabelTop.textByLocale().isEmpty &&  subscriptionItem.rightLabelBottom.textByLocale().isEmpty
+
+//        if  isLeftColumnEmpty ||  isRightColumnEmpty{
+//
+//        } else {
+        nextButton1.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.29).isActive = true
+        nextButton2.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.69).isActive = true
+//        }
+    }
     
     func setupNextButton() {
+        
         
         if let nextButtonScreenData = footer.button1 {
             if let height = nextButtonScreenData.styles.height {
@@ -122,7 +146,7 @@ private extension OnboardingFooterHorisontalVC {
             nextButton1.apply(button: nextButtonScreenData)
         } else {
             nextButton1.isHidden = true
-            containerButton1.isHidden = true
+//            containerButton1.isHidden = true
         }
         
         if let nextButtonScreenData = footer.button2 {
@@ -133,7 +157,7 @@ private extension OnboardingFooterHorisontalVC {
             nextButton2.apply(button: nextButtonScreenData)
         } else {
             nextButton2.isHidden = true
-            containerButton2.isHidden = true
+//            containerButton2.isHidden = true
         }
     }
     
