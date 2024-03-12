@@ -802,6 +802,9 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         
         labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
         labelHorizontalSpacing = item.styles.columnHorizontalPadding ?? 4
+        if item.isOneColumn() {
+            labelHorizontalSpacing = 0.0
+        }
         
         // Calculate effective width for labels heights calculation
         var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing - labelHorizontalSpacing

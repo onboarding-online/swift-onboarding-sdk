@@ -204,16 +204,10 @@ extension PaywallListSubscriptionCell {
         cellTrailingConstraint.constant = 16 + (list.box.styles.paddingRight ?? 0)
         
         let horizontalSpacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
-        //Percent for horizontal gap
-        let halfHorizontalSpacingInPercent = (horizontalSpacing / containerStack.frame.width) / 2
         
-        var leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
-        var rightColumnSize = 1 - leftColumnSize
-        
-        let multiplyer = leftColumnSize / rightColumnSize
-         
-//        leftColumnSize -= halfHorizontalSpacingInPercent
-//        rightColumnSize -= halfHorizontalSpacingInPercent
+        let leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
+        let rightColumnSize = 1 - leftColumnSize
+        let multiplier = leftColumnSize / rightColumnSize
 
         leftStack.translatesAutoresizingMaskIntoConstraints = false
         rightStack.translatesAutoresizingMaskIntoConstraints = false
@@ -221,14 +215,10 @@ extension PaywallListSubscriptionCell {
 
         leftStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         rightStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
-        
-        containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
 
         if !subscriptionItem.isOneColumn() {
-            (leftStack.widthAnchor.constraint(equalTo: rightStack.widthAnchor, multiplier: multiplyer)).isActive = true
-
-//            leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
-//            rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
+            containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
+            (leftStack.widthAnchor.constraint(equalTo: rightStack.widthAnchor, multiplier: multiplier)).isActive = true
         }
     }
     
