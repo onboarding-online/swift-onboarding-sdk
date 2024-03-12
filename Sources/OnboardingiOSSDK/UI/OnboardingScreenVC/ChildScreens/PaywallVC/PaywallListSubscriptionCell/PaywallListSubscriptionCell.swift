@@ -46,7 +46,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var leftStack: UIStackView!
     @IBOutlet private weak var rightStack: UIStackView!
 
-    
     @IBOutlet private weak var savedMoneyView: SavedMoneyView!
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
     
@@ -54,20 +53,11 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     private var list: SubscriptionList? = nil
 
     
-
     override func awakeFromNib() {
         super.awakeFromNib()
         
         clipsToBounds = false
         savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if let item = item, let list = list {
-            setupSizes(subscriptionItem: item, list: list)
-        }
     }
 
 }
@@ -82,11 +72,6 @@ extension PaywallListSubscriptionCell {
                  product: StoreKitProduct) {
         
         checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
-//        if isSelected {
-//            checkbox.tintColor = subscriptionItem.checkBox.selectedBlock.styles.color?.hexStringToColor
-//        } else {
-//            checkbox.tintColor = subscriptionItem.checkBox.styles.color?.hexStringToColor
-//        }
         
         self.item = subscriptionItem
         self.list = listWithStyles
@@ -95,6 +80,11 @@ extension PaywallListSubscriptionCell {
         
         setupLabels(subscriptionItem: subscriptionItem, product: product)
         setupCheckboxWith(list: listWithStyles)
+        
+        if let item = item, let list = list {
+            self.layoutSubviews()
+            setupSizes(subscriptionItem: item, list: list)
+        }
     }
     
     func setupCheckboxWith(list: SubscriptionList) {
@@ -150,9 +140,7 @@ private extension PaywallListSubscriptionCell {
         
         contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .clear
         
-//        contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
-        contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
-
+        contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
     }
     
     func setSelected(selectedBlock: SelectedSubscriptionListItemBlock) {
@@ -194,12 +182,8 @@ private extension PaywallListSubscriptionCell {
             NSLayoutConstraint.activate(constraints)
             currentSavedMoneyViewConstraints = constraints
         } else {
-//            savedMoneyView.removeFromSuperview()
-
             savedMoneyView.isHidden = true
         }
-    
-
     }
     
 }
@@ -225,9 +209,15 @@ extension PaywallListSubscriptionCell {
         
         var leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
         var rightColumnSize = 1 - leftColumnSize
+        
+        let multiplyer = leftColumnSize / rightColumnSize
          
-        leftColumnSize -= halfHorizontalSpacingInPercent
-        rightColumnSize -= halfHorizontalSpacingInPercent
+//        leftColumnSize -= halfHorizontalSpacingInPercent
+//        rightColumnSize -= halfHorizontalSpacingInPercent
+
+        leftStack.translatesAutoresizingMaskIntoConstraints = false
+        rightStack.translatesAutoresizingMaskIntoConstraints = false
+        containerStack.translatesAutoresizingMaskIntoConstraints = false
 
         leftStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         rightStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
@@ -235,7 +225,9 @@ extension PaywallListSubscriptionCell {
         containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
 
         if !subscriptionItem.isOneColumn() {
-            leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
+            (leftStack.widthAnchor.constraint(equalTo: rightStack.widthAnchor, multiplier: multiplyer)).isActive = true
+
+//            leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
 //            rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
         }
     }
