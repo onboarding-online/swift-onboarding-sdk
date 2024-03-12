@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -34,7 +34,6 @@
                             <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="9Y9-FC-FrS"/>
                             <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" priority="10" id="KRE-f8-T5Y"/>
                             <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" priority="900" id="SpB-KJ-J8U"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="Plq-34-e38" secondAttribute="trailing" constant="-346" id="UKl-CJ-hVW"/>
                             <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="Plq-34-e38" secondAttribute="leading" id="VfJ-UZ-7fv"/>
                             <constraint firstItem="Jze-sG-Veo" firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="jas-b1-aj5"/>
                             <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="lQu-pz-ELc"/>

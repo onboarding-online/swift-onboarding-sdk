@@ -316,8 +316,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     
                     var itemsHeight: CGFloat = 0.0
                     
-                    for (index, item) in  self.products.enumerated() {
-                        let currentProduct = self.products[index]
+                    for (index, currentProduct) in  self.products.enumerated() {
                         if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
                             itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }

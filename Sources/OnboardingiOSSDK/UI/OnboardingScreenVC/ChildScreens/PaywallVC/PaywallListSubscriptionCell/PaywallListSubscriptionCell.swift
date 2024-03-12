@@ -150,7 +150,9 @@ private extension PaywallListSubscriptionCell {
         
         contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .clear
         
-        contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
+//        contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
+        contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
+
     }
     
     func setSelected(selectedBlock: SelectedSubscriptionListItemBlock) {
@@ -164,8 +166,6 @@ private extension PaywallListSubscriptionCell {
     }
     
     func setBadgePosition(_ position: SavedMoneyBadgePosition, settings: Badge?) {
-       
-
         
         if let badge = settings {
             NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
@@ -226,17 +226,17 @@ extension PaywallListSubscriptionCell {
         var leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
         var rightColumnSize = 1 - leftColumnSize
          
-//        leftColumnSize -= halfHorizontalSpacingInPercent
-//        rightColumnSize -= halfHorizontalSpacingInPercent
+        leftColumnSize -= halfHorizontalSpacingInPercent
+        rightColumnSize -= halfHorizontalSpacingInPercent
 
         leftStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         rightStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         
-//        containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
+        containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
 
         if !subscriptionItem.isOneColumn() {
             leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
-            rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
+//            rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
         }
     }
     

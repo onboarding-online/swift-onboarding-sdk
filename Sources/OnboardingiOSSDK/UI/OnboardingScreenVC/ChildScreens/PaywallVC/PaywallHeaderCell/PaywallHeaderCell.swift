@@ -143,7 +143,7 @@ private extension PaywallHeaderCell {
         }
         
         switch style {
-        case .titleSubtitle(let title, let subtitle):
+        case .titleSubtitle(_, _):
             let titleLabel = buildTitleLabel()
             let subtitleLabel = buildLabel()
 
@@ -154,7 +154,7 @@ private extension PaywallHeaderCell {
             contentStackView.addArrangedSubview(subtitleLabel)
 //            gradientView.gradientColors = [.clear, .white]
 
-        case .titleBulletsList(let title, let bulletsList):
+        case .titleBulletsList(_, _):
             let titleLabel = buildTitleLabel()
             let subtitleLabel = buildLabel()
 
@@ -171,16 +171,20 @@ private extension PaywallHeaderCell {
             let bulletStackView = UIStackView()
             bulletStackView.axis = .vertical
             bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
-            
+    
             for item in screenData.list.items {
                 let label = buildLabel()
                 label.apply(text: item.title)
                 let checkmark = buildBulletCheckmark(image: item.image)
-                
+                checkmark.clipsToBounds = true
+
+
                 let hStack = UIStackView(arrangedSubviews: [checkmark, label])
+                hStack.distribution = .fill
+                hStack.alignment = .leading
                 hStack.axis = .horizontal
                 hStack.spacing = 16
-                
+
                 bulletStackView.addArrangedSubview(hStack)
             }
             contentStackView.addArrangedSubview(bulletStackView)
@@ -222,7 +226,13 @@ private extension PaywallHeaderCell {
         let height = image.styles.height ?? 24
        
         let imageView = UIImageView.init()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+//        imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+//        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+//        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+
+//        imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
