@@ -68,7 +68,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         if let item = item, let list = list {
             setupSizes(subscriptionItem: item, list: list)
         }
-
     }
 
 }
@@ -146,9 +145,9 @@ private extension PaywallListSubscriptionCell {
     
     func setDefault(style: SubscriptionListBlock) {
         contentContainerView.layer.borderWidth = style.borderWidth ?? 0
-        contentContainerView.layer.borderColor = style.borderColor?.hexStringToColor.cgColor
+        contentContainerView.layer.borderColor = (style.borderColor?.hexStringToColor ?? .clear).cgColor
         contentContainerView.layer.cornerRadius = style.borderRadius ?? 0
-
+        
         contentContainerView.backgroundColor = style.backgroundColor?.hexStringToColor ?? .clear
         
         contentContainerView.applyFigmaShadow(x: 0, y: 1, blur: 0, spread: 0, color: .black, alpha: 0.05)
@@ -199,7 +198,7 @@ private extension PaywallListSubscriptionCell {
 
             savedMoneyView.isHidden = true
         }
-        
+    
 
     }
     
@@ -227,19 +226,18 @@ extension PaywallListSubscriptionCell {
         var leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
         var rightColumnSize = 1 - leftColumnSize
          
-        leftColumnSize -= halfHorizontalSpacingInPercent
-        rightColumnSize -= halfHorizontalSpacingInPercent
+//        leftColumnSize -= halfHorizontalSpacingInPercent
+//        rightColumnSize -= halfHorizontalSpacingInPercent
 
         leftStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         rightStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
         
-        containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
+//        containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
 
         if !subscriptionItem.isOneColumn() {
             leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize).isActive = true
             rightStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: rightColumnSize).isActive = true
         }
-        
     }
     
     func setupCheckBoxSizes(subscriptionItem: ItemTypeSubscription) {

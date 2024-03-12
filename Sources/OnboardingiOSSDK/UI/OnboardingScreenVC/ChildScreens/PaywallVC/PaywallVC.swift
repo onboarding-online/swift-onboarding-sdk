@@ -416,6 +416,14 @@ private extension PaywallVC {
                         
                         return lhsIndex < rhsIndex
                     })
+                if let item = screenData.subscriptions.items.first(where: {$0.isSelected}) {
+                    for (index, product) in self.products.enumerated() {
+                        if product.id == item.subscriptionId {
+                            selectedIndex = index
+                            print("selectedIndex \(selectedIndex)")
+                        }
+                    }
+                }
                 didLoadProducts()
             } catch {
 //                delegate?.onboardingChildScreenUpdate(value: nil,
@@ -511,6 +519,7 @@ private extension PaywallVC {
         setupCollectionView()
 
         let sections = allSections()
+        
         
         if products.count - 1 >= selectedIndex {
             let currentProduct = self.products[selectedIndex]
@@ -754,55 +763,6 @@ extension PaywallVC {
     }
     
 }
-
-//@available(iOS 17, *)
-//#Preview {
-//    createPreviewVC()
-//}
-
-//import SwiftUI
-//struct PaywallVCPreviews: PreviewProvider {
-//    static var previews: some View {
-//        UIViewControllerPreview {
-//           createPreviewVC()
-//        }
-//        .edgesIgnoringSafeArea(.all)
-//        .preferredColorScheme(.dark)
-//    }
-//}
-
-//func createPreviewVC() -> UIViewController {
-//    let paymentService = PreviewPaymentService()
-//    let vc = PaywallVC.instantiate(paymentService: paymentService)
-//    vc.productIds = ["1", "2"]
-//    let nav = UINavigationController(rootViewController: vc)
-//    
-//    return nav
-//}
-
-//final class PreviewPaymentService: OnboardingPaymentServiceProtocol {
-//    var canMakePayments: Bool { true }
-//
-//    func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct] {
-//        try? await Task.sleep(nanoseconds: 1_000_000_000)
-//
-//        return SKProduct.mock(productIds: ids)
-//    }
-//
-//    func restorePurchases() async throws {
-//        try? await Task.sleep(nanoseconds: 5_000_000_000)
-//    }
-//
-//    func purchaseProduct(_ product: SKProduct) async throws {
-//        try? await Task.sleep(nanoseconds: 5_000_000_000)
-////        throw NSError(domain: "com", code: 12)
-//    }
-//
-//    func hasActiveSubscription() async throws -> Bool {
-//        false
-//    }
-//
-//}
 
 private extension PaywallVC.HeaderCellConfiguration {
     static func mock() -> PaywallVC.HeaderCellConfiguration {
