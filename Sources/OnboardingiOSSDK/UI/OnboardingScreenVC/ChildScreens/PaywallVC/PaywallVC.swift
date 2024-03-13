@@ -837,10 +837,11 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         var rightColumnSizeValue = (labelWidth - labelHorizontalSpacing/2) * rightColumnSize
         
         /// If one column is empty then use all container width
-        if item.leftLabelTop.textByLocale().isEmpty &&  item.leftLabelBottom.textByLocale().isEmpty {
+        if item.isLeftColumnEmpty() {
             rightColumnSizeValue = labelWidth
         }
-        if item.rightLabelTop.textByLocale().isEmpty &&  item.rightLabelBottom.textByLocale().isEmpty {
+        
+        if item.isRightColumnEmpty() {
             leftColumnSizeValue = labelWidth
         }
 
@@ -864,17 +865,19 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         
         subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
         totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
-
+        
+        
+        
 //        //Add gap between labels if there are 2 labels
-//        if titleHeight > 0.0 && subtitleHeight > 0.0 {
+//        if !titleText.textByLocale().isEmpty && !subtitleText.textByLocale().isEmpty {
 //            totalLabelsBlockHeight += labelsVerticalStackViewSpacing
 //        }
-        
+                  
         //Add gap between labels if there are 2 labels
-        if !titleText.textByLocale().isEmpty && !subtitleText.textByLocale().isEmpty {
+        if item.isTwoLabelInAnyColumn() {
             totalLabelsBlockHeight += labelsVerticalStackViewSpacing
         }
-                        
+        
         //Get max elemets height for cell height
         var maxHeight = totalLabelsBlockHeight > imageHeigh ? totalLabelsBlockHeight : imageHeigh
         
@@ -903,6 +906,16 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     
 }
 extension ItemTypeSubscription {
+    
+    func isTwoLabelInAnyColumn() -> Bool {
+        let is2NonEmptyLabelsLeftColumn = !self.leftLabelTop.textByLocale().isEmpty && !self.leftLabelBottom.textByLocale().isEmpty
+        let is2NonEmptyLabelsRightColumn = !self.rightLabelTop.textByLocale().isEmpty && !self.rightLabelBottom.textByLocale().isEmpty
+        if is2NonEmptyLabelsLeftColumn || is2NonEmptyLabelsRightColumn {
+            return true
+        } else {
+            return false
+        }
+    }
     
     func isLeftColumnEmpty() -> Bool {
         let isEmpty = self.leftLabelTop.textByLocale().isEmpty && self.leftLabelBottom.textByLocale().isEmpty
