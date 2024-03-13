@@ -65,8 +65,7 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
 // MARK: - Open methods
 extension PaywallListSubscriptionCell {
     
-    func setWith(configuration: PaywallVC.ListSubscriptionCellConfiguration,
-                 isSelected: Bool,
+    func setWith(isSelected: Bool,
                  subscriptionItem: ItemTypeSubscription,
                  listWithStyles: SubscriptionList,
                  product: StoreKitProduct) {
@@ -75,7 +74,7 @@ extension PaywallListSubscriptionCell {
         
         self.item = subscriptionItem
         self.list = listWithStyles
-        setBadgePosition(configuration.badgePosition, settings: subscriptionItem.badge)
+//        setBadgePosition(configuration.badgePosition, settings: subscriptionItem.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
         setupLabels(subscriptionItem: subscriptionItem, product: product)
@@ -112,20 +111,13 @@ extension PaywallListSubscriptionCell {
         rightLabelTop.text = subscriptionItem.rightLabelTop.textFor(product: product)
         rightLabelBottom.text = subscriptionItem.rightLabelBottom.textFor(product: product)
     }
-    
-    func setWith(configuration: PaywallVC.ListOneTimePurchaseCellConfiguration,
-                 isSelected: Bool) {
-        // TODO: - Use different cell
-//        setBadgePosition(configuration.badgePosition)
-//        setSelected(isSelected)
-    }
+
 }
 
 // MARK: - Private methods
 private extension PaywallListSubscriptionCell {
     
     func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
-//        checkbox.isOn = isSelected
         if isSelected {
             setSelected(selectedBlock: listWithStyles.selectedBlock)
         } else {

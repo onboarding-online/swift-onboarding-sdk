@@ -36,14 +36,13 @@ final class PaywallVC: BaseScreenGraphViewController {
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var headerView: UIView!
 
-
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
     private var isLoadingProducts = true
     private var isBusy = true
     private var products: [StoreKitProduct] = []
-    public var productIds: [String] = [] // TODO: - Set product ids
-    public var style: Style = .subscriptionsList
+    public var productIds: [String] = []
+    public var style: Style = .subscriptionsTiles
     var shouldCloseOnPurchaseCancel = false
     
     public var dismissalHandler: (() -> ())!
@@ -63,7 +62,6 @@ final class PaywallVC: BaseScreenGraphViewController {
         loadProducts()
 //        add selected product to parameters
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
-
     }
     
 
@@ -72,8 +70,6 @@ final class PaywallVC: BaseScreenGraphViewController {
         
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
         OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
-
-
         navigationController?.isNavigationBarHidden = true
     }
     
@@ -164,23 +160,30 @@ extension PaywallVC: UICollectionViewDataSource {
             let currentProduct = self.products[index]
 
             if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
-                cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             return cell
         case .oneTimePurchase(let configuration):
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            cell.setWith(configuration: configuration, isSelected: isSelected)
+            let currentProduct = self.products[index]
+
+            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+            }
             
             return cell
         case .tileSubscription(let configuration):
             let index = indexPath.row
             let isSelected = selectedIndex == index
-            let item = screenData.subscriptions.items[index]
             let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
-            
-            cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions)
+
+            let currentProduct = self.products[index]
+
+            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+                cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+            }
             
             return cell
         }
@@ -208,10 +211,6 @@ extension PaywallVC: UICollectionViewDelegate {
 
                 OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
                 OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
-
-//                delegate?.onboardingChildScreenUpdate(value: indexPath.row,
-//                                                      description: products[selectedIndex].id,
-//                                                      logAnalytics: true)
             }
         }
     }
@@ -319,27 +318,22 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
                             itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }
-                        
-//                        if self.products.count - 1 >= index {
-//                            let currentProduct = self.products[index]
-//                            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
-//                                                            
-//                            }
-//                           
-//                        } else {
-//                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width)
-//                        }
                     }
                     
                     itemsHeight += PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     if screenData.divider != nil {
-                        itemsHeight += Constants.sectionsSpacing
+                        itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     }
 
                     let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing
                     contentSize += (itemsHeight + spacingHeight)
                 case .subscriptionsTiles:
-                    contentSize += Constants.subscriptionTileItemSize.height
+                    var itemsHeight: CGFloat = 0.0
+
+                    if screenData.divider != nil {
+                        itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+                    }
+                    contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
                 }
             }
         }
@@ -726,13 +720,26 @@ extension PaywallVC {
                 }
             case .subscriptionsTiles:
                 return products.compactMap { product in
-                    guard case .subscription(let description) = product.type else { return nil }
-                    
-                    return .tileSubscription(.init(product: product,
-                                                   subscriptionDescription: description,
-                                                   badgePosition: .right,
-                                                   checkmarkPosition: .left))
+                    switch product.type {
+                    case .oneTimePurchase:
+                        return .oneTimePurchase(.init(product: product,
+                                                      badgePosition: .left))
+                    case .subscription(let description):
+                        return .tileSubscription(.init(product: product,
+                                                       subscriptionDescription: description,
+                                                       badgePosition: .right,
+                                                       checkmarkPosition: .left))
+                    }
                 }
+                
+//                return products.compactMap { product in
+//                    guard case .subscription(let description) = product.type else { return nil }
+//                    
+//                    return .tileSubscription(.init(product: product,
+//                                                   subscriptionDescription: description,
+//                                                   badgePosition: .right,
+//                                                   checkmarkPosition: .left))
+//                }
             }
         }
     }
@@ -883,8 +890,6 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         return cellHeight
     }
     
-    
-    
     func isCheckboxHiddenFor(list: SubscriptionList) -> Bool {
         switch list.itemType {
         case .checkboxLabels, .labelsCheckbox:
@@ -895,11 +900,10 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     }
     
     func isImageHiddenFor(item: ItemTypeSubscription) -> Bool {
-        
         return true
     }
-    
 }
+
 extension ItemTypeSubscription {
     
     func isTwoLabelInAnyColumn() -> Bool {
