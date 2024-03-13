@@ -42,7 +42,7 @@ final class PaywallVC: BaseScreenGraphViewController {
     private var isBusy = true
     private var products: [StoreKitProduct] = []
     public var productIds: [String] = []
-    public var style: Style = .subscriptionsTiles
+    public var style: Style = .subscriptionsList
     var shouldCloseOnPurchaseCancel = false
     
     public var dismissalHandler: (() -> ())!
