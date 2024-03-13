@@ -74,7 +74,7 @@ extension PaywallListSubscriptionCell {
         
         self.item = subscriptionItem
         self.list = listWithStyles
-//        setBadgePosition(configuration.badgePosition, settings: subscriptionItem.badge)
+        setBadgePosition(settings: subscriptionItem.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
         setupLabels(subscriptionItem: subscriptionItem, product: product)
@@ -145,7 +145,7 @@ private extension PaywallListSubscriptionCell {
         contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
     }
     
-    func setBadgePosition(_ position: SavedMoneyBadgePosition, settings: Badge?) {
+    func setBadgePosition(settings: Badge?) {
         
         if let badge = settings {
             NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
