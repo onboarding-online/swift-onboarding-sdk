@@ -799,6 +799,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         containerTop = screenData.subscriptions.styles.paddingTop ?? 16
         containerBottom = screenData.subscriptions.styles.paddingBottom ?? 16
         
+        /// Add gaps between rows and columns
         labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
         labelHorizontalSpacing = item.styles.columnHorizontalPadding ?? 4
         if item.isOneColumn() {
@@ -815,7 +816,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
             self.imageHeigh = 0
         }
         
-
+        /// Add checkbox width
         if !isCheckboxHiddenFor(list: screenData.subscriptions) {
             let checkBoxContainer = (item.checkBox.styles.width ?? 24.0) + (item.checkBox.box.styles.paddingLeft ?? 0.0) + (item.checkBox.box.styles.paddingRight ?? 0.0)
             labelWidth = labelWidth - checkBoxContainer
@@ -828,7 +829,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let titleText: Text
         let subtitleText: Text
         
-        ///size of columns
+        ///Calculate size of columns
         let leftColumnSize = (item.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
         let rightColumnSize = 1 - leftColumnSize
         
@@ -844,7 +845,9 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
             leftColumnSizeValue = labelWidth
         }
 
+        ///Left column height
         let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product)
+        ///Right column height
         let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
 
         let floatMaxHeightColumnWidth: Double
@@ -864,13 +867,6 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         
         subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
         totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
-        
-        
-        
-//        //Add gap between labels if there are 2 labels
-//        if !titleText.textByLocale().isEmpty && !subtitleText.textByLocale().isEmpty {
-//            totalLabelsBlockHeight += labelsVerticalStackViewSpacing
-//        }
                   
         //Add gap between labels if there are 2 labels
         if item.isTwoLabelInAnyColumn() {
@@ -929,7 +925,6 @@ extension ItemTypeSubscription {
     func isOneColumn() -> Bool {
         if isLeftColumnEmpty() || isRightColumnEmpty() {
             return true
-
         }
         return false
     }
