@@ -82,6 +82,7 @@ final class PaywallVC: BaseScreenGraphViewController {
     
     func setup() {
         setupBackground()
+        setupCollectionView()
         setup(navigationBar: screenData.navigationBar)
         setup(footer: screenData.footer)
         setupGradientView()
@@ -508,18 +509,18 @@ private extension PaywallVC {
     
     func didLoadProducts() {
         self.isLoadingProducts = false
-        setupCollectionView()
-
-        let sections = allSections()
-        
-        
+                
         if products.count - 1 >= selectedIndex {
             let currentProduct = self.products[selectedIndex]
             bottomView.setupPaymentDetailsLabel(content: currentProduct)
         }
         
-        self.collectionView.performBatchUpdates {
-            collectionView.reloadSections(IndexSet(0..<sections.count))
+        DispatchQueue.main.async {
+            let sections = self.allSections()
+
+            self.collectionView.performBatchUpdates {
+                self.collectionView.reloadSections(IndexSet(0..<sections.count))
+            }
         }
     }
     
