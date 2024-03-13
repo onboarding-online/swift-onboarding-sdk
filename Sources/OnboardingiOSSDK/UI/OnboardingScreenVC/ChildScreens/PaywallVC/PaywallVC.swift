@@ -56,6 +56,7 @@ final class PaywallVC: BaseScreenGraphViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        setup()
         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
         productIds = ids
         
@@ -69,7 +70,6 @@ final class PaywallVC: BaseScreenGraphViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setup()
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
         OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
 
@@ -85,11 +85,10 @@ final class PaywallVC: BaseScreenGraphViewController {
     
     
     func setup() {
+        setupBackground()
         setup(navigationBar: screenData.navigationBar)
         setup(footer: screenData.footer)
         setupGradientView()
-        
-        setupBackground()
     }
     
     func setupBackground() {
