@@ -467,15 +467,10 @@ private extension PaywallVC {
         Task {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
-
                 Task {
                     if let transaction = try await paymentService.activeSubscriptionReceipt() {
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
-                        
-//                        let purchase = PurchaseInfo.init(integrationType: .amplitude, userId: "", transactionId: transaction.originalTransactionId, amount: 20.0, currency: "usd")
-//                        AttributionStorageManager.sendPurchaseWithAttributionData(transactionId: transaction.originalTransactionId, purchaseInfo: purchase) { error in
-//                            print(error?.localizedDescription)
-//                        }
+                        sendReceiptInfo()
                     }
                 }
                 
@@ -500,6 +495,24 @@ private extension PaywallVC {
         }
     }
     
+    func sendReceiptInfo() {
+        Task {
+            do {
+                if let receipt = try await self.paymentService.activeSubscriptionReceipt() {
+                        let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
+                    let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
+
+                        AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+                } else {
+                    // Чек не найден, но и ошибки не было
+                    print("Активный чек подписки не найден")
+                }
+            } catch {
+                // Произошла ошибка при получении чека
+                print("Ошибка при получении чека: \(error)")
+            }
+        }
+    }
     
     func sendToServer(transactionId: String) {
         OnboardingLoadingService.sendPaymentInfo(transactionId: transactionId, projectId: "") { result in

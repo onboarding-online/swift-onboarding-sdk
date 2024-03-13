@@ -41,7 +41,7 @@ public class AttributionStorageManager {
     }
     
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
-    public static func sendPurchase(projectId: String, transactionId: String,  purchaseInfo: PurchaseInfo, completion: @escaping (Error?) -> Void) {
+    public static func sendPurchase(projectId: String, transactionId: String,  purchaseInfo: PurchaseInfo) {
         let apiManager = APIManager()
         let userID =  AttributionStorageManager.createAndSaveOnceOnboarding(userId: UUID.init().uuidString)
 
@@ -55,7 +55,7 @@ public class AttributionStorageManager {
         
         // Объединение данных покупки с атрибуционными данными для отправки
         apiManager.update(projectId: projectId, transactionId: transactionId, userId: userID, purchaseAttributes: purchaseAttributes) { error in
-            completion(error)
+//            completion(error)
         }
     }
     

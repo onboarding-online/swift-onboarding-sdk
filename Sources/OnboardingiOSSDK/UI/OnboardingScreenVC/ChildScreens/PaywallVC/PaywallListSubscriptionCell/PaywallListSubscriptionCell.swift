@@ -209,7 +209,7 @@ extension PaywallListSubscriptionCell {
         rightStack.spacing = subscriptionItem.styles.columnVerticalPadding ?? 4
 
         if !subscriptionItem.isOneColumn() {
-            containerStack.spacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
+            containerStack.spacing = horizontalSpacing
             (leftStack.widthAnchor.constraint(equalTo: rightStack.widthAnchor, multiplier: multiplier)).isActive = true
         }
     }
