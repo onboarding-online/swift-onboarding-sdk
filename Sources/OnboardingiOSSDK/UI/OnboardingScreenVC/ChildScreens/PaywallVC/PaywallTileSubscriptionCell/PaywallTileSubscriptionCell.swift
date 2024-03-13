@@ -110,7 +110,7 @@ private extension PaywallTileSubscriptionCell {
             NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
 
             var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
-                                                     savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
+                                                     savedMoneyView.centerYAnchor.constraint(equalTo: contentContainerView.topAnchor)]
             savedMoneyView.isHidden = false
             
             savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
@@ -136,28 +136,6 @@ private extension PaywallTileSubscriptionCell {
             savedMoneyView.isHidden = true
         }
     }
-    
-    
-    //    func setBadgePosition(_ position: SavedMoneyBadgePosition) {
-    //        savedMoneyView.isHidden = position == .none
-    //        NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
-    //
-    //        var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
-    //                                                 savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
-    //        switch position {
-    //        case .none:
-    //            return
-    //        case .left:
-    //            constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
-    //        case .center:
-    //            constraints.append(savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor))
-    //        case .right:
-    //            constraints.append(contentContainerView.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 16))
-    //        }
-    //
-    //        NSLayoutConstraint.activate(constraints)
-    //        currentSavedMoneyViewConstraints = constraints
-    //    }
 
     
     func setupCheckboxWith(list: SubscriptionList) {
