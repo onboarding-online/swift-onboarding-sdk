@@ -1,15 +1,16 @@
 //
-//  PaywallListSubscriptionCell.swift
+//  File.swift
 //  
 //
-//  Created by Oleg Kuplin on 26.12.2023.
+//  Created by Leonid Yuriev on 14.03.24.
 //
 
+import Foundation
 import UIKit
 import ScreensGraph
 
-final class PaywallListSubscriptionCell: UICollectionViewCell {
-
+class PaywallCellView: UIView {
+    
     @IBOutlet private weak var contentContainerView: UIView!
     @IBOutlet private weak var mainContainerStack: UIStackView!
 
@@ -51,7 +52,9 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     
     private var item: ItemTypeSubscription? = nil
     private var list: SubscriptionList? = nil
-
+    
+    
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -59,11 +62,14 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         clipsToBounds = false
         savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
     }
-
+    
+    
+    
 }
 
+
 // MARK: - Open methods
-extension PaywallListSubscriptionCell {
+extension PaywallCellView {
     
     func setWith(isSelected: Bool,
                  subscriptionItem: ItemTypeSubscription,
@@ -115,7 +121,7 @@ extension PaywallListSubscriptionCell {
 }
 
 // MARK: - Private methods
-private extension PaywallListSubscriptionCell {
+private extension PaywallCellView {
     
     func setSelected(_ isSelected: Bool, listWithStyles: SubscriptionList) {
         if isSelected {
@@ -181,7 +187,7 @@ private extension PaywallListSubscriptionCell {
 }
 
 // MARK: - Open methods
-extension PaywallListSubscriptionCell {
+extension PaywallCellView {
     
     func setupSizes(subscriptionItem: ItemTypeSubscription, list: SubscriptionList) {
 
