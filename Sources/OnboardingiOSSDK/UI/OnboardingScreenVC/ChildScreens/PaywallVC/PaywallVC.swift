@@ -23,6 +23,7 @@ final class PaywallVC: BaseScreenGraphViewController {
         paywallVC.paymentService = paymentService
         paywallVC.videoPreparationService = videoPreparationService
         paywallVC.screenData = screenData
+        paywallVC.loadViewIfNeeded()
         return paywallVC
     }
      
@@ -395,11 +396,12 @@ private extension PaywallVC {
 
         Task {
             do {
-                let products = try await paymentService.fetchProductsWith(ids: Set(productIds))
+                let productIds = self.productIds
+                let skProducts = try await paymentService.fetchProductsWith(ids: Set(productIds))
 //                delegate?.onboardingChildScreenUpdate(value: nil,
 //                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
 //                                                      logAnalytics: true)
-                self.products = products
+                let products = skProducts
                     .compactMap( { StoreKitProduct(skProduct: $0) })
                     .sorted(by: { lhs, rhs in
                         guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
@@ -409,23 +411,47 @@ private extension PaywallVC {
                         
                         return lhsIndex < rhsIndex
                     })
-                if let item = screenData.subscriptions.items.first(where: {$0.isSelected}) {
-                    for (index, product) in self.products.enumerated() {
-                        if product.id == item.subscriptionId {
-                            selectedIndex = index
-                            print("selectedIndex \(selectedIndex)")
-                        }
-                    }
-                }
-                didLoadProducts()
+                
+                didLoadProducts(products)
             } catch {
 //                delegate?.onboardingChildScreenUpdate(value: nil,
 //                                                      description: "Did fail to load products: \(error.localizedDescription)",
 //                                                      logAnalytics: true)
-                handleError(error, message: "Something went wrong") { [weak self] in
-                    self?.loadProducts()
+                didFailToLoadProductsWith(error: error)
+            }
+        }
+    }
+    
+    func didLoadProducts(_ products: [StoreKitProduct]) {
+        self.products = products
+        if let item = screenData.subscriptions.items.first(where: {$0.isSelected}) {
+            for (index, product) in self.products.enumerated() {
+                if product.id == item.subscriptionId {
+                    selectedIndex = index
+                    print("selectedIndex \(selectedIndex)")
+                    break
                 }
             }
+        }
+        
+        self.isLoadingProducts = false
+        
+        DispatchQueue.main.async {
+            self.setViewForLoadedProducts()
+        }
+    }
+    
+    func setViewForLoadedProducts() {
+        if products.count - 1 >= selectedIndex {
+            let currentProduct = products[selectedIndex]
+            bottomView.setupPaymentDetailsLabel(content: currentProduct)
+        }
+        collectionView.reloadData()
+    }
+    
+    func didFailToLoadProductsWith(error: Error) {
+        handleError(error, message: "Something went wrong") { [weak self] in
+            self?.loadProducts()
         }
     }
     
@@ -517,23 +543,6 @@ private extension PaywallVC {
     func sendToServer(transactionId: String) {
         OnboardingLoadingService.sendPaymentInfo(transactionId: transactionId, projectId: "") { result in
 
-        }
-    }
-    
-    func didLoadProducts() {
-        self.isLoadingProducts = false
-                
-        if products.count - 1 >= selectedIndex {
-            let currentProduct = self.products[selectedIndex]
-            bottomView.setupPaymentDetailsLabel(content: currentProduct)
-        }
-        
-        DispatchQueue.main.async {
-            let sections = self.allSections()
-
-            self.collectionView.performBatchUpdates {
-                self.collectionView.reloadSections(IndexSet(0..<sections.count))
-            }
         }
     }
     
