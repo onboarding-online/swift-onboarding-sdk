@@ -322,7 +322,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         }
                     }
                     
-                    itemsHeight += PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+//                    itemsHeight += PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     if screenData.divider != nil {
                         itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     }

@@ -105,12 +105,12 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" id="5Pz-Jl-xGj"/>
+                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" priority="500" id="5Pz-Jl-xGj"/>
                             <constraint firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" id="6Bo-sJ-00h"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" id="PEn-vx-dI2"/>
                             <constraint firstAttribute="bottom" secondItem="S5s-Dr-Ix9" secondAttribute="bottom" id="WhH-d6-9QT"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" id="gIZ-O1-6Ar"/>
-                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerY" secondItem="uhh-6B-Hi4" secondAttribute="centerY" id="lRW-KV-AoC"/>
+                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerY" secondItem="uhh-6B-Hi4" secondAttribute="centerY" priority="500" id="lRW-KV-AoC"/>
                         </constraints>
                     </view>
                 </subviews>
