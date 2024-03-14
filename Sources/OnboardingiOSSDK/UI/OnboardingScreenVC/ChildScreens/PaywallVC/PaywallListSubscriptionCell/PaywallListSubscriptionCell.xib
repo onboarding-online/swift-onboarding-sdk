@@ -98,18 +98,19 @@
                                     <constraint firstItem="zJx-QK-eNu" firstAttribute="top" secondItem="S5s-Dr-Ix9" secondAttribute="top" id="idU-Xf-CQq"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="9jQ-Tk-hac" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
-                                <rect key="frame" x="35.666666666666657" y="-12" width="239.99999999999997" height="24"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="9jQ-Tk-hac" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
+                                <rect key="frame" x="153.66666666666663" y="200.66666666666666" width="240" height="24"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" id="5Pz-Jl-xGj"/>
                             <constraint firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" id="6Bo-sJ-00h"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" id="PEn-vx-dI2"/>
                             <constraint firstAttribute="bottom" secondItem="S5s-Dr-Ix9" secondAttribute="bottom" id="WhH-d6-9QT"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" id="gIZ-O1-6Ar"/>
+                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerY" secondItem="uhh-6B-Hi4" secondAttribute="centerY" id="lRW-KV-AoC"/>
                         </constraints>
                     </view>
                 </subviews>

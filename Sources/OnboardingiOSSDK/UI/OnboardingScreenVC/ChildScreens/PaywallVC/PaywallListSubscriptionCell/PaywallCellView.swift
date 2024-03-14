@@ -54,7 +54,14 @@ class PaywallCellView: UIView {
     private var list: SubscriptionList? = nil
     
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
     
+    // Инициализатор, который вызывается при создании вью из XIB
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -151,7 +151,9 @@ private extension PaywallListSubscriptionCell {
             NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
 
             var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
-                                                     savedMoneyView.centerYAnchor.constraint(equalTo: topAnchor)]
+                                                     savedMoneyView.centerYAnchor.constraint(equalTo: contentContainerView.topAnchor)]
+
+            
             savedMoneyView.isHidden = false
             
             savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
@@ -167,7 +169,7 @@ private extension PaywallListSubscriptionCell {
             case .topcenter:
                 constraints.append(savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor))
             case .topright:
-                constraints.append(contentContainerView.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 16))
+                constraints.append(savedMoneyView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -16))
             default:
                 constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
             }
@@ -212,7 +214,7 @@ extension PaywallListSubscriptionCell {
         leftStack.setContentCompressionResistancePriority(UILayoutPriority(750), for: .horizontal) // Для вертикального стека
         
         rightStack.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
-        rightStack.setContentCompressionResistancePriority(UILayoutPriority(750), for: .horizontal) // Для вертикального стека
+        rightStack.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal) // Для вертикального стека
 
         
         let labels = [leftLabelTop, leftLabelBottom, rightLabelTop, rightLabelBottom]
@@ -235,7 +237,7 @@ extension PaywallListSubscriptionCell {
         
         if !subscriptionItem.isOneColumn() {
             containerStack.spacing = horizontalSpacing
-            (leftStack.widthAnchor.constraint(equalTo: rightStack.widthAnchor, multiplier: multiplier)).isActive = true
+            (leftStack.widthAnchor.constraint(equalTo: containerStack.widthAnchor, multiplier: leftColumnSize)).isActive = true
         }
     }
     
