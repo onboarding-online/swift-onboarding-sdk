@@ -26,4 +26,13 @@ extension UIImage {
         }
         return UIImage(data: imageData)
     }
+    
+    func readyToDisplay() async -> UIImage {
+        if #available(iOS 15.0, *) {
+            let preparedImage = await self.byPreparingForDisplay()
+            return preparedImage ?? self
+        } else {
+            return self
+        }
+    }
 }

@@ -33,6 +33,11 @@ final class MockAssetsLoadingService: AssetsLoadingServiceProtocol {
         return nil
     }
     
+    func cacheImage(_ image: UIImage, withName name: String) { }
+    func getCachedImageWith(name: String) -> UIImage? {
+        nil
+    }
+    
     func clear() {
         
     }

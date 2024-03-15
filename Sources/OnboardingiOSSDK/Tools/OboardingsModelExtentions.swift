@@ -177,17 +177,16 @@ extension BaseVideo: OnboardingLocalVideoAssetProvider { }
 protocol OnboardingLocalImageAssetProvider: OnboardingLocalAssetProvider { }
 
 extension OnboardingLocalImageAssetProvider {
-   
+    
     func loadImage() async -> UIImage? {
         let urlByLocale = assetUrlByLocale()
-
+        
         if let assetName = urlByLocale?.assetName,
-            let image = UIImage.init(named: assetName) {
+           let image = await getLocalImageWith(assetName: assetName) {
             return image
         } else if let url = urlByLocale?.assetUrl?.origin {
             // Check local resources first
-            if let imageName = url.resourceName(),
-               let image = await UIImage.createWith(name: imageName) {
+            if let image = await getLocalImageWith(assetURL: url) {
                 return image
             }
             
@@ -195,6 +194,28 @@ extension OnboardingLocalImageAssetProvider {
         }
         return nil
     }
+    
+    private func getLocalImageWith(assetName: String) async -> UIImage? {
+        if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetName) {
+            return cachedImage
+        } else if let image = UIImage.init(named: assetName) {
+            AssetsLoadingService.shared.cacheImage(image, withName: assetName)
+            return image
+        }
+        return nil
+    }
+    
+    private func getLocalImageWith(assetURL: String) async -> UIImage? {
+        if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetURL) {
+            return cachedImage
+        } else if let imageName = assetURL.resourceName(),
+                  let image = await UIImage.createWith(name: imageName) {
+            AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
+            return image
+        }
+        return nil
+    }
+
 }
 
 extension Image: OnboardingLocalImageAssetProvider {
