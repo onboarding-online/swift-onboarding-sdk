@@ -229,7 +229,6 @@ extension PaywallListSubscriptionCell {
                 label.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
                 label.setContentCompressionResistancePriority(UILayoutPriority(750), for: .horizontal) // Для вертикального стека
                 
-
                 // Установка количества строк на 0 позволяет лейблу поддерживать многострочный текст.
                 label.numberOfLines = 0
             }

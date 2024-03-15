@@ -499,6 +499,7 @@ private extension PaywallVC {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
                 Task {
                     if let transaction = try await paymentService.activeSubscriptionReceipt() {
+                        print("[trnsaction_id]-> \(transaction.originalTransactionId)")
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
                         sendReceiptInfo()
                     }
@@ -533,6 +534,10 @@ private extension PaywallVC {
                     let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
 
                         AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+                    
+                    AttributionStorageManager.sendIntegrationsDetails(projectId: projectId) { error in
+                        
+                    }
                 } else {
                     // Чек не найден, но и ошибки не было
                     print("Активный чек подписки не найден")
