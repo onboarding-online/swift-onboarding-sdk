@@ -20,6 +20,7 @@ public protocol OnboardingPaymentServiceProtocol {
     func purchaseProduct(_ product: SKProduct) async throws
     
     func activeSubscriptionReceipt() async throws -> OnboardingPaymentReceipt?
+    func lastPurchaseReceipts() async throws -> OnboardingPaymentReceipt?
     func hasActiveSubscription() async throws -> Bool
 }
 

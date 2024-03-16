@@ -73,6 +73,15 @@ extension OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         return nil
     }
     
+    public func lastPurchaseReceipts() async throws -> OnboardingPaymentReceipt? {
+        let validatedReceipt = try await validateReceipt(sharedSecret: sharedSecret)
+        if let appStoreReceipt = validatedReceipt.lastPurchaseReceipts() {
+            let onboardingReceipt = transformAppStoreReceiptToOnboardingReceipt(appStoreReceipt)
+            return onboardingReceipt
+        }
+        return nil
+    }
+    
     public func hasActiveSubscription() async throws -> Bool {
         let receipt = try await validateReceipt(sharedSecret: sharedSecret)
         let subStatuses = receipt.subscriptionsStatuses()

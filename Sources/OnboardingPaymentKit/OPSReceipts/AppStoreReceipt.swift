@@ -29,6 +29,10 @@ public struct AppStoreValidatedReceipt: Codable, Hashable {
         return latestReceiptInfo.filter({ !$0.isSubscription })
     }
     
+    public func lastPurchaseReceipts() -> AppStoreReceiptInApp? {
+        let receipts = nonSubscriptionReceipts()
+        return receipts.first
+    }
     
     public func activeSubscriptionReceipt() -> AppStoreReceiptInApp? {
         latestReceiptInfo?.first(where: { $0.expiresDate != nil && $0.expiresDate! > Date() })

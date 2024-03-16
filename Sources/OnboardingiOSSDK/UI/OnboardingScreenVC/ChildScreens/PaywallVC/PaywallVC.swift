@@ -505,11 +505,20 @@ private extension PaywallVC {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
                 Task {
-                    if let transaction = try await paymentService.activeSubscriptionReceipt() {
-                        print("[trnsaction_id]-> \(transaction.originalTransactionId)")
-                        OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
-                        sendReceiptInfo()
+                    if selectedProduct.type == .oneTimePurchase {
+                        if let transaction = try await paymentService.lastPurchaseReceipts() {
+                            print("[trnsaction_id]-> \(transaction.originalTransactionId)")
+                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
+                            sendReceiptInfo(product: selectedProduct)
+                        }
+                    } else {
+                        if let transaction = try await paymentService.activeSubscriptionReceipt() {
+                            print("[trnsaction_id]-> \(transaction.originalTransactionId)")
+                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
+                            sendReceiptInfo(product: selectedProduct)
+                        }
                     }
+                    
                 }
                 
                 self.value = selectedProduct.id
@@ -533,22 +542,49 @@ private extension PaywallVC {
         }
     }
     
-    func sendReceiptInfo() {
+    func sendReceiptInfo(product: StoreKitProduct) {
         Task {
             do {
-                if let receipt = try await self.paymentService.activeSubscriptionReceipt() {
+                if product.type == .oneTimePurchase {
+                    if let receipt = try await paymentService.lastPurchaseReceipts() {
+                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
-                    let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
-
-                        AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
-                    
-                    AttributionStorageManager.sendIntegrationsDetails(projectId: projectId) { error in
+                        let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
                         
+                        AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+                        
+                        AttributionStorageManager.sendIntegrationsDetails(projectId: projectId) { error in
+                            
+                        }
                     }
                 } else {
-                    // Чек не найден, но и ошибки не было
-                    print("Активный чек подписки не найден")
+                    if let receipt = try await paymentService.activeSubscriptionReceipt() {
+                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
+                        let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
+                        let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
+                        
+                        AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+                        
+                        AttributionStorageManager.sendIntegrationsDetails(projectId: projectId) { error in
+                            
+                        }
+                    }
                 }
+                
+//                if let receipt = try await self.paymentService.lastPurchaseReceipts() {
+////                if let receipt = try await self.paymentService.activeSubscriptionReceipt() {
+//                        let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
+//                    let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
+//
+//                        AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+//                    
+//                    AttributionStorageManager.sendIntegrationsDetails(projectId: projectId) { error in
+//                        
+//                    }
+//                } else {
+//                    // Чек не найден, но и ошибки не было
+//                    print("Активный чек подписки не найден")
+//                }
             } catch {
                 // Произошла ошибка при получении чека
                 print("Ошибка при получении чека: \(error)")
