@@ -140,7 +140,7 @@ private extension PaywallTileSubscriptionCell {
     
     func setupCheckboxWith(list: SubscriptionList) {
         switch list.itemType {
-        case .checkboxLabels:
+        case .subscriptionListItemType5:
             checkboxStackContainerTopConstraint.constant = 20
             checkboxStackContainer.alignment = .leading
         case .labelsCheckbox:
@@ -149,8 +149,6 @@ private extension PaywallTileSubscriptionCell {
         default:
             checkBoxContainerView.isHidden = true
         }
-//        mainContainerStack.setNeedsLayout()
-//        mainContainerStack.layoutIfNeeded()
     }
     
     func setCheckmarkPosition(_ position: CheckmarkPosition) {

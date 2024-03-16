@@ -60,6 +60,13 @@ final class PaywallVC: BaseScreenGraphViewController {
         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
         productIds = ids
         
+        switch screenData.subscriptions.itemType {
+        case .subscriptionListItemType5:
+            style = .subscriptionsTiles
+        default:
+            style = .subscriptionsList
+        }
+        
         loadProducts()
 //        add selected product to parameters
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])

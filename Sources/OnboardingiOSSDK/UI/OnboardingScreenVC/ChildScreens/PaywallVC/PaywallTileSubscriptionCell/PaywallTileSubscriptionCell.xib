@@ -21,9 +21,8 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TWr-2w-EsV">
                         <rect key="frame" x="0.0" y="0.0" width="200" height="196"/>
                         <subviews>
-                            <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="kOo-wb-Rnj" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
-                                <rect key="frame" x="35" y="-12" width="187" height="24"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="kOo-wb-Rnj" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
+                                <rect key="frame" x="-20" y="86" width="240" height="24"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="TnT-wZ-9Ay">
@@ -71,6 +70,8 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="kOo-wb-Rnj" firstAttribute="centerY" secondItem="TWr-2w-EsV" secondAttribute="centerY" priority="500" id="41q-GK-1gZ"/>
+                            <constraint firstItem="kOo-wb-Rnj" firstAttribute="centerX" secondItem="TWr-2w-EsV" secondAttribute="centerX" priority="500" id="4uO-Rz-nzI"/>
                             <constraint firstAttribute="bottom" secondItem="KSA-X7-6QO" secondAttribute="bottom" constant="20" id="GAm-R2-vxD"/>
                             <constraint firstItem="KSA-X7-6QO" firstAttribute="centerX" secondItem="TWr-2w-EsV" secondAttribute="centerX" id="Qcv-8s-pSj"/>
                             <constraint firstItem="TnT-wZ-9Ay" firstAttribute="centerX" secondItem="TWr-2w-EsV" secondAttribute="centerX" id="Ucm-Ne-EYR"/>
