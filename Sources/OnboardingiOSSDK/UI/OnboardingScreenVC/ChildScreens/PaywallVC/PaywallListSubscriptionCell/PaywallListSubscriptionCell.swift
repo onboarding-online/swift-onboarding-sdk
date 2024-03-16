@@ -218,10 +218,13 @@ extension PaywallListSubscriptionCell {
 
         
         let labels = [leftLabelTop, leftLabelBottom, rightLabelTop, rightLabelBottom]
-
+        
         for label in labels {
             if let label = label {
                 // Настройка для поддержания размера контента по вертикали
+                label.adjustsFontSizeToFitWidth = true
+                label.minimumScaleFactor = 0.5 // The font size can shrink to 50% of its original size
+//                label.baselineAdjustment = .alignCenters
                 
                 label.setContentHuggingPriority(UILayoutPriority(250), for: .vertical) // Для вертикального стека
                 label.setContentCompressionResistancePriority(UILayoutPriority(750), for: .vertical) // Для вертикального стека
