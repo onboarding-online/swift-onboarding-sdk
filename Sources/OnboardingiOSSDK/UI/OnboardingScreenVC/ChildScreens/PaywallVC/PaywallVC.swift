@@ -846,7 +846,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         }
         
         // Calculate effective width for labels heights calculation
-        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing - labelHorizontalSpacing
+        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing
         
         if !isImageHiddenFor(item: item) {
             labelWidth -= (imageWidth + allItemsHorizontalStackViewSpacing)
@@ -872,8 +872,8 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let leftColumnSize = (item.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
         let rightColumnSize = 1 - leftColumnSize
         
-        var leftColumnSizeValue = (labelWidth - labelHorizontalSpacing/2) * leftColumnSize
-        var rightColumnSizeValue = (labelWidth - labelHorizontalSpacing/2) * rightColumnSize
+        var leftColumnSizeValue = (labelWidth) * leftColumnSize
+        var rightColumnSizeValue = labelWidth  * rightColumnSize - labelHorizontalSpacing
         
         /// If one column is empty then use all container width
         if item.isLeftColumnEmpty() {
