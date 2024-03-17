@@ -24,10 +24,10 @@ public class AttributionStorageManager {
     static let platformDeviceId = "deviceId"
     
     // Сохранение данных атрибуции
-    public static func saveAttributionData(userId: String?, deviceId: String? = nil, data: [String: Any]?, for platform: IntegrationType) {
+    public static func saveAttributionData(userId: String?, deviceId: String? = nil, data: [AnyHashable: Any]?, for platform: IntegrationType) {
         if AttributionStorageManager.getSyncDate(for: platform) == nil {
             let defaults = UserDefaults.standard
-            var params = data ?? [String: Any]()
+            var params = data ?? [AnyHashable: Any]()
             if let userId = userId {
                 params[AttributionStorageManager.platformUserId] = userId
             }
@@ -299,7 +299,7 @@ extension  AttributionStorageManager {
     }
     
     // Извлечение данных атрибуции для заданной системы
-    static func getAttributionData(for platform: IntegrationType) -> [String: Any]? {
+    static func getAttributionData(for platform: IntegrationType) -> [AnyHashable: Any]? {
         let defaults = UserDefaults.standard
         let key = platform.keyForUserDefaults
         return defaults.dictionary(forKey: key)
