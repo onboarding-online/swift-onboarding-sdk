@@ -85,16 +85,16 @@ extension PaywallHeaderCell {
         }
     }
     
-    func setWith(configuration: PaywallVC.HeaderCellConfiguration) {
-        setWithStyle(configuration.style)
+    func setWith() {
+        setWithStyle()
         if screenData.video == nil {
             load(image: screenData.image, in: imageView)
         }
     }
     
-    func setWith(configuration: PaywallVC.HeaderCellConfiguration, paywallData: ScreenBasicPaywall) {
+    func setWith(paywallData: ScreenBasicPaywall) {
         screenData = paywallData
-        setWithStyle(configuration.style)
+        setWithStyle()
         imageHeaderSetup()
         if screenData.video == nil {
             load(image: screenData.image, in: imageView)
@@ -117,7 +117,6 @@ extension PaywallHeaderCell {
         }
     }
     
-
     func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
 
         if self.videoBackground == nil {
@@ -126,7 +125,6 @@ extension PaywallHeaderCell {
                                         using: preparedData)
         }
     }
-    
     
     func setScrollOffset(_ offset: CGPoint) {
         let offset = min(0, offset.y)
@@ -137,59 +135,43 @@ extension PaywallHeaderCell {
 // MARK: - Private methods
 private extension PaywallHeaderCell {
     
-    func setWithStyle(_ style: Style) {
+    func setWithStyle() {
         contentStackView.arrangedSubviews.forEach { view in
             view.removeFromSuperview()
         }
         
-        switch style {
-        case .titleSubtitle(_, _):
-            let titleLabel = buildTitleLabel()
-            let subtitleLabel = buildLabel()
-
-            titleLabel.apply(text: screenData.title)
-            subtitleLabel.apply(text: screenData.subtitle)
-
-            contentStackView.addArrangedSubview(titleLabel)
-            contentStackView.addArrangedSubview(subtitleLabel)
-//            gradientView.gradientColors = [.clear, .white]
-
-        case .titleBulletsList(_, _):
-            let titleLabel = buildTitleLabel()
-            let subtitleLabel = buildLabel()
-
-            titleLabel.apply(text: screenData.title)
-            subtitleLabel.apply(text: screenData.subtitle)
-
-            contentStackView.addArrangedSubview(titleLabel)
-            contentStackView.addArrangedSubview(subtitleLabel)
-
-            applyListSettings()
+        let titleLabel = buildTitleLabel()
+        let subtitleLabel = buildLabel()
+        
+        titleLabel.apply(text: screenData.title)
+        subtitleLabel.apply(text: screenData.subtitle)
+        
+        contentStackView.addArrangedSubview(titleLabel)
+        contentStackView.addArrangedSubview(subtitleLabel)
+        
+        applyListSettings()
+        
+        let bulletStackView = UIStackView()
+        bulletStackView.axis = .vertical
+        bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
+        
+        for item in screenData.list.items {
+            let label = buildLabel()
+            label.apply(text: item.title)
+            let checkmark = buildBulletCheckmark(image: item.image)
+            checkmark.clipsToBounds = true
             
-//            hStack.spacing =  screenData.list.styles.itemsSpacing ??
-
-            let bulletStackView = UIStackView()
-            bulletStackView.axis = .vertical
-            bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
-    
-            for item in screenData.list.items {
-                let label = buildLabel()
-                label.apply(text: item.title)
-                let checkmark = buildBulletCheckmark(image: item.image)
-                checkmark.clipsToBounds = true
-
-
-                let hStack = UIStackView(arrangedSubviews: [checkmark, label])
-                hStack.distribution = .fill
-                hStack.alignment = .leading
-                hStack.axis = .horizontal
-                hStack.spacing = 16
-
-                bulletStackView.addArrangedSubview(hStack)
-            }
-            contentStackView.addArrangedSubview(bulletStackView)
-
+            
+            let hStack = UIStackView(arrangedSubviews: [checkmark, label])
+            hStack.distribution = .fill
+            hStack.alignment = .leading
+            hStack.axis = .horizontal
+            hStack.spacing = 16
+            
+            bulletStackView.addArrangedSubview(hStack)
         }
+        contentStackView.addArrangedSubview(bulletStackView)
+        
         setupGradient()
     }
     
@@ -197,12 +179,8 @@ private extension PaywallHeaderCell {
         blurView.isHidden = true
 
         if let colorText = screenData.list.styles.backgroundColor {
-//            if colorText == "#ffffff" {
-//                blurView.isHidden = false
-//            } else {
-                listBackground.backgroundColor = colorText.hexStringToColor
-                blurView.isHidden = true
-//            }
+            listBackground.backgroundColor = colorText.hexStringToColor
+            blurView.isHidden = true
         } else {
             contentStackView.backgroundColor = .clear
         }
@@ -281,13 +259,5 @@ private extension PaywallHeaderCell {
         }
     
         gradientView.gradientDirection = .bottomToTop
-    }
-}
-
-// MARK: - Open methods
-extension PaywallHeaderCell {
-    enum Style {
-        case titleSubtitle(title: String, subtitle: String)
-        case titleBulletsList(title: String, bulletsList: [String])
     }
 }

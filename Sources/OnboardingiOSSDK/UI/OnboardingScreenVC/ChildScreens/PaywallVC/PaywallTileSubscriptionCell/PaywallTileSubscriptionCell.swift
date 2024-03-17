@@ -45,15 +45,14 @@ final class PaywallTileSubscriptionCell: UICollectionViewCell {
 // MARK: - Open methods
 extension PaywallTileSubscriptionCell {
 
-    func setWith(configuration: PaywallVC.TileSubscriptionCellConfiguration,
-                    isSelected: Bool,
+    func setWith(isSelected: Bool,
                     subscriptionItem: ItemTypeSubscription, listWithStyles: SubscriptionList,  product: StoreKitProduct) {
         self.item = subscriptionItem
         
         checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
 
                             
-        setBadgePosition(configuration.badgePosition, settings: item.badge)
+        setBadgePosition(settings: item.badge)
         setSelected(isSelected, listWithStyles: listWithStyles)
         
         setupLabels(subscriptionItem: subscriptionItem, product: product)
@@ -103,7 +102,7 @@ private extension PaywallTileSubscriptionCell {
         contentContainerView.applyFigmaShadow(x: 0, y: 20, blur: 40, spread: 0, color: .black, alpha: 0.15)
     }
     
-    func setBadgePosition(_ position: SavedMoneyBadgePosition, settings: Badge?) {
+    func setBadgePosition(settings: Badge?) {
         
         if let badge = settings {
             contentContainerView.bringSubviewToFront(savedMoneyView)

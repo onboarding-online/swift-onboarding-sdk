@@ -84,17 +84,6 @@ final class PaywallVC: BaseScreenGraphViewController {
     
 }
 
-extension PaywallVC {
-    
-    func finishWith(action: Action?) {
-        DispatchQueue.main.async {[weak self] in
-            guard let strongSelf = self else { return }
-            
-            strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
-        }
-    }
-    
-}
 
 // MARK: - UICollectionViewDataSource
 extension PaywallVC: UICollectionViewDataSource {
@@ -114,9 +103,9 @@ extension PaywallVC: UICollectionViewDataSource {
         let row = rowsFor(section: section)[indexPath.row]
                 
         switch row {
-        case .header(let configuration):
+        case .header:
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
-            cell.setWith(configuration: configuration, paywallData: screenData)
+            cell.setWith(paywallData: screenData)
             if screenData.video != nil {
                 let screenID = screen.id + screenData.paywallHeaderVideoKeyConstant
                 cell.setupBackgroundFor(screenId: screenID, using: videoPreparationService)
@@ -131,7 +120,7 @@ extension PaywallVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
             
             return cell
-        case .listSubscription(_):
+        case .listSubscription:
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
@@ -142,7 +131,7 @@ extension PaywallVC: UICollectionViewDataSource {
                 cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             return cell
-        case .oneTimePurchase(_):
+        case .oneTimePurchase:
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
@@ -153,7 +142,7 @@ extension PaywallVC: UICollectionViewDataSource {
             }
             
             return cell
-        case .tileSubscription(let configuration):
+        case .tileSubscription:
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
@@ -161,7 +150,7 @@ extension PaywallVC: UICollectionViewDataSource {
             let currentProduct = self.products[index]
 
             if let item = itemFor(product: currentProduct) {
-                cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             
             return cell
@@ -177,7 +166,7 @@ extension PaywallVC: UICollectionViewDelegate {
         let row = rowsFor(section: section)[indexPath.row]
         
         switch row {
-        case .header(_), .separator, .loading:
+        case .header, .separator, .loading:
             return
         case .listSubscription, .oneTimePurchase, .tileSubscription:
             let index = indexPath.row
@@ -209,9 +198,6 @@ extension PaywallVC: UICollectionViewDelegate {
         }
     }
 }
-
-
-
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension PaywallVC: UICollectionViewDelegateFlowLayout {
@@ -249,12 +235,12 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         var contentSize: CGFloat = 0
         for section in sections {
             switch section {
-            case .header:
+            case .header, .separator:
                 contentSize += Constants.sectionsSpacing
-            case .separator:
-                if screenData.divider != nil {
-                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-                }
+//            case .separator:
+//                if screenData.divider != nil {
+//                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+//                }
             case .items:
                 switch style {
                 case .subscriptionsList:
@@ -266,7 +252,14 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         numberOfItems = items.count
                     }
                     
+                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+
+                    
                     var itemsHeight: CGFloat = 0.0
+                    
+                    if screenData.divider != nil {
+                        itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+                    }
                     
                     for product in  self.products {
                         if let item = itemFor(product: product) {
@@ -278,6 +271,10 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     contentSize += (itemsHeight + spacingHeight)
                 case .subscriptionsTiles:
                     var itemsHeight: CGFloat = 0.0
+                   
+                    if screenData.divider != nil {
+                        itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+                    }
 
                     contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
                 }
@@ -506,9 +503,11 @@ private extension PaywallVC {
         }
     }
     
-    func sendToServer(transactionId: String) {
-        OnboardingLoadingService.sendPaymentInfo(transactionId: transactionId, projectId: "") { result in
-
+    func finishWith(action: Action?) {
+        DispatchQueue.main.async {[weak self] in
+            guard let strongSelf = self else { return }
+            
+            strongSelf.delegate?.onboardingScreen(strongSelf, didFinishWithScreenData: action)
         }
     }
     
@@ -675,11 +674,11 @@ extension PaywallVC {
     }
     
     enum RowType {
-        case header(HeaderCellConfiguration)
+        case header
         case separator
-        case oneTimePurchase(ListOneTimePurchaseCellConfiguration)
-        case listSubscription(ListSubscriptionCellConfiguration)
-        case tileSubscription(TileSubscriptionCellConfiguration)
+        case oneTimePurchase
+        case listSubscription
+        case tileSubscription
         case loading
         
         var height: CGFloat {
@@ -696,29 +695,6 @@ extension PaywallVC {
         }
     }
     
-    struct HeaderCellConfiguration {
-        let imageURL: URL
-        let style: PaywallHeaderCell.Style
-    }
-    
-    struct ListSubscriptionCellConfiguration {
-        let product: StoreKitProduct
-        let subscriptionDescription: StoreKitSubscriptionDescription
-        let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
-    }
-    
-    struct ListOneTimePurchaseCellConfiguration {
-        let product: StoreKitProduct
-        let badgePosition: PaywallListSubscriptionCell.SavedMoneyBadgePosition
-    }
-    
-    struct TileSubscriptionCellConfiguration {
-        let product: StoreKitProduct
-        let subscriptionDescription: StoreKitSubscriptionDescription
-        let badgePosition: PaywallTileSubscriptionCell.SavedMoneyBadgePosition
-        let checkmarkPosition: PaywallTileSubscriptionCell.CheckmarkPosition
-    }
-    
     func allSections() -> [SectionType] {
         var sections: [SectionType] = [.header]
         if screenData.divider != nil {
@@ -731,7 +707,7 @@ extension PaywallVC {
     func rowsFor(section: SectionType) -> [RowType] {
         switch section {
         case .header:
-            return [.header(.mock())]
+            return [.header]
         case .separator:
             return [.separator]
         case .items:
@@ -745,25 +721,18 @@ extension PaywallVC {
                 return products.map { product in
                     switch product.type {
                     case .oneTimePurchase:
-                        return .oneTimePurchase(.init(product: product,
-                                                      badgePosition: .left))
-                    case .subscription(let description):
-                        return .listSubscription(.init(product: product,
-                                                       subscriptionDescription: description,
-                                                       badgePosition: .left))
+                        return .oneTimePurchase
+                    case .subscription(_):
+                        return .listSubscription
                     }
                 }
             case .subscriptionsTiles:
                 return products.compactMap { product in
                     switch product.type {
                     case .oneTimePurchase:
-                        return .oneTimePurchase(.init(product: product,
-                                                      badgePosition: .left))
-                    case .subscription(let description):
-                        return .tileSubscription(.init(product: product,
-                                                       subscriptionDescription: description,
-                                                       badgePosition: .right,
-                                                       checkmarkPosition: .left))
+                        return .oneTimePurchase
+                    case .subscription(_):
+                        return .tileSubscription
                     }
                 }
             }
@@ -777,186 +746,12 @@ extension PaywallVC {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
         static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 0 : 0 }()
         static let listItemsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 8 : 16 }()
-        
-        
-//        static let sectionsSpacing: CGFloat = { 0 }()
-//
-//        static let listItemsSpacing: CGFloat = { 0 }()
 
-        
-//        static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 77 }()
-        
         static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 120 }()
 
         static let subscriptionTileItemSize: CGSize = {
             UIScreen.isIphoneSE1 ? CGSize(width: 120, height: 120) : CGSize(width: 140, height: 150)
         }()
-    }
-    
-}
-
-private extension PaywallVC.HeaderCellConfiguration {
-    static func mock() -> PaywallVC.HeaderCellConfiguration {
-        .init(imageURL: URL(string: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?size=626&ext=jpg&ga=GA1.1.1546980028.1703462400&semt=sph")!,
-//              style: .titleSubtitle(title: "Do you have a question? ",
-//                                    subtitle: "Just ask it to our lawyer and get a quick and high-quality answer. ")
-              style: .titleBulletsList(title: "Do you have a question? ",
-                                    bulletsList: ["Just ask it to our lawyer",
-                                                  "Just ask it to our",
-                                                  "Just ask it to"])
-        )
-    }
-}
-
-
-final class PaywallCellWithBorderConfigurator: CellConfigurator {
-    var cellLeading: CGFloat = 24
-    var cellTrailing: CGFloat = 24
-    var cellTop: CGFloat = 24
-    var cellBottom: CGFloat = 24
-    var labelHorizontalSpacing: CGFloat = 4
-    
-    func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
-        ///cell size
-        cellTrailing = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
-        cellLeading = 16 + (screenData.subscriptions.box.styles.paddingLeft ?? 0)
-        cellTop = 16 + (screenData.subscriptions.box.styles.paddingTop ?? 0)
-        cellBottom = 16 + (screenData.subscriptions.box.styles.paddingBottom ?? 0)
-
-        let containerWidthWithoutPaddings: CGFloat = containerWidth - cellTrailing - cellLeading
-        allItemsHorizontalStackViewSpacing = 0
-        
-        ///cell content size
-        containerLeading = screenData.subscriptions.styles.paddingLeft ?? 16
-        containerTrailing = screenData.subscriptions.styles.paddingRight ?? 16
-        containerTop = screenData.subscriptions.styles.paddingTop ?? 16
-        containerBottom = screenData.subscriptions.styles.paddingBottom ?? 16
-        
-        /// Add gaps between rows and columns
-        labelsVerticalStackViewSpacing = item.styles.columnVerticalPadding ?? 4
-        labelHorizontalSpacing = item.styles.columnHorizontalPadding ?? 4
-        if item.isOneColumn() {
-            labelHorizontalSpacing = 0.0
-        }
-        
-        // Calculate effective width for labels heights calculation
-        var labelWidth = containerWidthWithoutPaddings - containerLeading - containerTrailing
-        
-        if !isImageHiddenFor(item: item) {
-            labelWidth -= (imageWidth + allItemsHorizontalStackViewSpacing)
-        } else {
-            self.imageWidth = 0
-            self.imageHeigh = 0
-        }
-        
-        /// Add checkbox width
-        if !isCheckboxHiddenFor(list: screenData.subscriptions) {
-            let checkBoxContainer = (item.checkBox.styles.width ?? 24.0) + (item.checkBox.box.styles.paddingLeft ?? 0.0) + (item.checkBox.box.styles.paddingRight ?? 0.0)
-            labelWidth = labelWidth - checkBoxContainer
-        }
-        
-        //Calculate labels height
-        var totalLabelsBlockHeight = 0.0
-        var subtitleHeight: CGFloat = 0.0
-        
-        let titleText: Text
-        let subtitleText: Text
-        
-        ///Calculate size of columns
-        let leftColumnSize = (item.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
-        let rightColumnSize = 1 - leftColumnSize
-        
-        var leftColumnSizeValue = (labelWidth) * leftColumnSize
-        var rightColumnSizeValue = labelWidth  * rightColumnSize - labelHorizontalSpacing
-        
-        /// If one column is empty then use all container width
-        if item.isLeftColumnEmpty() {
-            rightColumnSizeValue = labelWidth
-        }
-        
-        if item.isRightColumnEmpty() {
-            leftColumnSizeValue = labelWidth
-        }
-
-        ///Left column height
-        let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product)
-        ///Right column height
-        let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
-
-        let floatMaxHeightColumnWidth: Double
-        if leftColumnHeight >= rightColumnHeight {
-            titleText = item.leftLabelTop
-            subtitleText  = item.leftLabelBottom
-            floatMaxHeightColumnWidth = leftColumnSizeValue
-        } else {
-            titleText = item.rightLabelTop
-            subtitleText  = item.rightLabelBottom
-            floatMaxHeightColumnWidth = rightColumnSizeValue
-        }
-
-        let titleHeight = titleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
-
-        totalLabelsBlockHeight += titleHeight > 0.0 ? titleHeight : 0
-        
-        subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
-        totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
-                  
-        //Add gap between labels if there are 2 labels
-        if item.isTwoLabelInAnyColumn() {
-            totalLabelsBlockHeight += labelsVerticalStackViewSpacing
-        }
-        
-        //Get max elemets height for cell height
-        var maxHeight = totalLabelsBlockHeight > imageHeigh ? totalLabelsBlockHeight : imageHeigh
-        
-        maxHeight = maxHeight > checkboxSize ? maxHeight : checkboxSize
-        
-        let cellHeight = maxHeight + containerTop + containerBottom
-        
-        return cellHeight
-    }
-    
-    func isCheckboxHiddenFor(list: SubscriptionList) -> Bool {
-        switch list.itemType {
-        case .checkboxLabels, .labelsCheckbox:
-            return false
-        default:
-            return true
-        }
-    }
-    
-    func isImageHiddenFor(item: ItemTypeSubscription) -> Bool {
-        return true
-    }
-}
-
-extension ItemTypeSubscription {
-    
-    func isTwoLabelInAnyColumn() -> Bool {
-        let is2NonEmptyLabelsLeftColumn = !self.leftLabelTop.textByLocale().isEmpty && !self.leftLabelBottom.textByLocale().isEmpty
-        let is2NonEmptyLabelsRightColumn = !self.rightLabelTop.textByLocale().isEmpty && !self.rightLabelBottom.textByLocale().isEmpty
-        if is2NonEmptyLabelsLeftColumn || is2NonEmptyLabelsRightColumn {
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    func isLeftColumnEmpty() -> Bool {
-        let isEmpty = self.leftLabelTop.textByLocale().isEmpty && self.leftLabelBottom.textByLocale().isEmpty
-        return isEmpty
-    }
-    
-    func isRightColumnEmpty() -> Bool {
-        let isEmpty = self.rightLabelTop.textByLocale().isEmpty && self.rightLabelBottom.textByLocale().isEmpty
-        return isEmpty
-    }
-    
-    func isOneColumn() -> Bool {
-        if isLeftColumnEmpty() || isRightColumnEmpty() {
-            return true
-        }
-        return false
     }
     
 }

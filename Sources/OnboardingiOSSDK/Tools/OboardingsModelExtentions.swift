@@ -1352,3 +1352,34 @@ extension ScreensGraph {
     }
 
 }
+
+extension ItemTypeSubscription {
+    
+    func isTwoLabelInAnyColumn() -> Bool {
+        let is2NonEmptyLabelsLeftColumn = !self.leftLabelTop.textByLocale().isEmpty && !self.leftLabelBottom.textByLocale().isEmpty
+        let is2NonEmptyLabelsRightColumn = !self.rightLabelTop.textByLocale().isEmpty && !self.rightLabelBottom.textByLocale().isEmpty
+        if is2NonEmptyLabelsLeftColumn || is2NonEmptyLabelsRightColumn {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func isLeftColumnEmpty() -> Bool {
+        let isEmpty = self.leftLabelTop.textByLocale().isEmpty && self.leftLabelBottom.textByLocale().isEmpty
+        return isEmpty
+    }
+    
+    func isRightColumnEmpty() -> Bool {
+        let isEmpty = self.rightLabelTop.textByLocale().isEmpty && self.rightLabelBottom.textByLocale().isEmpty
+        return isEmpty
+    }
+    
+    func isOneColumn() -> Bool {
+        if isLeftColumnEmpty() || isRightColumnEmpty() {
+            return true
+        }
+        return false
+    }
+    
+}
