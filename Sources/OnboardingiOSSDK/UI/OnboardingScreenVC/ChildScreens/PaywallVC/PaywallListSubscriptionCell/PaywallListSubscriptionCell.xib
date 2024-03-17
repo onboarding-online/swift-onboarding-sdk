@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -98,19 +97,13 @@
                                     <constraint firstItem="zJx-QK-eNu" firstAttribute="top" secondItem="S5s-Dr-Ix9" secondAttribute="top" id="idU-Xf-CQq"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="24" translatesAutoresizingMaskIntoConstraints="NO" id="9jQ-Tk-hac" customClass="SavedMoneyView" customModule="OnboardingiOSSDK">
-                                <rect key="frame" x="153.66666666666663" y="200.66666666666666" width="240" height="24"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" priority="500" id="5Pz-Jl-xGj"/>
                             <constraint firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" id="6Bo-sJ-00h"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" id="PEn-vx-dI2"/>
                             <constraint firstAttribute="bottom" secondItem="S5s-Dr-Ix9" secondAttribute="bottom" id="WhH-d6-9QT"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" id="gIZ-O1-6Ar"/>
-                            <constraint firstItem="9jQ-Tk-hac" firstAttribute="centerY" secondItem="uhh-6B-Hi4" secondAttribute="centerY" priority="500" id="lRW-KV-AoC"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -149,14 +142,8 @@
                 <outlet property="rightLabelBottom" destination="dun-H3-aEi" id="yJT-XJ-2S7"/>
                 <outlet property="rightLabelTop" destination="nh0-fV-a0E" id="kei-BM-1HK"/>
                 <outlet property="rightStack" destination="zo4-a7-Dq4" id="O4U-7m-2MS"/>
-                <outlet property="savedMoneyView" destination="9jQ-Tk-hac" id="8ZS-2c-BZE"/>
             </connections>
             <point key="canvasLocation" x="232.82442748091603" y="147.53521126760563"/>
         </collectionViewCell>
     </objects>
-    <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>

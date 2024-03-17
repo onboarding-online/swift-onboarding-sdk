@@ -252,7 +252,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         numberOfItems = items.count
                     }
                     
-                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+//                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
 
                     
                     var itemsHeight: CGFloat = 0.0
