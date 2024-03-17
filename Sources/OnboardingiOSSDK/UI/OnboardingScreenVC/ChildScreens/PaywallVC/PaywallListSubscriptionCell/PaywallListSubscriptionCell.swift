@@ -186,7 +186,6 @@ private extension PaywallListSubscriptionCell {
 extension PaywallListSubscriptionCell {
     
     func setupSizes(subscriptionItem: ItemTypeSubscription, list: SubscriptionList) {
-
         setupCheckBoxSizes(subscriptionItem: subscriptionItem)
         
         mainContainerBottomConstraint.constant = list.styles.paddingBottom ?? 16
@@ -201,7 +200,6 @@ extension PaywallListSubscriptionCell {
         
         let leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
         let rightColumnSize = 1 - leftColumnSize
-        let multiplier = leftColumnSize / rightColumnSize
 
         leftStack.translatesAutoresizingMaskIntoConstraints = false
         rightStack.translatesAutoresizingMaskIntoConstraints = false
@@ -216,23 +214,19 @@ extension PaywallListSubscriptionCell {
         rightStack.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
         rightStack.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal) // Для вертикального стека
 
-        
         let labels = [leftLabelTop, leftLabelBottom, rightLabelTop, rightLabelBottom]
         
         for label in labels {
             if let label = label {
-                // Настройка для поддержания размера контента по вертикали
                 label.adjustsFontSizeToFitWidth = true
-                label.minimumScaleFactor = 0.5 // The font size can shrink to 50% of its original size
-//                label.baselineAdjustment = .alignCenters
+                label.minimumScaleFactor = 0.5
                 
-                label.setContentHuggingPriority(UILayoutPriority(250), for: .vertical) // Для вертикального стека
-                label.setContentCompressionResistancePriority(UILayoutPriority(750), for: .vertical) // Для вертикального стека
+                label.setContentHuggingPriority(UILayoutPriority(250), for: .vertical)
+                label.setContentCompressionResistancePriority(UILayoutPriority(750), for: .vertical)
   
-                label.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
-                label.setContentCompressionResistancePriority(UILayoutPriority(750), for: .horizontal) // Для вертикального стека
+                label.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal)
+                label.setContentCompressionResistancePriority(UILayoutPriority(750), for: .horizontal)
                 
-                // Установка количества строк на 0 позволяет лейблу поддерживать многострочный текст.
                 label.numberOfLines = 0
             }
         }

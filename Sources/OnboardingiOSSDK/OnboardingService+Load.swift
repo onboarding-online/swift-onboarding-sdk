@@ -80,7 +80,7 @@ public extension OnboardingService {
                                                            env: env,
                                                            appearance: appearance,
                                                            launchWithAnimation: launchWithAnimation)
-            
+            self.projectId = projectId
             loadOnboarding(configuration: loadConfiguration, finishedCallback: finishedCallback)
         } catch {
             finishedCallback(.failure(.init(error: error)))
@@ -110,6 +110,7 @@ public extension OnboardingService {
             let localScreenGraph = try OnboardingLoadingService.getOnboardingFromLocalJsonName(localJSONFileName)
             let config = RunConfiguration.init(screenGraph: localScreenGraph,
                                                launchWithAnimation: launchWithAnimation)
+            
             OnboardingService.shared.startOnboarding(configuration: config,
                                                      finishedCallback: finishedCallback)
         } catch {

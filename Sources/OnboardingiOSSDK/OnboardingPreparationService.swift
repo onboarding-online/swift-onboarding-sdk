@@ -120,7 +120,6 @@ private extension OnboardingPreparationService {
                 
             case .failure(let error):
                 OnboardingService.shared.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: error.localizedDescription])
-
                 finishedCallback(.failure(error))
             }
         }

@@ -14,7 +14,6 @@ public final class OnboardingService {
     
     public static let shared = OnboardingService()
 
-    private let windowManager: OnboardingWindowManagerProtocol 
     public var customFlow: CustomScreenCallback? = nil
     
     public var permissionRequestCallback: PermissionRequestCallback? = nil
@@ -39,7 +38,8 @@ public final class OnboardingService {
 
     private var onboardingUserData: OnboardingData = [:]
     private var onboardingFinishedCallback: OnboardingFinishResult?
-    
+    private let windowManager: OnboardingWindowManagerProtocol
+
     public var projectId: String = ""
 
     

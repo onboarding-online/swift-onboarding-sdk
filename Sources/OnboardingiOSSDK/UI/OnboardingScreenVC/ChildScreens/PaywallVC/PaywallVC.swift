@@ -12,11 +12,6 @@ import StoreKit
 // TODO: - Check for canMakePayments before showing paywall 
 final class PaywallVC: BaseScreenGraphViewController {
     
-     var videoPreparationService: VideoPreparationService!
-
-     var transitionKind: ScreenTransitionKind?
-     
-     
     public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screen: Screen, screenData: ScreenBasicPaywall, videoPreparationService: VideoPreparationService) -> PaywallVC {
         let paywallVC = PaywallVC.nibInstance()
         paywallVC.screen = screen
@@ -27,8 +22,15 @@ final class PaywallVC: BaseScreenGraphViewController {
         return paywallVC
     }
      
-    private var screenData: ScreenBasicPaywall! = nil
-
+    var videoPreparationService: VideoPreparationService!
+    var transitionKind: ScreenTransitionKind?
+    
+    public var productIds: [String] = []
+    public var style: Style = .subscriptionsList
+    var shouldCloseOnPurchaseCancel = false
+    
+    public var dismissalHandler: (() -> ())!
+    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomView: PaywallBottomView!
@@ -36,23 +38,17 @@ final class PaywallVC: BaseScreenGraphViewController {
     
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var headerView: UIView!
+    @IBOutlet private weak var backgroundContainerView: UIView!
 
     private var paymentService: OnboardingPaymentServiceProtocol!
     private var selectedIndex: Int = 0
     private var isLoadingProducts = true
     private var isBusy = true
     private var products: [StoreKitProduct] = []
-    public var productIds: [String] = []
-    public var style: Style = .subscriptionsList
-    var shouldCloseOnPurchaseCancel = false
-    
-    public var dismissalHandler: (() -> ())!
+    private var screenData: ScreenBasicPaywall! = nil
 
-    @IBOutlet private weak var backgroundContainerView: UIView!
-    
     let cellConfigurator =  PaywallCellWithBorderConfigurator()
 
-    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -60,6 +56,7 @@ final class PaywallVC: BaseScreenGraphViewController {
         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
         productIds = ids
         
+        //TODO: remove when new types will be added
         switch screenData.subscriptions.itemType {
         case .subscriptionListItemType5:
             style = .subscriptionsTiles
@@ -68,11 +65,9 @@ final class PaywallVC: BaseScreenGraphViewController {
         }
         
         loadProducts()
-//        add selected product to parameters
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -84,32 +79,7 @@ final class PaywallVC: BaseScreenGraphViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-//        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
-    }
-    
-    
-    func setup() {
-        setupBackground()
-        setupCollectionView()
-        setup(navigationBar: screenData.navigationBar)
-        setup(footer: screenData.footer)
-        setupGradientView()
-    }
-    
-    func setupBackground() {
-        backgroundView = backgroundContainerView
-
-        if let background = self.screenData?.styles.background {
-            switch background.styles {
-            case .typeBackgroundStyleColor(let value):
-                backgroundContainerView.backgroundColor = value.color.hexStringToColor
-            case .typeBackgroundStyleImage(let value):
-                updateBackground(image: value.image)
-            case .typeBackgroundStyleVideo:
-                setupBackgroundFor(screenId: screen.id,
-                                   using: videoPreparationService)
-            }
-        }
+        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
 }
@@ -161,7 +131,7 @@ extension PaywallVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
             
             return cell
-        case .listSubscription(let configuration):
+        case .listSubscription(_):
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
@@ -172,13 +142,13 @@ extension PaywallVC: UICollectionViewDataSource {
                 cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             return cell
-        case .oneTimePurchase(let configuration):
+        case .oneTimePurchase(_):
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
             let currentProduct = self.products[index]
 
-            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+            if let item = itemFor(product: currentProduct) {
                 cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             
@@ -190,7 +160,7 @@ extension PaywallVC: UICollectionViewDataSource {
 
             let currentProduct = self.products[index]
 
-            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+            if let item = itemFor(product: currentProduct) {
                 cell.setWith(configuration: configuration, isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             
@@ -201,6 +171,7 @@ extension PaywallVC: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 extension PaywallVC: UICollectionViewDelegate {
+    
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
@@ -240,36 +211,7 @@ extension PaywallVC: UICollectionViewDelegate {
 }
 
 
-// MARK: - PaywallBottomViewDelegate
-extension PaywallVC: PaywallBottomViewDelegate {
-    
-    func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
-        purchaseSelectedProduct()
-    }
-  
-    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-        OnboardingService.shared.eventRegistered(event: .ppButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .url: url])
 
-        if let url = URL.init(string: url) {
-            showSafariWith(url: url)
-        }
-    }
-    
-    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
-        OnboardingService.shared.eventRegistered(event: .tcButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .url: url])
-
-        if let url = URL.init(string: url) {
-            showSafariWith(url: url)
-        }
-    }
-    
-    func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Restore",
-//                                              logAnalytics: true)
-        restoreProducts()
-    }
-}
 
 // MARK: - UICollectionViewDelegateFlowLayout
 extension PaywallVC: UICollectionViewDelegateFlowLayout {
@@ -288,10 +230,9 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         case .tileSubscription:
             return Constants.subscriptionTileItemSize
         case .listSubscription:
-//            let item = screenData.subscriptions.items[indexPath.row]
             let currentProduct = self.products[indexPath.row]
             
-            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+            if let item = itemFor(product: currentProduct) {
                 height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
             }
         case .separator:
@@ -308,8 +249,12 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         var contentSize: CGFloat = 0
         for section in sections {
             switch section {
-            case .header, .separator:
+            case .header:
                 contentSize += Constants.sectionsSpacing
+            case .separator:
+                if screenData.divider != nil {
+                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
+                }
             case .items:
                 switch style {
                 case .subscriptionsList:
@@ -323,25 +268,17 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     
                     var itemsHeight: CGFloat = 0.0
                     
-                    for (index, currentProduct) in  self.products.enumerated() {
-                        if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
-                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+                    for product in  self.products {
+                        if let item = itemFor(product: product) {
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width)
                         }
                     }
                     
-//                    itemsHeight += PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-                    if screenData.divider != nil {
-                        itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-                    }
-
                     let spacingHeight = CGFloat(numberOfItems - 1) * Constants.listItemsSpacing
                     contentSize += (itemsHeight + spacingHeight)
                 case .subscriptionsTiles:
                     var itemsHeight: CGFloat = 0.0
 
-                    if screenData.divider != nil {
-                        itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-                    }
                     contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
                 }
             }
@@ -385,11 +322,18 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return .zero
     }
+    
 }
 
 // MARK: - Private methods
 private extension PaywallVC {
-    private var ppURL: URL { 
+    
+    func itemFor(product: StoreKitProduct) -> ItemTypeSubscription? {
+        let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == product.id})
+        return item
+    }
+    
+    private var ppURL: URL {
         URL(string: "https://google.com")! // TODO: - Set PP URL
     }
     private var tacURL: URL {
@@ -435,7 +379,6 @@ private extension PaywallVC {
             for (index, product) in self.products.enumerated() {
                 if product.id == item.subscriptionId {
                     selectedIndex = index
-                    print("selectedIndex \(selectedIndex)")
                     break
                 }
             }
@@ -478,9 +421,6 @@ private extension PaywallVC {
                 OnboardingService.shared.eventRegistered(event: .productRestored, params: [.hasActiveSubscription: hasActiveSubscription ?? false, .screenName: screen.name, .screenID: screen.id,])
 
                 if hasActiveSubscription == true {
-                    
-//                    OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
-
                     close()
                 }
             } catch {
@@ -504,23 +444,8 @@ private extension PaywallVC {
         Task {
             do {
                 try await paymentService.purchaseProduct(selectedProduct.skProduct)
-                Task {
-                    if selectedProduct.type == .oneTimePurchase {
-                        if let transaction = try await paymentService.lastPurchaseReceipts() {
-                            print("[trnsaction_id]-> \(transaction.originalTransactionId)")
-                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
-                            sendReceiptInfo(product: selectedProduct)
-                        }
-                    } else {
-                        if let transaction = try await paymentService.activeSubscriptionReceipt() {
-                            print("[trnsaction_id]-> \(transaction.originalTransactionId)")
-                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .transactionId : transaction.originalTransactionId])
-                            sendReceiptInfo(product: selectedProduct)
-                        }
-                    }
-                    
-                }
                 
+                sendReceiptInfo(product: selectedProduct)
                 self.value = selectedProduct.id
                 
                 finishWith(action: screenData.footer.purchase?.action)
@@ -545,11 +470,14 @@ private extension PaywallVC {
     func sendReceiptInfo(product: StoreKitProduct) {
         Task {
             do {
+                let projectId = OnboardingService.shared.projectId
+
                 if product.type == .oneTimePurchase {
                     if let receipt = try await paymentService.lastPurchaseReceipts() {
                         print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
-                        let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
+                        
+                        OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId])
                         
                         AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
                         
@@ -561,7 +489,7 @@ private extension PaywallVC {
                     if let receipt = try await paymentService.activeSubscriptionReceipt() {
                         print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
-                        let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
+                        OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId])
                         
                         AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
                         
@@ -571,23 +499,9 @@ private extension PaywallVC {
                     }
                 }
                 
-//                if let receipt = try await self.paymentService.lastPurchaseReceipts() {
-////                if let receipt = try await self.paymentService.activeSubscriptionReceipt() {
-//                        let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
-//                    let projectId = "2370dbee-0b62-49ea-8ccb-ef675c6dd1f9"
-//
-//                        AttributionStorageManager.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
-//                    
-//                    AttributionStorageManager.sendIntegrationsDetails(projectId: projectId) { error in
-//                        
-//                    }
-//                } else {
-//                    // Чек не найден, но и ошибки не было
-//                    print("Активный чек подписки не найден")
-//                }
             } catch {
-                // Произошла ошибка при получении чека
-                print("Ошибка при получении чека: \(error)")
+                // An error occurred while retrieving the receipt
+                print("Error retrieving the receipt: \(error)")
             }
         }
     }
@@ -630,6 +544,58 @@ private extension PaywallVC {
             activityIndicator.stopAnimating()
         }
         view.isUserInteractionEnabled = !isBusy
+    }
+    
+    
+    func setup() {
+        setupBackground()
+        setupCollectionView()
+        setup(navigationBar: screenData.navigationBar)
+        setup(footer: screenData.footer)
+    }
+    
+    func setupBackground() {
+        backgroundView = backgroundContainerView
+
+        if let background = self.screenData?.styles.background {
+            switch background.styles {
+            case .typeBackgroundStyleColor(let value):
+                backgroundContainerView.backgroundColor = value.color.hexStringToColor
+            case .typeBackgroundStyleImage(let value):
+                updateBackground(image: value.image)
+            case .typeBackgroundStyleVideo:
+                setupBackgroundFor(screenId: screen.id,
+                                   using: videoPreparationService)
+            }
+        }
+    }
+}
+
+// MARK: - PaywallBottomViewDelegate
+extension PaywallVC: PaywallBottomViewDelegate {
+    
+    func paywallBottomViewBuyButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        purchaseSelectedProduct()
+    }
+  
+    func paywallBottomViewPPButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
+        OnboardingService.shared.eventRegistered(event: .ppButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .url: url])
+
+        if let url = URL.init(string: url) {
+            showSafariWith(url: url)
+        }
+    }
+    
+    func paywallBottomViewTACButtonPressed(_ paywallBottomView: PaywallBottomView, url: String) {
+        OnboardingService.shared.eventRegistered(event: .tcButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .url: url])
+
+        if let url = URL.init(string: url) {
+            showSafariWith(url: url)
+        }
+    }
+    
+    func paywallBottomViewRestoreButtonPressed(_ paywallBottomView: PaywallBottomView) {
+        restoreProducts()
     }
 }
 
@@ -690,12 +656,6 @@ private extension PaywallVC {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.clipsToBounds = false
-    }
-    
-    func setupGradientView() {
-//        gradientView.gradientColors = [.white.withAlphaComponent(0.01),
-//                                       .white]
-//        gradientView.gradientDirection = .topToBottom
     }
     
 }
@@ -806,15 +766,6 @@ extension PaywallVC {
                                                        checkmarkPosition: .left))
                     }
                 }
-                
-//                return products.compactMap { product in
-//                    guard case .subscription(let description) = product.type else { return nil }
-//                    
-//                    return .tileSubscription(.init(product: product,
-//                                                   subscriptionDescription: description,
-//                                                   badgePosition: .right,
-//                                                   checkmarkPosition: .left))
-//                }
             }
         }
     }
