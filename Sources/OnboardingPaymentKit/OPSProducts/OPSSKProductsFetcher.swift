@@ -15,6 +15,7 @@ public typealias OPSProductsRequestCompletion = (OPSProductsRequestResult)->()
 final class OPSSKProductsFetcher: NSObject {
         
     private var completions: [OPSProductsRequestCompletion] = []
+    private let serialQueue = DispatchQueue(label: "com.ops.skproductsfetcher.serial")
     
 }
 
@@ -24,11 +25,16 @@ extension OPSSKProductsFetcher: SKProductsFetcher {
     func fetch(productIds: Set<String>,
                completion: @escaping OPSProductsRequestCompletion) {
         OPSLogger.logEvent("Did start fetching products with ids \(productIds)")
-        self.completions.append(completion)
-
-        let request = SKProductsRequest(productIdentifiers: productIds)
-        request.delegate = self
-        request.start()
+        serialQueue.sync {
+            self.completions.append(completion)
+            if completions.count > 1 { // Already performing request
+                return
+            }
+            
+            let request = SKProductsRequest(productIdentifiers: productIds)
+            request.delegate = self
+            request.start()
+        }
     }
     
     func fetch(productIds: Set<String>) async throws -> OPSProductsResponse {
@@ -56,9 +62,11 @@ extension OPSSKProductsFetcher: SKProductsRequestDelegate {
 // MARK: - Private methods
 private extension OPSSKProductsFetcher {
     func completeWith(result: OPSProductsRequestResult) {
-        completions.forEach { completion in
-            completion(result)
+        serialQueue.sync {
+            completions.forEach { completion in
+                completion(result)
+            }
+            completions.removeAll()
         }
-        completions.removeAll()
     }
 }
