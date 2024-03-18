@@ -191,7 +191,6 @@ class APIManager {
         var platformDict = Dictionary<String, Any>()
         for platform in attributions {
             platformDict[platform.platform.rawValue] = ["platformUserId" : platform.platformUserId]
-            
             platformDict[platform.platform.rawValue] = ["platformDeviceId" : platform.deviceUserId]
         }
         
@@ -238,6 +237,7 @@ class APIManager {
         var platformDict = Dictionary<String, Any>()
         for platform in attributions {
             platformDict[platform.platform.rawValue] = ["platformUserId" : platform.platformUserId]
+            platformDict[platform.platform.rawValue] = ["platformDeviceId" : platform.deviceUserId]
         }
         
         
