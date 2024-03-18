@@ -10,7 +10,7 @@ import ScreensGraph
 import StoreKit
 
 // TODO: - Check for canMakePayments before showing paywall 
-final class PaywallVC: BaseScreenGraphViewController {
+public final class PaywallVC: BaseScreenGraphViewController {
     
     public static func instantiate(paymentService: OnboardingPaymentServiceProtocol, screen: Screen, screenData: ScreenBasicPaywall, videoPreparationService: VideoPreparationService) -> PaywallVC {
         let paywallVC = PaywallVC.nibInstance()
@@ -68,7 +68,7 @@ final class PaywallVC: BaseScreenGraphViewController {
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
@@ -76,7 +76,7 @@ final class PaywallVC: BaseScreenGraphViewController {
         navigationController?.isNavigationBarHidden = true
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
+    public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])

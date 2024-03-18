@@ -10,7 +10,7 @@ import ScreensGraph
 import AVFoundation
 import Combine
 
-final class VideoPreparationService {
+public final class VideoPreparationService {
     
     let screenGraph: ScreensGraph
     

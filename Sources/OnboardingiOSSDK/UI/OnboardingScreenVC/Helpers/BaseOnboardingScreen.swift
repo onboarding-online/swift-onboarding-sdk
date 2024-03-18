@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import ScreensGraph
 
-class BaseOnboardingScreen: UIViewController {
+public class BaseOnboardingScreen: UIViewController {
     
     private var backgroundImageView: UIImageView?
     var footerBottomConstraint: NSLayoutConstraint?
@@ -17,19 +17,19 @@ class BaseOnboardingScreen: UIViewController {
     private var videoBackground: VideoBackground?
 
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.isNavigationBarHidden = true
         addKeyboardListeners()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
+    public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     
         removeKeyboardListener()
