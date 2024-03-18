@@ -172,6 +172,7 @@ public enum AnalyticsEvent: String {
     //    screenID
     //    screenName
     //    productId
+    //    paymentsInfo
     case productPurchased
     //    Parameters:
     //    screenID
@@ -283,6 +284,8 @@ public enum AnalyticsEventParams: String {
     case selectedProductId
     
     case productId
+    
+    case paymentsInfo
     
     case transactionId
 

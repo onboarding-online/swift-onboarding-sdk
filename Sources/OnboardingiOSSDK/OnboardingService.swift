@@ -20,7 +20,7 @@ public final class OnboardingService {
     
     public var userEventListener: ((AnalyticsEvent, [String: Any]?) -> ())? = nil
     public var systemEventListener: ((AnalyticsEvent, [String: Any]?) -> ())? = nil
-
+    
     public var customLoadingViewController: UIViewController?
     public var assetsPrefetchMode: AssetsPrefetchMode = .waitForScreenToLoad(timeout: 0.5)
 
