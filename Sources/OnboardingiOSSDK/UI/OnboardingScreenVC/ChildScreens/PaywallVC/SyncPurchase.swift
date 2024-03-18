@@ -25,7 +25,7 @@ public class AttributionStorageManager {
     
     // Сохранение данных атрибуции
     public static func saveAttributionData(userId: String?, deviceId: String? = nil, data: [AnyHashable: Any]?, for platform: IntegrationType) {
-        if AttributionStorageManager.getSyncDate(for: platform) == nil {
+        if AttributionStorageManager.getSyncDate(for: platform) == nil, (!(userId ?? "").isEmpty || !(deviceId ?? "").isEmpty){
             let defaults = UserDefaults.standard
             var params = data ?? [AnyHashable: Any]()
             if let userId = userId {
