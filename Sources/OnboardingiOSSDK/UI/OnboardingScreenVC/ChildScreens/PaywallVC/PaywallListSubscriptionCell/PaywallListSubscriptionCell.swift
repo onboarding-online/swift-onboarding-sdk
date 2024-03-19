@@ -64,10 +64,6 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
         
         clipsToBounds = false
         
-        //        addSubview(savedMoneyView)
-        
-//        setupBadgeViewAndLabel()
-        
         savedMoneyView.clipsToBounds = true
         NSLayoutConstraint.activate([
             savedMoneyView.label.topAnchor.constraint(equalTo: savedMoneyView.topAnchor, constant: 0),

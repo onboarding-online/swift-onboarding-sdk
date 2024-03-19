@@ -287,7 +287,7 @@ class APIManager {
     
     static func buildURlForAttributionSync() -> String {
         let host = "dev.api.onboarding.online"
-        let baseURL = "https://\(host)/paywall-service/v1/user"
+        let baseURL = "https://\(host)/analytics-service/v1/user"
                 
         return baseURL
     }
