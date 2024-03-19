@@ -20,7 +20,7 @@ public final class VideoPreparationService {
     private var onStatusCallbacks: [String : [(PlayerPreparationStatus)->()]] = [:]
     private var screenIdToEdgesDict: [String : [ConditionedAction]] = [:]
     
-    init(screenGraph: ScreensGraph) {
+    public init(screenGraph: ScreensGraph) {
         self.screenGraph = screenGraph
 //        prepareVideo()
         

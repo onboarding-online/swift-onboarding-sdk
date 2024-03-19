@@ -64,6 +64,57 @@ public extension OnboardingService {
         }
     }
     
+    func getScreenGraphWhenReady(projectId: String,
+                                          finishedCallback:  @escaping GenericResultCallback<ScreensGraph>) {
+        let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: .prod)
+        
+        self.projectId = projectId
+      
+        func getPrepared() {
+            if let screenGraph = OnboardingPreparationService.getScreenGraphFor(projectId: projectId) {
+                finishedCallback(.success(screenGraph))
+            } else {
+                finishedCallback(.failure(GenericError.init(errorCode: 5, localizedDescription: "Could not find ScreenGraph")))
+            }
+        }
+        
+        switch preparationState {
+        case .notStarted, .failed:
+            getScreenGraph(projectId: projectId, finishedCallback: finishedCallback)
+            print("")
+        case .preparing:
+            print("")
+
+            OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: .prod) { [weak self] result in
+                switch result {
+                case .success:
+                    print("------- onboarding assets downloaded")
+                    getPrepared()
+                case .failure:
+                    self?.getScreenGraph(projectId: projectId, finishedCallback: finishedCallback)
+                    print("------- onboarding assets loading failed, restart onboarding")
+                }
+            }
+        case .ready:
+            print("")
+            getPrepared()
+        }
+    }
+    
+    func getScreenGraph(projectId: String, finishedCallback: @escaping GenericResultCallback<ScreensGraph>) {
+        OnboardingLoadingService.loadScreenGraphFor(projectId: projectId, env: .prod) { [weak self](result)  in
+            finishedCallback(result)
+            switch result {
+            case .success(let screenGraph):
+                print("loaded")
+            case .failure(let failure):
+                self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: failure.localizedDescription])
+            }
+        }
+    }
+    
+    
+    
     func startOnboarding(projectId: String,
                          localJSONFileName: String,
                          env: OnboardingEnvironment = .prod,

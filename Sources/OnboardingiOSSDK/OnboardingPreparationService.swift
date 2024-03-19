@@ -75,6 +75,14 @@ extension OnboardingPreparationService {
         let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
         startOnboardingWith(identifier: identifier, env: env, finishedCallback: finishedCallback)
     }
+    
+    static func getScreenGraphFor(projectId: String) -> ScreensGraph? {
+        serialQueue.sync {
+            let identifier = onboardingIdentifierFor(projectId: projectId, env: .prod)
+            let data = preparedOnboardingDataCache.first(where: { $0.identifier == identifier })
+            return data?.screenGraph
+        }
+    }
 }
 
 // MARK: - Private methods
@@ -206,6 +214,8 @@ private extension OnboardingPreparationService {
             preparedOnboardingDataCache.first(where: { $0.identifier == identifier })
         }
     }
+    
+
     
     static func mutatePreparedOnboardingData(identifier: String, block: (inout PreparedOnboardingData)->())  {
         serialQueue.sync {
