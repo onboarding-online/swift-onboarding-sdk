@@ -38,6 +38,7 @@ final class PaywallTileSubscriptionCell: UICollectionViewCell {
         
         clipsToBounds = false
         savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
+        self.layer.zPosition = -200
     }
 
 }

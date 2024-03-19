@@ -9,19 +9,19 @@ import UIKit
 import ScreensGraph
 
 final class PaywallListSubscriptionCell: UICollectionViewCell {
-
+    
     @IBOutlet private weak var contentContainerView: UIView!
     @IBOutlet private weak var mainContainerStack: UIStackView!
-
+    
     @IBOutlet private weak var checkbox: UIImageView!
     @IBOutlet private weak var checkBoxContainerView: UIView!
-
+    
     @IBOutlet private weak var leftLabelTop: UILabel!
     @IBOutlet private weak var leftLabelBottom: UILabel!
     
     @IBOutlet private weak var rightLabelTop: UILabel!
     @IBOutlet private weak var rightLabelBottom: UILabel!
-
+    
     @IBOutlet private weak var contentLeadingConstraint: NSLayoutConstraint!
     
     @IBOutlet private weak var mainContainerLeadingConstraint: NSLayoutConstraint!
@@ -41,25 +41,103 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var checkBoxTrailing: NSLayoutConstraint!
     @IBOutlet private weak var checkBoxBot: NSLayoutConstraint!
     @IBOutlet private weak var checkBoxTop: NSLayoutConstraint!
-
+    
     @IBOutlet private weak var containerStack: UIStackView!
     @IBOutlet private weak var leftStack: UIStackView!
     @IBOutlet private weak var rightStack: UIStackView!
-
-    @IBOutlet private weak var savedMoneyView: SavedMoneyView!
+    
+    //    @IBOutlet private weak var savedMoneyView: SavedMoneyView!
+    
+    var savedMoneyView: SavedMoneyView = SavedMoneyView()
+    
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
     
     private var item: ItemTypeSubscription? = nil
     private var list: SubscriptionList? = nil
-
+    
+    
+    let badgeView = UIView()
+    let badgeLabel = UILabel()
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         clipsToBounds = false
-//        savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
+        
+        //        addSubview(savedMoneyView)
+        
+//        setupBadgeViewAndLabel()
+        
+        savedMoneyView.clipsToBounds = true
+        NSLayoutConstraint.activate([
+            savedMoneyView.label.topAnchor.constraint(equalTo: savedMoneyView.topAnchor, constant: 0),
+            savedMoneyView.label.bottomAnchor.constraint(equalTo: savedMoneyView.bottomAnchor, constant: 0),
+            savedMoneyView.label.leadingAnchor.constraint(equalTo: savedMoneyView.leadingAnchor, constant: 0),
+            savedMoneyView.label.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: 0),
+        ])
+        
+        savedMoneyView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(savedMoneyView)
     }
-
+    
+    
+    
+    private func setupBadgeViewAndLabel() {
+        badgeView.backgroundColor = .red
+        badgeView.layer.cornerRadius = 10
+        badgeView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(badgeView)
+        badgeView.isHidden = true
+        badgeLabel.textColor = .black
+        badgeLabel.font = .boldSystemFont(ofSize: 12)
+        badgeLabel.translatesAutoresizingMaskIntoConstraints = false
+        badgeView.addSubview(badgeLabel)
+        
+        NSLayoutConstraint.activate([
+            badgeLabel.topAnchor.constraint(equalTo: badgeView.topAnchor, constant: 5),
+            badgeLabel.bottomAnchor.constraint(equalTo: badgeView.bottomAnchor, constant: -5),
+            badgeLabel.leadingAnchor.constraint(equalTo: badgeView.leadingAnchor, constant: 10),
+            badgeLabel.trailingAnchor.constraint(equalTo: badgeView.trailingAnchor, constant: -10),
+        ])
+    }
+    
+    enum BadgePosition {
+        case center
+        case left
+        case right
+    }
+    
+    func configureBadge(with text: String?, isVisible: Bool, position: BadgePosition) {
+        badgeLabel.text = text
+        badgeView.isHidden = !isVisible
+        
+        // Удаляем существующие ограничения badgeView
+        badgeView.removeConstraints(badgeView.constraints)
+        
+        // Восстанавливаем общие ограничения
+        NSLayoutConstraint.activate([
+            badgeView.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            badgeView.heightAnchor.constraint(equalToConstant: 30), // Пример высоты, может быть изменен
+        ])
+        
+        // Устанавливаем ограничения в зависимости от выбранного положения
+        switch position {
+        case .center:
+            NSLayoutConstraint.activate([
+                badgeView.centerXAnchor.constraint(equalTo: self.centerXAnchor)
+            ])
+        case .left:
+            NSLayoutConstraint.activate([
+                badgeView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16)
+            ])
+        case .right:
+            NSLayoutConstraint.activate([
+                badgeView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            ])
+        }
+    }
+    
+    
 }
 
 // MARK: - Open methods
@@ -71,7 +149,7 @@ extension PaywallListSubscriptionCell {
                  product: StoreKitProduct) {
         
         checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
-        
+
         self.item = subscriptionItem
         self.list = listWithStyles
         setBadgePosition(settings: subscriptionItem.badge)
@@ -146,37 +224,72 @@ private extension PaywallListSubscriptionCell {
     }
     
     func setBadgePosition(settings: Badge?) {
-//        if let badge = settings {
-//            NSLayoutConstraint.deactivate(currentSavedMoneyViewConstraints)
-//
-//            var constraints: [NSLayoutConstraint] = [savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
-//                                                     savedMoneyView.centerYAnchor.constraint(equalTo: contentContainerView.topAnchor)]
-//
-//            
-//            savedMoneyView.isHidden = false
-//            
-//            savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
-//            
-//            savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
-//            savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
-//            savedMoneyView.layer.borderColor = badge.styles.borderColor?.hexStringToColor.cgColor ?? UIColor.clear.cgColor
-//
-//            savedMoneyView.label.apply(badge: settings)
-//            switch badge.styles.position {
-//            case .topleft:
-//                constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
-//            case .topcenter:
-//                constraints.append(savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor))
-//            case .topright:
-//                constraints.append(savedMoneyView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -16))
-//            default:
-//                constraints.append(savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16))
-//            }
-//            NSLayoutConstraint.activate(constraints)
-//            currentSavedMoneyViewConstraints = constraints
-//        } else {
-//            savedMoneyView.isHidden = true
-//        }
+        if let badge = settings {
+            savedMoneyView.removeConstraints(savedMoneyView.constraints)
+            
+            NSLayoutConstraint.activate([
+                savedMoneyView.heightAnchor.constraint(equalToConstant: 24),
+                savedMoneyView.topAnchor.constraint(equalTo: self.topAnchor, constant: -12),
+                savedMoneyView.label.topAnchor.constraint(equalTo: savedMoneyView.topAnchor, constant: 0),
+                savedMoneyView.label.bottomAnchor.constraint(equalTo: savedMoneyView.bottomAnchor, constant: 0),
+                savedMoneyView.label.leadingAnchor.constraint(equalTo: savedMoneyView.leadingAnchor, constant: 6),
+                savedMoneyView.label.trailingAnchor.constraint(equalTo: savedMoneyView.trailingAnchor, constant: -6),
+            ])
+
+            savedMoneyView.isHidden = false
+            
+            savedMoneyView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
+            
+            savedMoneyView.layer.borderWidth = badge.styles.borderWidth ?? 0
+            savedMoneyView.layer.cornerRadius = badge.styles.borderRadius ?? 0
+            savedMoneyView.layer.borderColor = badge.styles.borderColor?.hexStringToColor.cgColor ?? UIColor.clear.cgColor
+
+            savedMoneyView.label.apply(badge: settings)
+            switch badge.styles.position {
+            case .topleft:
+                savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16).isActive = true
+            case .topcenter:
+                savedMoneyView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            case .topright:
+                savedMoneyView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -16).isActive = true
+            default:
+                savedMoneyView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16).isActive = true
+            }
+        } else {
+            savedMoneyView.isHidden = true
+        }
+    }
+    
+    func setBadgePosition1(settings: Badge?) {
+        // Удаляем существующие ограничения badgeView
+        badgeView.removeConstraints(badgeView.constraints)
+        
+        // Восстанавливаем общие ограничения
+        NSLayoutConstraint.activate([
+            badgeView.topAnchor.constraint(equalTo: self.topAnchor, constant: -12),
+//            badgeView.centerYAnchor.constraint(equalTo: contentContainerView.topAnchor
+            badgeView.heightAnchor.constraint(equalToConstant: 24), // Пример высоты, может быть изменен
+        ])
+        
+        if let badge = settings {
+            badgeLabel.apply(badge: badge)
+
+            badgeView.backgroundColor = badge.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
+
+            badgeView.isHidden = false
+            switch badge.styles.position {
+            case .topleft:
+                badgeView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16).isActive = true
+            case .topcenter:
+                badgeView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            case .topright:
+                badgeView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor, constant: -16).isActive = true
+            default:
+                badgeView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor, constant: 16).isActive = true
+            }
+        } else {
+            badgeView.isHidden = true
+        }
     }
     
 }

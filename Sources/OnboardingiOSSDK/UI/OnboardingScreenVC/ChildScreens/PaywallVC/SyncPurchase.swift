@@ -25,7 +25,10 @@ public class AttributionStorageManager {
     
     // Сохранение данных атрибуции
     public static func saveAttributionData(userId: String?, deviceId: String? = nil, data: [AnyHashable: Any]?, for platform: IntegrationType) {
-        if AttributionStorageManager.getSyncDate(for: platform) == nil{
+        if  let date = AttributionStorageManager.getSyncDate(for: platform) {
+            print("[deicline platform save, was saved at]  \(date)")
+        } else {
+            print("[save platform data] \(platform.rawValue)")
             if  ( platform == .Amplitude && (!(userId ?? "").isEmpty || !(deviceId ?? "").isEmpty)) || !(userId ?? "").isEmpty  {
                 let defaults = UserDefaults.standard
                 var params = data ?? [AnyHashable: Any]()
@@ -203,14 +206,13 @@ class APIManager {
         
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                    print(jsonString)
-            }
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            
             request.httpBody = jsonData
             
             // Отправка запроса
             URLSession.shared.dataTask(with: request) { data, response, error in
-                print(response)
+                print("[update user] platform data \(jsonString ?? "") --- \(response)")
                 if error == nil, let response = response as? HTTPURLResponse {
                     switch response.statusCode {
                     case 200, 201:
@@ -250,13 +252,13 @@ class APIManager {
         
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                    print(jsonString)
-            }
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            
             request.httpBody = jsonData
             
             // Отправка запроса
             URLSession.shared.dataTask(with: request) { data, response, error in
+                print("[create user] platform data \(jsonString ?? "") --- \(response)")
                 if error == nil, let response = response as? HTTPURLResponse {
                     switch response.statusCode {
                     case 200, 201:
