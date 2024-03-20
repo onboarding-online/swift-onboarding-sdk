@@ -21,8 +21,11 @@ class OnboardingHeaderVC: UIViewController {
 
 
     @IBOutlet var dashProgressHeightConstraint: NSLayoutConstraint!
-
     
+    
+    @IBOutlet var dashProgressBottomConstraint: NSLayoutConstraint!
+    @IBOutlet var dashProgressVerticalCenterConstraint: NSLayoutConstraint!
+
     @IBOutlet var backButtonWidthConstraint: NSLayoutConstraint!
     @IBOutlet var backButtonHeightConstraint: NSLayoutConstraint!
     
@@ -98,12 +101,31 @@ private extension OnboardingHeaderVC {
                         progressView.isHidden = true
                         parentProgressView.layoutIfNeeded()
                         
+                        dashProgressVerticalCenterConstraint.isActive = false
+                        dashProgressBottomConstraint.isActive = true
+                        dashesTitle.isHidden = false
+                        
                         dashProgressHeightConstraint.constant = navigationBar.dashesPageIndicator?.styles.dashHeight ?? 2
                         dashesProgressView.setWith(configuration: config)
                         dashesProgressView.setProgress(value.doubleValue)
                         dashesTitle.apply(text: navigationBar.dashesPageIndicator?.title)
                     }
+                case .dashes:
+                    if let config = DashesProgressView.Configuration.initWith(navigationBar: navigationBar) {
+                        dashesProgressView.isHidden = false
+                        dashesTitle.isHidden = false
+                        progressView.isHidden = true
+                        parentProgressView.layoutIfNeeded()
+                        dashProgressVerticalCenterConstraint.isActive = true
+                        dashProgressBottomConstraint.isActive = false
+                        dashesTitle.isHidden = true
+                        dashProgressHeightConstraint.constant = navigationBar.dashesPageIndicator?.styles.dashHeight ?? 2
+                        dashesProgressView.setWith(configuration: config)
+                        dashesProgressView.setProgress(value.doubleValue)
+                    }
                 default:
+                    
+                    
                     break
                 }
             }
