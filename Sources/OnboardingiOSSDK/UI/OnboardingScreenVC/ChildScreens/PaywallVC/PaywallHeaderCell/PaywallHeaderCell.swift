@@ -156,13 +156,20 @@ private extension PaywallHeaderCell {
         bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
         
         for item in screenData.list.items {
-            let label = buildLabel()
-            label.apply(text: item.title)
+            let title = buildLabel()
+            title.apply(text: item.title)
+            let subTitle = buildLabel()
+            subTitle.apply(text: item.subtitle)
             let checkmark = buildBulletCheckmark(image: item.image)
             checkmark.clipsToBounds = true
             
+            let vStack = UIStackView(arrangedSubviews: [title, subTitle])
+            vStack.distribution = .fill
+            vStack.alignment = .leading
+            vStack.axis = .vertical
+            vStack.spacing = 4
             
-            let hStack = UIStackView(arrangedSubviews: [checkmark, label])
+            let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
             hStack.distribution = .fill
             hStack.alignment = .leading
             hStack.axis = .horizontal

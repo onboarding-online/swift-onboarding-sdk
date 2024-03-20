@@ -129,8 +129,8 @@ extension DashesProgressView {
                     switch navigationBarLind {
                     case .dashesWithTitle, .dashes, .dashesWithImage, .dashesWithTitleImage:
                         if let dashes = navigationBar.dashesPageIndicator {
-                            let filledColorDashes = dashes.styles.filledColor?.hexStringToColor ?? .clear
-                            let notFilledColorDashes = dashes.styles.notFilledColor?.hexStringToColor ?? .clear
+                            let filledColorDashes = progress.styles.color?.hexStringToColor ?? .clear
+                            let notFilledColorDashes = progress.styles.trackColor?.hexStringToColor ?? .clear
                             let numberOfDashes = dashes.numberOfDashes.intValue
                             let dashesHeight  = dashes.styles.dashHeight?.cgFloatValue ?? 1.0
                             let dashesSpacing  = dashes.styles.dashesSpacing?.cgFloatValue ?? 1.0
