@@ -110,7 +110,7 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         
         maxHeight = maxHeight > checkboxSize ? maxHeight : checkboxSize
         
-        let cellHeight = maxHeight + containerTop + containerBottom
+        let cellHeight = maxHeight + containerTop + containerBottom + 12
         
         return cellHeight
     }
