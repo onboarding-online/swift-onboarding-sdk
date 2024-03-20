@@ -86,32 +86,13 @@ extension PaywallListSubscriptionCell {
         self.list = listWithStyles
         if let settings = subscriptionItem.badge {
             savedMoneyViewContainer.isHidden = false
+            savedMoneyLabel.isHidden = false
             updatePosition(settings: settings)
             
-//            savedMoneyViewContainer.backgroundColor = settings.styles.backgroundColor?.hexStringToColor ?? UIColor.clear
-//            
-//            savedMoneyViewContainer.layer.borderWidth = settings.styles.borderWidth ?? 0
-//            savedMoneyViewContainer.layer.cornerRadius = settings.styles.borderRadius ?? 0
-//            savedMoneyViewContainer.layer.borderColor = settings.styles.borderColor?.hexStringToColor.cgColor ?? UIColor.clear.cgColor
-//
-//            savedMoneyLabel.apply(badge: settings)
-//            
-////            saveMoneyLeading.isActive = false
-////            saveMoneyTrailing.isActive = false
-////            saveMoneyCentering.isActive = false
-//
-////            switch settings.styles.position {
-////            case .topleft:
-////                saveMoneyLeading.isActive = true
-////            case .topcenter:
-////                saveMoneyCentering.isActive = true
-////            case .topright:
-////                saveMoneyTrailing.isActive = true
-////            default:
-////                saveMoneyTrailing.isActive = true
-////            }
+
         } else {
             savedMoneyViewContainer.isHidden = true
+            savedMoneyLabel.isHidden = true
         }
         
         setSelected(isSelected, listWithStyles: listWithStyles)
@@ -233,7 +214,7 @@ extension PaywallListSubscriptionCell {
         let horizontalSpacing = subscriptionItem.styles.columnHorizontalPadding ?? 4
         
         let leftColumnSize = ((subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00)
-        let rightColumnSize = 1 - leftColumnSize
+        _ = 1 - leftColumnSize
 
         leftStack.translatesAutoresizingMaskIntoConstraints = false
         rightStack.translatesAutoresizingMaskIntoConstraints = false
