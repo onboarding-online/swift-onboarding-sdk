@@ -42,6 +42,7 @@ public final class OnboardingService {
 
     public var projectId: String = ""
 
+    private let integrationManagerManager: AttributionStorageManager = AttributionStorageManager()
     
     init(windowManager: OnboardingWindowManagerProtocol = OnboardingWindowManager.shared) {
         self.windowManager = windowManager
@@ -125,12 +126,26 @@ extension OnboardingService {
         }
     }
     
-    func showLoadingAssetsScreen(appearance: AppearanceStyle,
-                                 launchWithAnimation: Bool) {
+    public func saveAttributionData(userId: String?, deviceId: String? = nil, data: [AnyHashable: Any]?, for platform: IntegrationType) {
+        integrationManagerManager.saveAttributionData(userId: userId, deviceId: deviceId, data: data, for: platform)
+    }
+    
+    public func sendPurchase(projectId: String, transactionId: String,  purchaseInfo: PurchaseInfo) {
+        integrationManagerManager.sendPurchase(projectId: projectId, transactionId: transactionId, purchaseInfo: purchaseInfo) {(error) in
+            
+        }
+    }
+    
+    public func sendIntegrationsDetails(projectId: String, completion: @escaping (Error?) -> Void) {
+        integrationManagerManager.sendIntegrationsDetails(projectId: projectId, completion: completion)
+    }
+    
+    func showLoadingAssetsScreen(appearance: AppearanceStyle, launchWithAnimation: Bool) {
         self.appearance = appearance
         self.launchWithAnimation = launchWithAnimation
         showLoadingAssetsScreen()
     }
+    
 }
 
 // MARK: - OnboardingScreenDelegate

@@ -19,12 +19,14 @@ import Foundation
 
 public class AttributionStorageManager {
     static let syncDate = "syncDate"
+    static let transactions = "transactions"
+
     static let onboardingUserId = "onboardingUserId"
     static let platformUserId = "userId"
     static let platformDeviceId = "deviceId"
     
     // Сохранение данных атрибуции
-    public static func saveAttributionData(userId: String?, deviceId: String? = nil, data: [AnyHashable: Any]?, for platform: IntegrationType) {
+    public func saveAttributionData(userId: String?, deviceId: String? = nil, data: [AnyHashable: Any]?, for platform: IntegrationType) {
         if  let date = AttributionStorageManager.getSyncDate(for: platform) {
             print("[deicline platform save, was saved at]  \(date)")
         } else {
@@ -47,7 +49,7 @@ public class AttributionStorageManager {
     }
     
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
-    public static func sendPurchase(projectId: String, transactionId: String,  purchaseInfo: PurchaseInfo) {
+    public func sendPurchase(projectId: String, transactionId: String,  purchaseInfo: PurchaseInfo,  completion: @escaping (Error?) -> Void) {
         let apiManager = APIManager()
         let userID =  AttributionStorageManager.createAndSaveOnceOnboarding(userId: UUID.init().uuidString)
 
@@ -61,18 +63,18 @@ public class AttributionStorageManager {
         
         // Объединение данных покупки с атрибуционными данными для отправки
         apiManager.update(projectId: projectId, transactionId: transactionId, userId: userID, purchaseAttributes: purchaseAttributes) { error in
-//            completion(error)
+            completion(error)
         }
     }
     
     // Отправка информации о покупке вместе с атрибуционными данными на сервер
-    public static func sendIntegrationsDetails(projectId: String, completion: @escaping (Error?) -> Void) {
+    public func sendIntegrationsDetails(projectId: String, completion: @escaping (Error?) -> Void) {
         let apiManager = APIManager()
         var allAttributionData: [AttributionData] = []
         
         // Проходим по всем типам атрибуции и собираем данные
         IntegrationType.allCases.forEach { source in
-            if let attributionData = getAttributionData(for: source) {
+            if let attributionData = AttributionStorageManager.getAttributionData(for: source) {
                 if AttributionStorageManager.getSyncDate(for: source) == nil {
                     let userId = attributionData[AttributionStorageManager.platformUserId] as? String
                     let deviceId = attributionData[AttributionStorageManager.platformDeviceId] as? String
@@ -106,13 +108,12 @@ public class AttributionStorageManager {
         }
     }
     
+    
     // Сохранение данных атрибуции
     public static func createAndSaveOnceOnboarding(userId: String) -> String {
         if AttributionStorageManager.getOnboardingUserId() == nil {
             let defaults = UserDefaults.standard
-            let onboardingUserAttributes: [String: Any] = [
-                AttributionStorageManager.onboardingUserId: userId
-            ]
+            let onboardingUserAttributes: [String: Any] = [AttributionStorageManager.onboardingUserId: userId]
             
             let key = AttributionStorageManager.onboardingUserId
             defaults.set(onboardingUserAttributes, forKey: key)
@@ -169,6 +170,14 @@ class APIManager {
             // Отправка запроса
             URLSession.shared.dataTask(with: request) { data, response, error in
                 print(response)
+                if error == nil, let response = response as? HTTPURLResponse {
+                    switch response.statusCode {
+                    case 200, 201:
+                        AttributionStorageManager.updateSyncDate()
+                    default:
+                        break
+                    }
+                }
                 completion(error)
             }.resume()
         } catch {
@@ -310,6 +319,58 @@ extension  AttributionStorageManager {
         let defaults = UserDefaults.standard
         let key = platform.keyForUserDefaults
         return defaults.dictionary(forKey: key)
+    }
+    
+    // Извлечение данных атрибуции для заданной системы
+    static func getNotSyncedTransactions() -> [AnyHashable: Any]? {
+        let defaults = UserDefaults.standard
+        let key = AttributionStorageManager.transactions
+        return defaults.dictionary(forKey: key)
+    }
+    
+    // Извлечение данных атрибуции для заданной системы
+    static func save(transactionId: String, projectId: String) {
+        let defaults = UserDefaults.standard
+        let key = AttributionStorageManager.transactions
+        if var dict = getNotSyncedTransactions() {
+            dict[transactionId] = projectId
+            defaults.set(dict, forKey: key)
+        }
+    }
+    
+    public func update(transactionId: String){
+        let date = Date()
+        let defaults = UserDefaults.standard
+        
+        if var dict = AttributionStorageManager.getNotSyncedTransactions() {
+            let purchase = PurchaseInfo.init(integrationType: .Custom, userId: "", transactionId: "", amount: 0.0, currency: "")
+
+            dict.keys.forEach { transaction in
+                if let transactionId = transaction as? String, let value = dict[transactionId] as? String {
+                    
+                    self.sendPurchase(projectId: value, transactionId: transactionId, purchaseInfo: purchase) { (error) in
+                        if error == nil {
+                            dict.removeValue(forKey: transaction)
+                            //TODO: add removing synced transaction
+                        }
+                    }
+                }
+               
+            }
+         
+        }
+        
+        // Проходим по всем типам атрибуции и собираем данные
+        IntegrationType.allCases.forEach { platform in
+            if AttributionStorageManager.getSyncDate(for: platform) == nil {
+                if var attributionData = AttributionStorageManager.getAttributionData(for: platform) {
+                    attributionData[AttributionStorageManager.syncDate]  = date
+                    let key = platform.keyForUserDefaults
+                    defaults.set(attributionData, forKey: key)
+                    
+                }
+            }
+        }
     }
     
     // Извлечение данных атрибуции для заданной системы
