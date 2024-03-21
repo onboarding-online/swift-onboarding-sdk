@@ -92,11 +92,11 @@ extension AssetsPrefetchService {
     }
     
     func isScreenAssetsPrefetched(screenId: String) -> Bool {
-        preloadedScreenIds.contains(screenId)
+        serialQueue.sync { preloadedScreenIds.contains(screenId) }
     }
     
     func isScreenAssetsPrefetchFailed(screenId: String) -> Bool {
-        failedScreenIds.contains(screenId)
+        serialQueue.sync { failedScreenIds.contains(screenId) }
     }
     
     func clear() {
@@ -144,7 +144,7 @@ private extension AssetsPrefetchService {
     }
     
     func prefetchAssetsFor(screen: Screen) async throws {
-        guard !preloadedScreenIds.contains(screen.id) else {
+        guard !isScreenAssetsPrefetched(screenId: screen.id) else {
             return
         }
         
