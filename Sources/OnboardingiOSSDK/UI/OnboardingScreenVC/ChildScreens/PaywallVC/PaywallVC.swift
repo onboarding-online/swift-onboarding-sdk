@@ -498,8 +498,9 @@ private extension PaywallVC {
                             OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
                             
                             OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) {error in
-                                self?.finishWith(action: self?.screenData.footer.purchase?.action)
                             }
+                            self?.finishWith(action: self?.screenData.footer.purchase?.action)
+
                         }
                        
 
