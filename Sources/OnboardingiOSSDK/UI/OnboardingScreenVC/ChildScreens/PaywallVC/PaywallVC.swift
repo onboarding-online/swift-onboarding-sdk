@@ -484,7 +484,6 @@ private extension PaywallVC {
 
                         finishWith(action: screenData.footer.purchase?.action)
 
-                        
                     } else {
                         finishWith(action: screenData.footer.purchase?.action)
                     }
