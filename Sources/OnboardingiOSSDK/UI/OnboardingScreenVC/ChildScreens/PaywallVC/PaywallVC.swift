@@ -475,14 +475,16 @@ private extension PaywallVC {
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
                         
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
-                        
-                        finishWith(action: screenData.footer.purchase?.action)
-
-                        OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
-                        
+                    
                         OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) { error in
                             
                         }
+                        
+                        OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+
+                        finishWith(action: screenData.footer.purchase?.action)
+
+                        
                     } else {
                         finishWith(action: screenData.footer.purchase?.action)
                     }
