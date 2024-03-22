@@ -165,6 +165,10 @@ class APIManager {
         
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
+            let jsonString = String(data: jsonData, encoding: .utf8)
+
+            print("[transaction_info] platform data \(jsonString ?? "")")
+
             request.httpBody = jsonData
             
             // Отправка запроса
