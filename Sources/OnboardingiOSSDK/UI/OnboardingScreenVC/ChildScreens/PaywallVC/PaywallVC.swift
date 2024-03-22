@@ -489,17 +489,19 @@ private extension PaywallVC {
                     }
                 } else {
                     if let receipt = try await paymentService.activeSubscriptionReceipt() {
-                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
-                        let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
-                        OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                         
-                        OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
-                        
-                        OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) { error in
+                        DispatchQueue.main.async {[weak self] in
+                            print("[trnsaction_id]-> \(receipt.originalTransactionId)")
+                            let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
+                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: self?.screen.id, .screenName: self?.screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                             
+                            OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
+                            
+                            OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) {error in
+                                self?.finishWith(action: self?.screenData.footer.purchase?.action)
+                            }
                         }
-                        
-                        finishWith(action: screenData.footer.purchase?.action)
+                       
 
                       
                     } else {
