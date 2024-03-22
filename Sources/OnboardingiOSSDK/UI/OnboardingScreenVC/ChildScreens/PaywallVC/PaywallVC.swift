@@ -445,7 +445,7 @@ private extension PaywallVC {
                 sendReceiptInfo(product: selectedProduct)
                 self.value = selectedProduct.id
                 
-                finishWith(action: screenData.footer.purchase?.action)
+//                finishWith(action: screenData.footer.purchase?.action)
             } catch OnboardingPaywallError.cancelled {
                 OnboardingService.shared.eventRegistered(event: .purchaseCanceled, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
 
@@ -476,11 +476,15 @@ private extension PaywallVC {
                         
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                         
+                        finishWith(action: screenData.footer.purchase?.action)
+
                         OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
                         
                         OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) { error in
                             
                         }
+                    } else {
+                        finishWith(action: screenData.footer.purchase?.action)
                     }
                 } else {
                     if let receipt = try await paymentService.activeSubscriptionReceipt() {
@@ -488,11 +492,15 @@ private extension PaywallVC {
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                         
+                        finishWith(action: screenData.footer.purchase?.action)
+
                         OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
                         
                         OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) { error in
                             
                         }
+                    } else {
+                        finishWith(action: screenData.footer.purchase?.action)
                     }
                 }
                 
