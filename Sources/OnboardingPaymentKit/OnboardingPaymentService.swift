@@ -41,6 +41,11 @@ extension OnboardingPaymentService: OnboardingPaymentServiceProtocol {
         return response.products
     }
     
+    public func cashedProductsWith(ids: Set<String>) -> [SKProduct]? {
+        let response: OPSProductsResponse? = cashedProductsWith(ids: ids)
+        return response?.products
+    }
+    
     public func restorePurchases() async throws {
         return try await withCheckedThrowingContinuation { continuation in
             restorePurchases() { result in
@@ -91,8 +96,13 @@ extension OnboardingPaymentService: OnboardingPaymentServiceProtocol {
 
 // MARK: - Private methods
 private extension OnboardingPaymentService {
+    
     func fetchProductsWith(ids: SKProductIDs) async throws -> OPSProductsResponse  {
         try await productsManager.fetchProductsWith(ids: ids)
+    }
+    
+    func cashedProductsWith(ids: SKProductIDs) -> OPSProductsResponse?  {
+        return productsManager.cachedProducts(ids: ids)
     }
     
     func perform(transaction: OPSPaymentTransaction, completion: @escaping OPSTransactionResultCallback) {

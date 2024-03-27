@@ -36,6 +36,15 @@ extension OPSProductsManager {
         
         return response
     }
+    
+    func cachedProducts(ids: SKProductIDs) -> OPSProductsResponse? {
+        if let cachedProducts = self.cachedProductsWith(ids: ids) {
+            OPSLogger.logEvent("ProductsRequest.Will return products with ids \(ids) from cache")
+            return OPSProductsResponse(products: Array(cachedProducts), invalidProductIdentifiers: [])
+        }
+            
+        return nil
+    }
 }
 
 // MARK: - Private methods

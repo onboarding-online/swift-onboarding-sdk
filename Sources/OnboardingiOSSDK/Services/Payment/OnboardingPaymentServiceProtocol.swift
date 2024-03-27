@@ -12,6 +12,8 @@ public protocol OnboardingPaymentServiceProtocol {
     var canMakePayments: Bool { get }
     
     func fetchProductsWith(ids: Set<String>) async throws -> [SKProduct]
+    func cashedProductsWith(ids: Set<String>) -> [SKProduct]? 
+
     func restorePurchases() async throws
     
     /// Purchase SKProduct

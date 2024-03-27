@@ -341,6 +341,22 @@ private extension PaywallVC {
 //        delegate?.onboardingChildScreenUpdate(value: nil,
 //                                              description: "Will load products",
 //                                              logAnalytics: true)
+        
+        if let skProducts = paymentService.cashedProductsWith(ids:  Set(productIds)) {
+            let products = skProducts
+                .compactMap( { StoreKitProduct(skProduct: $0) })
+                .sorted(by: { lhs, rhs in
+                    guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
+                          let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
+                        return false
+                    }
+                    
+                    return lhsIndex < rhsIndex
+                })
+            
+            didLoadProducts(products)
+            return
+        }
 
         Task {
             do {
@@ -388,8 +404,8 @@ private extension PaywallVC {
 //        }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.setViewForLoadedProducts()
-                }
+            self.setViewForLoadedProducts()
+        }
     }
     
     func setViewForLoadedProducts() {
@@ -397,7 +413,9 @@ private extension PaywallVC {
             let currentProduct = products[selectedIndex]
             bottomView.setupPaymentDetailsLabel(content: currentProduct)
         }
-        collectionView.reloadData()
+        setupCollectionView()
+
+//        collectionView.reloadData()
     }
     
     func didFailToLoadProductsWith(error: Error) {
@@ -562,7 +580,6 @@ private extension PaywallVC {
     
     func setup() {
         setupBackground()
-        setupCollectionView()
         setup(navigationBar: screenData.navigationBar)
         setup(footer: screenData.footer)
     }
