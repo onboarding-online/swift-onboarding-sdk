@@ -68,6 +68,77 @@ public final class PaywallVC: BaseScreenGraphViewController {
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
+    
+    func loadProducts() {
+//        delegate?.onboardingChildScreenUpdate(value: nil,
+//                                              description: "Will load products",
+//                                              logAnalytics: true)
+        print( "Will load products")
+        if var skProducts = paymentService.cashedProductsWith(ids:  Set(productIds)),  productIds.count == skProducts.count {
+            skProducts = skProducts.compactMap({ product in
+                if (productIds.firstIndex(where: {$0 == product.productIdentifier}) != nil) {
+                    return product
+                } else {
+                    return nil
+                }
+            })
+            
+            var products = skProducts
+                .compactMap( { StoreKitProduct(skProduct: $0) })
+                .sorted(by: { lhs, rhs in
+                    guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
+                          let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
+                        return false
+                    }
+                    
+                    return lhsIndex < rhsIndex
+                })
+            
+            
+            
+            print( "local ids \(productIds)  prodcucts - \(products) ")
+
+            didLoadProducts(products)
+            return
+        }
+
+        Task {
+            do {
+                let productIds = self.productIds
+                var skProducts = try await paymentService.fetchProductsWith(ids: Set(productIds))
+                skProducts = skProducts.compactMap({ product in
+                    if (productIds.firstIndex(where: {$0 == product.productIdentifier}) != nil) {
+                        return product
+                    } else {
+                        return nil
+                    }
+                })
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
+//                                                      logAnalytics: true)
+                let products = skProducts
+                    .compactMap( { StoreKitProduct(skProduct: $0) })
+                    .sorted(by: { lhs, rhs in
+                        guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
+                              let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
+                            return false
+                        }
+                        
+                        return lhsIndex < rhsIndex
+                    })
+                
+                print( "loaded prodcucts - \(products)  ids \(productIds)")
+
+                didLoadProducts(products)
+            } catch {
+//                delegate?.onboardingChildScreenUpdate(value: nil,
+//                                                      description: "Did fail to load products: \(error.localizedDescription)",
+//                                                      logAnalytics: true)
+                didFailToLoadProductsWith(error: error)
+            }
+        }
+    }
+    
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -95,7 +166,11 @@ extension PaywallVC: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let section = allSections()[section]
         
-        return rowsFor(section: section).count
+        let rows =  rowsFor(section: section)
+        print("section \(section)  rows \(rows)")
+        print("products \(self.products.count)")
+
+        return rows.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -220,7 +295,11 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             
             if let item = itemFor(product: currentProduct) {
                 height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+            } else {
+                height = max(40, height)
+                print("row height \(height)")
             }
+
         case .separator:
             height = PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
 
@@ -251,9 +330,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         let items = rowsFor(section: section)
                         numberOfItems = items.count
                     }
-                    
-//                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-
+    
                     
                     var itemsHeight: CGFloat = 0.0
                     
@@ -326,7 +403,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
 private extension PaywallVC {
     
     func itemFor(product: StoreKitProduct) -> ItemTypeSubscription? {
-        let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == product.id})
+        let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == product.skProduct.productIdentifier})
         return item
     }
     
@@ -337,54 +414,7 @@ private extension PaywallVC {
         URL(string: "https://google.com")! // TODO: - Set TAC URL
     }
     
-    func loadProducts() {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Will load products",
-//                                              logAnalytics: true)
-        
-        if let skProducts = paymentService.cashedProductsWith(ids:  Set(productIds)) {
-            let products = skProducts
-                .compactMap( { StoreKitProduct(skProduct: $0) })
-                .sorted(by: { lhs, rhs in
-                    guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
-                          let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
-                        return false
-                    }
-                    
-                    return lhsIndex < rhsIndex
-                })
-            
-            didLoadProducts(products)
-            return
-        }
 
-        Task {
-            do {
-                let productIds = self.productIds
-                let skProducts = try await paymentService.fetchProductsWith(ids: Set(productIds))
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
-//                                                      logAnalytics: true)
-                let products = skProducts
-                    .compactMap( { StoreKitProduct(skProduct: $0) })
-                    .sorted(by: { lhs, rhs in
-                        guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
-                              let rhsIndex = productIds.firstIndex(where: { $0 == rhs.id }) else {
-                            return false
-                        }
-                        
-                        return lhsIndex < rhsIndex
-                    })
-                
-                didLoadProducts(products)
-            } catch {
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did fail to load products: \(error.localizedDescription)",
-//                                                      logAnalytics: true)
-                didFailToLoadProductsWith(error: error)
-            }
-        }
-    }
     
     func didLoadProducts(_ products: [StoreKitProduct]) {
         self.products = products
@@ -749,13 +779,18 @@ extension PaywallVC {
             switch style {
             case .subscriptionsList:
                 
-                return products.map { product in
-                    switch product.type {
-                    case .oneTimePurchase:
-                        return .oneTimePurchase
-                    case .subscription(_):
-                        return .listSubscription
+                return products.compactMap { product in
+                    if itemFor(product: product) != nil {
+                        switch product.type {
+                        case .oneTimePurchase:
+                            return .oneTimePurchase
+                        case .subscription(_):
+                            return .listSubscription
+                        }
+                    } else {
+                        return nil
                     }
+                    
                 }
             case .subscriptionsTiles:
                 return products.compactMap { product in

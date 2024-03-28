@@ -163,11 +163,17 @@ private extension PaywallHeaderCell {
             let checkmark = buildBulletCheckmark(image: item.image)
             checkmark.clipsToBounds = true
             
+            
+            
+            
             let vStack = UIStackView(arrangedSubviews: [title, subTitle])
             vStack.distribution = .fill
-            vStack.alignment = .leading
+            vStack.alignment = .fill
             vStack.axis = .vertical
             vStack.spacing = 4
+            
+            vStack.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
+            vStack.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal) // Для вертикального стека
             
             let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
             hStack.distribution = .fill
