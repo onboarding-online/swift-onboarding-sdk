@@ -142,8 +142,8 @@ public final class PaywallVC: BaseScreenGraphViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
-        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
+//        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
+//        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
         navigationController?.isNavigationBarHidden = true
     }
     
@@ -439,11 +439,18 @@ private extension PaywallVC {
     }
     
     func setViewForLoadedProducts() {
+        setupCollectionView()
+        setup(footer: screenData.footer)
+        
         if products.count - 1 >= selectedIndex {
             let currentProduct = products[selectedIndex]
             bottomView.setupPaymentDetailsLabel(content: currentProduct)
         }
-        setupCollectionView()
+
+        
+        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
+        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
+
 
 //        collectionView.reloadData()
     }
@@ -611,7 +618,6 @@ private extension PaywallVC {
     func setup() {
         setupBackground()
         setup(navigationBar: screenData.navigationBar)
-        setup(footer: screenData.footer)
     }
     
     func setupBackground() {

@@ -153,6 +153,7 @@ private extension PaywallHeaderCell {
         
         let bulletStackView = UIStackView()
         bulletStackView.axis = .vertical
+        bulletStackView.distribution = .fillProportionally
         bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
         
         for item in screenData.list.items {
@@ -163,9 +164,6 @@ private extension PaywallHeaderCell {
             let checkmark = buildBulletCheckmark(image: item.image)
             checkmark.clipsToBounds = true
             
-            
-            
-            
             let vStack = UIStackView(arrangedSubviews: [title, subTitle])
             vStack.distribution = .fill
             vStack.alignment = .fill
@@ -175,8 +173,14 @@ private extension PaywallHeaderCell {
             vStack.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
             vStack.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal) // Для вертикального стека
             
+            checkmark.setContentHuggingPriority(UILayoutPriority(240), for: .horizontal) // Для вертикального стека
+            checkmark.setContentCompressionResistancePriority(UILayoutPriority(755), for: .horizontal) // Для вертикального стека
+            
+            checkmark.setContentHuggingPriority(UILayoutPriority(240), for: .horizontal) // Для вертикального стека
+            checkmark.setContentCompressionResistancePriority(UILayoutPriority(755), for: .horizontal) // Для вертикального стека
+            
             let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
-            hStack.distribution = .fill
+            hStack.distribution = .fillProportionally
             hStack.alignment = .leading
             hStack.axis = .horizontal
             hStack.spacing = 16
@@ -218,12 +222,12 @@ private extension PaywallHeaderCell {
        
         let imageView = UIImageView.init()
 //        
-//        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-//        imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-//        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-//        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
 
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
@@ -233,7 +237,10 @@ private extension PaywallHeaderCell {
     
     func buildTitleLabel() -> UILabel {
         let titleLabel = buildLabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
         titleLabel.font = .systemFont(ofSize: 23, weight: .bold)
+        titleLabel.numberOfLines = 0
         return titleLabel
     }
     
