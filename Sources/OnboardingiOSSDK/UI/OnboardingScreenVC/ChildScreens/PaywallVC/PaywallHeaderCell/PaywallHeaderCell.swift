@@ -54,11 +54,24 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
 }
 
+extension ScreenBasicPaywall {
+   
+    func image()-> BaseImage? {
+        switch self.media?.content {
+        case .typeBaseImage(let image):
+            return image
+        default:
+            return nil
+        }
+    }
+    
+}
+
 // MARK: - Open methods
 extension PaywallHeaderCell {
     
     func imageHeaderSetup() {
-        var bottomPadding = screenData.image?.box.styles.paddingBottom ?? 0
+        var bottomPadding = screenData.media?.box.styles.paddingBottom ?? 0
 
         if let verticalPosition = screenData.styles.imageVerticalPosition {
             if verticalPosition == .headerTop {
@@ -72,13 +85,13 @@ extension PaywallHeaderCell {
             imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
-        if let box = screenData.image?.box {
+        if let box = screenData.media?.box {
             imageViewContainerTopConstraint.constant = box.styles.paddingTop ?? 0
             imageViewContainerTrailingConstraint.constant = box.styles.paddingRight ?? 0
             imageViewContainerLeadingConstraint.constant = box.styles.paddingLeft ?? 0
         }
             
-        if let imageContentMode = screenData.image?.imageContentMode() {
+        if let imageContentMode = screenData.image()?.imageContentMode() {
             imageView.contentMode = imageContentMode
         } else {
             imageView.contentMode = .scaleAspectFit
@@ -87,8 +100,8 @@ extension PaywallHeaderCell {
     
     func setWith() {
         setWithStyle()
-        if screenData.video == nil {
-            load(image: screenData.image, in: imageView)
+        if screenData.media?.kind == .image {
+            load(image: screenData.image(), in: imageView)
         }
     }
     
@@ -96,8 +109,8 @@ extension PaywallHeaderCell {
         screenData = paywallData
         setWithStyle()
         imageHeaderSetup()
-        if screenData.video == nil {
-            load(image: screenData.image, in: imageView)
+        if screenData.media?.kind == .image {
+            load(image: screenData.image(), in: imageView)
         }
     }
     

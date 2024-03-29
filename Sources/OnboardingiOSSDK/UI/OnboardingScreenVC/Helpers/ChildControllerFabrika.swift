@@ -137,8 +137,13 @@ class ChildControllerFabrika {
         switch screen._struct {
         case .typeScreenBasicPaywall(let value):
             let screenId = screen.id + ChildControllerFabrika.videosKeyFor(screen: screen)
-            let videoStruct = VideoWithUniqueKey.init(video:  value.video?.baseVideo(), screenIdWithElementType: screenId)
-            return videoStruct
+            switch value.media?.content {
+            case .typeBaseVideo(let video):
+                let videoStruct = VideoWithUniqueKey.init(video:  video, screenIdWithElementType: screenId)
+                return videoStruct
+            default:
+                return VideoWithUniqueKey.init(video: nil, screenIdWithElementType: screen.id)
+            }
         default:
             return VideoWithUniqueKey.init(video: nil, screenIdWithElementType: screen.id)
         }
@@ -164,14 +169,14 @@ extension ScreenBasicPaywall {
     
 }
 
-extension Video {
-    
-    func baseVideo () -> BaseVideo? {
-        let baseVideo = BaseVideo.init(l10n: l10n, styles: styles)
-        return baseVideo
-    }
-    
-}
+//extension Video {
+//    
+//    func baseVideo () -> BaseVideo? {
+//        let baseVideo = BaseVideo.init(l10n: l10n, styles: styles)
+//        return baseVideo
+//    }
+//    
+//}
 
 struct VideoWithUniqueKey {
     var video: BaseVideo?

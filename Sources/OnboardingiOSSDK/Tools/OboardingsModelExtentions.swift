@@ -219,6 +219,7 @@ extension OnboardingLocalImageAssetProvider {
 }
 
 extension Image: OnboardingLocalImageAssetProvider {
+
     func imageContentMode() -> UIView.ContentMode? {
         if let scaleMode = styles.scaleMode {
             switch scaleMode {
@@ -243,9 +244,38 @@ extension Image: OnboardingLocalImageAssetProvider {
         }
         return nil
     }
+    
 }
 
-extension BaseImage: OnboardingLocalImageAssetProvider { }
+
+extension BaseImage: OnboardingLocalImageAssetProvider { 
+    
+    func imageContentMode() -> UIView.ContentMode? {
+        if let scaleMode = styles.scaleMode {
+            switch scaleMode {
+                
+            case .scaletofill:
+                return .scaleToFill
+            case .scaleaspectfit:
+                return .scaleAspectFit
+            case .scaleaspectfill:
+                return .scaleAspectFill
+            case .center:
+                return .center
+            case .top:
+                return .top
+            case .bottom:
+                return .bottom
+            case ._left:
+                return .left
+            case ._right:
+                return .right
+            }
+        }
+        return nil
+    }
+    
+}
 
 extension BaseText {
     

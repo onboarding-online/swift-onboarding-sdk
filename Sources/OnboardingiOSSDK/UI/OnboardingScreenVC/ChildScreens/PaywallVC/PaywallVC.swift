@@ -181,7 +181,7 @@ extension PaywallVC: UICollectionViewDataSource {
         case .header:
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
             cell.setWith(paywallData: screenData)
-            if screenData.video != nil {
+            if screenData.media?.kind == .image  {
                 let screenID = screen.id + screenData.paywallHeaderVideoKeyConstant
                 cell.setupBackgroundFor(screenId: screenID, using: videoPreparationService)
             }
