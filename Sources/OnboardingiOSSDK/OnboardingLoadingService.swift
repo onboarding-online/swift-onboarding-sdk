@@ -32,7 +32,7 @@ final class OnboardingLoadingService {
         
         let baseURL = OnboardingServiceConfig.baseDevUrl
         
-        var url = "\(baseURL)/v1/onboarding?schemaVersion=\(sdkVersion)&buildVersion=\(buildVersion)"
+        let url = "\(baseURL)/v1/onboarding?schemaVersion=\(sdkVersion)&buildVersion=\(buildVersion)"
        
         return url
     }

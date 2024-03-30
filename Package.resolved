@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onboarding-online/swift-screens-graph",
       "state" : {
-        "revision" : "b6023ce98214d4f4a13739694f89686c516bf228",
-        "version" : "1.1.0-alpha.3"
+        "revision" : "e9c2b7ba0169ed7e1625086eb661a3b1d58c06fe",
+        "version" : "1.1.0-alpha.4"
       }
     }
   ],

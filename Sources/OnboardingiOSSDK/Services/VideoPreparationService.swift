@@ -75,11 +75,13 @@ private extension VideoPreparationService {
         }
         
         for (_, screen) in screenGraph.screens {
-            let videoStruct = ChildControllerFabrika.videos(screen: screen)
-            if let video = videoStruct.video  {
-                let player = createNewPlayer()
-                screenIdToPlayerDict[videoStruct.screenIdWithElementType] = PlayerPreparationDetails(player: player, video: video)
+            if  let videoStruct = ChildControllerFabrika.videos(screen: screen) {
+                if  let video = videoStruct.video  {
+                    let player = createNewPlayer()
+                    screenIdToPlayerDict[videoStruct.screenIdWithElementType] = PlayerPreparationDetails(player: player, video: video)
+                }
             }
+           
         }
         
         preparePlayers()

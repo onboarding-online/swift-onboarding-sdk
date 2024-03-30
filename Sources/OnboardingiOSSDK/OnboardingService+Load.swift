@@ -105,7 +105,7 @@ public extension OnboardingService {
         OnboardingLoadingService.loadScreenGraphFor(projectId: projectId, env: .prod) { [weak self](result)  in
             finishedCallback(result)
             switch result {
-            case .success(let screenGraph):
+            case .success(_):
                 print("loaded")
             case .failure(let failure):
                 self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: failure.localizedDescription])

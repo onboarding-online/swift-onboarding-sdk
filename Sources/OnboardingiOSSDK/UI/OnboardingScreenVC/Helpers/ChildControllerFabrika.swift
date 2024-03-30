@@ -133,20 +133,25 @@ class ChildControllerFabrika {
         }        
     }
     
-    static func videos(screen: Screen) -> VideoWithUniqueKey {
+    static func videos(screen: Screen) -> VideoWithUniqueKey? {
         switch screen._struct {
         case .typeScreenBasicPaywall(let value):
             let screenId = screen.id + ChildControllerFabrika.videosKeyFor(screen: screen)
-            switch value.media?.content {
-            case .typeBaseVideo(let video):
-                let videoStruct = VideoWithUniqueKey.init(video:  video, screenIdWithElementType: screenId)
-                return videoStruct
-            default:
-                return VideoWithUniqueKey.init(video: nil, screenIdWithElementType: screen.id)
+            if let mediaContent = value.media?.content  {
+                switch mediaContent {
+                case .typeMediaVideo(let video):
+                    let videoStruct = VideoWithUniqueKey.init(video:  video.video, screenIdWithElementType: screenId)
+                    return videoStruct
+                default:
+                    break
+                }
+                
             }
         default:
-            return VideoWithUniqueKey.init(video: nil, screenIdWithElementType: screen.id)
+            break
         }
+        
+        return nil
     }
     
     static func videosKeyFor(screen: Screen) -> String {

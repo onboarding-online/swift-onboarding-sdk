@@ -58,8 +58,8 @@ extension ScreenBasicPaywall {
    
     func image()-> BaseImage? {
         switch self.media?.content {
-        case .typeBaseImage(let image):
-            return image
+        case .typeMediaImage(let image):
+            return image.image
         default:
             return nil
         }

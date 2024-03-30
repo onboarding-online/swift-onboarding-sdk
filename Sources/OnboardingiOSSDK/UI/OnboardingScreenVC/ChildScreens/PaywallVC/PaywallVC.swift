@@ -83,7 +83,7 @@ public final class PaywallVC: BaseScreenGraphViewController {
                 }
             })
             
-            var products = skProducts
+            let products = skProducts
                 .compactMap( { StoreKitProduct(skProduct: $0) })
                 .sorted(by: { lhs, rhs in
                     guard let lhsIndex = productIds.firstIndex(where: { $0 == lhs.id }),
@@ -181,7 +181,7 @@ extension PaywallVC: UICollectionViewDataSource {
         case .header:
             let cell = collectionView.dequeueCellOfType(PaywallHeaderCell.self, at: indexPath)
             cell.setWith(paywallData: screenData)
-            if screenData.media?.kind == .image  {
+            if screenData.media?.kind == .video  {
                 let screenID = screen.id + screenData.paywallHeaderVideoKeyConstant
                 cell.setupBackgroundFor(screenId: screenID, using: videoPreparationService)
             }
@@ -548,7 +548,7 @@ private extension PaywallVC {
                         DispatchQueue.main.async {[weak self] in
                             print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                             let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
-                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: self?.screen.id, .screenName: self?.screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
+                            OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: self?.screen.id ?? "none", .screenName: self?.screen.name ?? "none", .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                             
                             OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
                             
