@@ -196,7 +196,7 @@ private extension PaywallHeaderCell {
             hStack.distribution = .fillProportionally
             hStack.alignment = .leading
             hStack.axis = .horizontal
-            hStack.spacing = 16
+            hStack.spacing = 0
             
             bulletStackView.addArrangedSubview(hStack)
         }
@@ -206,14 +206,14 @@ private extension PaywallHeaderCell {
     }
     
     func applyListSettings() {
-        blurView.isHidden = true
-
-        if let colorText = screenData.list.styles.backgroundColor {
-            listBackground.backgroundColor = colorText.hexStringToColor
-            blurView.isHidden = true
-        } else {
-            contentStackView.backgroundColor = .clear
-        }
+//        blurView.isHidden = true
+//
+//        if let colorText = screenData.list.styles.backgroundColor {
+//            listBackground.backgroundColor = colorText.hexStringToColor
+//            blurView.isHidden = true
+//        } else {
+//            contentStackView.backgroundColor = .clear
+//        }
         
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
         listBackground.layer.borderColor = (screenData.list.styles.borderColor?.hexStringToColor ?? .clear).cgColor

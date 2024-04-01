@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -41,17 +41,6 @@
                             <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="woF-nx-oRb"/>
                         </constraints>
                     </view>
-                    <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5LR-dD-o6v">
-                        <rect key="frame" x="0.0" y="113" width="346" height="284"/>
-                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="yuV-KL-dVm">
-                            <rect key="frame" x="0.0" y="0.0" width="346" height="284"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </view>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <vibrancyEffect style="fill">
-                            <blurEffect style="prominent"/>
-                        </vibrancyEffect>
-                    </visualEffectView>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Cii-tw-ukF">
                         <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
                         <subviews>
@@ -85,15 +74,10 @@
                 <constraint firstItem="qbw-eF-EJ0" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Zfx-Jb-9IW"/>
                 <constraint firstItem="Cii-tw-ukF" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="chw-58-nS5"/>
                 <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" priority="10" id="fgO-eO-XDn"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="top" secondItem="Lag-yb-nxE" secondAttribute="top" id="gD2-IX-x3k"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="bottom" secondItem="Lag-yb-nxE" secondAttribute="bottom" id="hPS-Rj-quy"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="leading" secondItem="Lag-yb-nxE" secondAttribute="leading" id="lHk-RT-slY"/>
-                <constraint firstItem="5LR-dD-o6v" firstAttribute="trailing" secondItem="Lag-yb-nxE" secondAttribute="trailing" id="lOO-zI-Ks5"/>
                 <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
             </constraints>
             <size key="customSize" width="346" height="397"/>
             <connections>
-                <outlet property="blurView" destination="5LR-dD-o6v" id="e90-9H-6Ra"/>
                 <outlet property="contentStackView" destination="jjj-3w-9m3" id="Ao3-kW-5Iz"/>
                 <outlet property="gradientView" destination="Jze-sG-Veo" id="e6w-Lj-w5z"/>
                 <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
