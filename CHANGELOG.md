@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.0.4...v1.1.0) (2024-04-03)
+
+
+### ScreensGraph Changes
+
+* release new version v1.1 with basic paywall screen ([588c8bc](https://github.com/onboarding-online/swift-onboarding-sdk/commit/588c8bc0915f3fa37a34361a9b8fe4c2529f70e7))
+
 ### [1.0.4](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.0.3...v1.0.4) (2024-02-08)
 
 
