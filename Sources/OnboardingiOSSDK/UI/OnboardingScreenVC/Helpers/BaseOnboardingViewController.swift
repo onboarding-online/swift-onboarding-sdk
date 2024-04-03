@@ -1,7 +1,7 @@
 import UIKit
 import ScreensGraph
 
-class BaseScreenGraphViewController: BaseOnboardingViewController, OnboardingScreenProtocol {
+public class BaseScreenGraphViewController: BaseOnboardingScreen, OnboardingScreenProtocol {
     
     var screen: Screen!
     var value: Any?

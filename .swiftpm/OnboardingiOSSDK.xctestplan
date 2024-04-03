@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "BA395E01-CCF1-4D19-BC91-397FEB2D1C23",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "OnboardingPaymentKitTests",
+        "name" : "OnboardingPaymentKitTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "OnboardingiOSSDKTests",
+        "name" : "OnboardingiOSSDKTests"
+      }
+    }
+  ],
+  "version" : 1
+}

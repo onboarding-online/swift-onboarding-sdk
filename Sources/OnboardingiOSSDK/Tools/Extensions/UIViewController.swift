@@ -32,3 +32,13 @@ extension UIViewController {
     }
     
 }
+
+import SafariServices
+
+extension UIViewController {
+    func showSafariWith(url: URL) {
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.modalPresentationStyle = .pageSheet
+        present(safariVC, animated: true)
+    }
+}

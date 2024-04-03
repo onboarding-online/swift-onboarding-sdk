@@ -14,6 +14,18 @@ class OnboardingHeaderVC: UIViewController {
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
     
+    @IBOutlet weak var dashesProgressView: DashesProgressView!
+    @IBOutlet weak var dashesTitle: UILabel!
+
+    @IBOutlet weak var parentProgressView: UIView!
+
+
+    @IBOutlet var dashProgressHeightConstraint: NSLayoutConstraint!
+    
+    
+    @IBOutlet var dashProgressBottomConstraint: NSLayoutConstraint!
+    @IBOutlet var dashProgressVerticalCenterConstraint: NSLayoutConstraint!
+
     @IBOutlet var backButtonWidthConstraint: NSLayoutConstraint!
     @IBOutlet var backButtonHeightConstraint: NSLayoutConstraint!
     
@@ -40,6 +52,7 @@ class OnboardingHeaderVC: UIViewController {
         super.viewWillAppear(animated)
         
         setupNavBar()
+
     }
     
 }
@@ -73,12 +86,54 @@ private extension OnboardingHeaderVC {
     }
     
     func setupProgress() {
-        if let progres  = navigationBar.pageIndicator, let progressView = progressView {
-            let value = (progres.value / 100.0).floatValue
-            
-            progressView.tintColor = progres.styles.color?.hexStringToColor ?? .clear
-            progressView.trackTintColor = progres.styles.trackColor?.hexStringToColor ?? .clear
+        dashesProgressView.isHidden = true
+        dashesTitle.isHidden = true
+        
+        if let progress  = navigationBar.pageIndicator, let progressView = progressView {
+            let value = (progress.value / 100.0).floatValue
 
+            if let navigationBarLind = navigationBar.pageIndicatorKind {
+                switch navigationBarLind {
+                case .dashesWithTitle:
+                    if let config = DashesProgressView.Configuration.initWith(navigationBar: navigationBar) {
+                        dashesProgressView.isHidden = false
+                        dashesTitle.isHidden = false
+                        progressView.isHidden = true
+                        parentProgressView.layoutIfNeeded()
+                        
+                        dashProgressVerticalCenterConstraint.isActive = false
+                        dashProgressBottomConstraint.isActive = true
+                        dashesTitle.isHidden = false
+                        
+                        dashProgressHeightConstraint.constant = navigationBar.dashesPageIndicator?.styles.dashHeight ?? 2
+                        dashesProgressView.setWith(configuration: config)
+                        dashesProgressView.setProgress(value.doubleValue)
+                        dashesTitle.apply(text: navigationBar.dashesPageIndicator?.title)
+                    }
+                case .dashes:
+                    if let config = DashesProgressView.Configuration.initWith(navigationBar: navigationBar) {
+                        dashesProgressView.isHidden = false
+                        dashesTitle.isHidden = false
+                        progressView.isHidden = true
+                        parentProgressView.layoutIfNeeded()
+                        dashProgressVerticalCenterConstraint.isActive = true
+                        dashProgressBottomConstraint.isActive = false
+                        dashesTitle.isHidden = true
+                        dashProgressHeightConstraint.constant = navigationBar.dashesPageIndicator?.styles.dashHeight ?? 2
+                        dashesProgressView.setWith(configuration: config)
+                        dashesProgressView.setProgress(value.doubleValue)
+                    }
+                default:
+                    
+                    
+                    break
+                }
+            }
+            
+            let filledColor = progress.styles.color?.hexStringToColor ?? .clear
+            let notFilledColor = progress.styles.trackColor?.hexStringToColor ?? .lightGray
+            progressView.tintColor = filledColor
+            progressView.trackTintColor = notFilledColor
             progressView.setProgress(value, animated: false)
         } else {
             progressView.isHidden = true
