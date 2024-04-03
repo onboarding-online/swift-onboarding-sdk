@@ -49,6 +49,7 @@ public final class OnboardingService {
         BackgroundTasksService.shared.startTrackAppState()
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
+    
 }
 
 // MARK: - Open methods
@@ -138,6 +139,10 @@ extension OnboardingService {
     
     public func sendIntegrationsDetails(projectId: String, completion: @escaping (Error?) -> Void) {
         integrationManagerManager.sendIntegrationsDetails(projectId: projectId, completion: completion)
+    }
+    
+    public func cleanCash() {
+        prefetchService?.clear()
     }
     
     func showLoadingAssetsScreen(appearance: AppearanceStyle, launchWithAnimation: Bool) {
