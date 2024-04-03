@@ -12,10 +12,10 @@
     {
       "identity" : "swift-screens-graph",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:onboarding-online/swift-screens-graph.git",
+      "location" : "https://github.com/onboarding-online/swift-screens-graph",
       "state" : {
-        "revision" : "de08875edf7b5ac36fc89a963c3f0219fa15c60b",
-        "version" : "1.0.0"
+        "revision" : "3e47a90789fbc7c0b7b6ce5c6e52a2b5e3cd3510",
+        "version" : "1.1.0"
       }
     }
   ],

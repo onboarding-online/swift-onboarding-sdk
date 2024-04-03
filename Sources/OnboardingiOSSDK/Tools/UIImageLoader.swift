@@ -13,58 +13,58 @@ protocol UIImageLoader { }
 extension UIImageLoader {
     
     func load(image: Image?, in imageView: UIImageView) {
-        guard let image = image else { return }
+        if let cornerRadius = image?.styles.mainCornerRadius {
+            imageView.layer.cornerRadius = cornerRadius
+        }
 
-        if let url = image.assetUrlByLocal()?.assetUrl?.origin, let imageURL = URL(string: url) {
-            // Check local resources first
-            if let imageString = url.resourceName()  {
-                if let image = UIImage.init(named: imageString) {
-                    if imageView.image != image {
-                        imageView.setImage(image, animated: true)
-                    }
-                    return
-                }
-            }
+        Task { @MainActor in
             
-            imageView.image = nil
-            AssetsLoadingService.shared.loadImageFromURL(imageURL, intoView: imageView, placeholderImageName: nil)
-        } else  if let assetName = image.assetUrlByLocal()?.assetName, let image = UIImage.init(named: assetName)  {
+            guard let image = await image?.loadImage() else {
+                imageView.image = nil
+                return
+            }
             if imageView.image != image {
                 imageView.setImage(image, animated: true)
             }
-        } else {
-            imageView.image = nil
+        }
+    }
+    
+    func load(image: BaseImage?, in imageView: UIImageView) {
+        if let cornerRadius = image?.styles.mainCornerRadius {
+            imageView.layer.cornerRadius = cornerRadius
+        }
+
+        Task { @MainActor in
+            
+            guard let image = await image?.loadImage() else {
+                imageView.image = nil
+                return
+            }
+            if imageView.image != image {
+                imageView.setImage(image, animated: true)
+            }
+        }
+    }
+    
+    func applyScaleModeAndLoad(image: Image?, in imageView: UIImageView) {
+        Task { @MainActor in
+            self.load(image: image, in: imageView)
+            if let imageContentMode = image?.imageContentMode() {
+                imageView.contentMode = imageContentMode
+            } else {
+                imageView.contentMode = .scaleAspectFit
+            }
         }
     }
     
     func load(image: BaseImage?, in button: UIButton) {
-        guard let image = image else { return }
-
-        if let url = image.assetUrlByLocal()?.assetUrl?.origin {
-            // Check local resources first
-            if let imageString = url.resourceName()  {
-                if let image = UIImage.init(named: imageString) {
-                    button.setBackgroundImage(image, for: .normal)
-
-                    return
-                }
+        Task { @MainActor in
+            guard let image = await image?.loadImage() else {
+                button.setBackgroundImage(nil, for: .normal)
+                return
             }
             
-            button.setBackgroundImage(nil, for: .normal)
-            AssetsLoadingService.shared.loadImage(from: url, assetType: .image) { (result) in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let image):
-                        button.setBackgroundImage(image, for: .normal)
-                    case .failure:
-                        return
-                    }
-                }
-            }
-        } else  if let assetName = image.assetUrlByLocal()?.assetName, let image = UIImage.init(named: assetName)  {
             button.setBackgroundImage(image, for: .normal)
-        } else {
-            button.setBackgroundImage(nil, for: .normal)
         }
     }
 }

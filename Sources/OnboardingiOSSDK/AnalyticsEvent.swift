@@ -131,6 +131,66 @@ public enum AnalyticsEvent: String {
     //    assetsLoadedSuccess
     case allAssetsLoaded = "all assets loaded"
     
+    /// Paywalls
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case paywallAppeared
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case paywallDisappeared
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case paywallCloseButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    
+    case restorePurchaseButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    url
+    case tcButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    url
+    case ppButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    case productSelected
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    selectedProductId
+    case purchaseButtonPressed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    //    paymentsInfo
+    case productPurchased
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    //    transactionId
+    case purchaseCanceled
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    case purchaseFailed
+    //    Parameters:
+    //    screenID
+    //    screenName
+    //    productId
+    case productRestored
+    
 // System events
     
     //    Parameters:
@@ -160,7 +220,8 @@ public enum AnalyticsEvent: String {
     //    Parameters:
     //    edge
     case nextScreenEdgeForWrongConditions = "there are no right conditions. Random edge for wrong condition used!!!"
-            
+    
+    case paymentServiceNotFound = "paymentServiceNotFound"
 }
 
 public enum AnalyticsEventParams: String {
@@ -218,5 +279,16 @@ public enum AnalyticsEventParams: String {
     case pushNotificationPermission = "pushNotificationPermission"
     
     case permissionGranted = "permissionGranted"
+    
+    
+    case selectedProductId
+    
+    case productId
+    
+    case paymentsInfo
+    
+    case transactionId
+
+    case hasActiveSubscription
 
 }

@@ -165,7 +165,6 @@ fileprivate extension KOCalendarView {
         KOCalendarViewQueue.async { [weak self] in
             Thread.current.name = "KOCalendarView Thread"
             
-            let date = Date()
             let startDate = configurator.startDate
             let endDate = configurator.endDate
             

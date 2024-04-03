@@ -8,8 +8,7 @@
 import UIKit
 import ScreensGraph
 
-
-class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewController {
+final class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewController {
     
     static func instantiate(screenData: ScreenTwoColumnSingleSelection) -> ScreenCollectionSingleSelectionVC {
         let twoColumnSingleSelectionVC = ScreenCollectionSingleSelectionVC.storyBoardInstance()

@@ -190,7 +190,7 @@ fileprivate extension  ScreenImageTitleSubtitle1Subtitle2TimerVC {
     }
     
     func moveUpTextBlockIfImageIsEmpty(sliderItem: SliderItem) {
-        if let asset = sliderItem.content.image.assetUrlByLocal(), asset.assetUrl == nil, (asset.assetName ?? "").isEmpty {
+        if let asset = sliderItem.content.image.assetUrlByLocale(), asset.assetUrl == nil, (asset.assetName ?? "").isEmpty {
             textBlockTopConstraint.constant = -60
         } else {
             textBlockTopConstraint.constant = 0

@@ -75,6 +75,14 @@ extension OnboardingPreparationService {
         let identifier = onboardingIdentifierFor(projectId: projectId, env: env)
         startOnboardingWith(identifier: identifier, env: env, finishedCallback: finishedCallback)
     }
+    
+    static func getScreenGraphFor(projectId: String) -> ScreensGraph? {
+        serialQueue.sync {
+            let identifier = onboardingIdentifierFor(projectId: projectId, env: .prod)
+            let data = preparedOnboardingDataCache.first(where: { $0.identifier == identifier })
+            return data?.screenGraph
+        }
+    }
 }
 
 // MARK: - Private methods
@@ -120,7 +128,6 @@ private extension OnboardingPreparationService {
                 
             case .failure(let error):
                 OnboardingService.shared.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: error.localizedDescription])
-
                 finishedCallback(.failure(error))
             }
         }
@@ -152,34 +159,23 @@ private extension OnboardingPreparationService {
             preparingOnboarding.prefetchService = prefetchService
         }
         
-        switch prefetchMode {
-        case .waitForAllDone:
-            prefetchService.prefetchAllAssets { result in
-                handleAssetsLoadedResultWith(identifier: identifier, result: result, finishedCallback: finishedCallback)
+        Task { @MainActor in
+            do {
+                switch prefetchMode {
+                case .waitForAllDone:
+                    try await prefetchService.prefetchAllAssets()
+                case .waitForFirstDone:
+                    prefetchService.startLazyPrefetching()
+                    try await prefetchService.onScreenReady(screenId: screenGraph.launchScreenId)
+                case .waitForScreenToLoad(let timeout):
+                    prefetchService.startLazyPrefetching()
+                    try await prefetchService.onScreenReady(screenId: screenGraph.launchScreenId, timeout: timeout)
+                }
+                
+                notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .ready)
+            } catch {
+                notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .failed(error))
             }
-        case .waitForFirstDone:
-            prefetchService.startLazyPrefetching()
-            prefetchService.onScreenReady(screenId: screenGraph.launchScreenId) { result in
-                handleAssetsLoadedResultWith(identifier: identifier, result: result, finishedCallback: finishedCallback)
-            }
-        case .waitForScreenToLoad(let timeout):
-            prefetchService.startLazyPrefetching()
-            prefetchService.onScreenReady(screenId: screenGraph.launchScreenId, timeout: timeout) { result in
-                handleAssetsLoadedResultWith(identifier: identifier, result: result, finishedCallback: finishedCallback)
-            }
-        }
-    }
-    
-    static func handleAssetsLoadedResultWith(identifier: String,
-                                             result: AssetsPrefetchResult,
-                                             finishedCallback: @escaping OnboardingPreparationFinishCallback) {
-        switch result {
-        case .success:
-            finishedCallback(.success(Void()))
-            notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .ready)
-        case .failure(let error):
-            finishedCallback(.failure(.init(error: error)))
-            notifyOnboardingWaitersAndClearWith(identifier: identifier, state: .failed(error))
         }
     }
     
@@ -218,6 +214,8 @@ private extension OnboardingPreparationService {
             preparedOnboardingDataCache.first(where: { $0.identifier == identifier })
         }
     }
+    
+
     
     static func mutatePreparedOnboardingData(identifier: String, block: (inout PreparedOnboardingData)->())  {
         serialQueue.sync {
@@ -261,6 +259,8 @@ private extension OnboardingPreparationService {
         let runConfiguration = OnboardingService.RunConfiguration(screenGraph: screenGraph,
                                                                   appearance: OnboardingService.shared.appearance ?? .default,
                                                                   launchWithAnimation: true)
+        OnboardingService.shared.projectId = identifier
+
         OnboardingService.shared.startOnboarding(configuration: runConfiguration,
                                                  prefetchService: onboardingData.prefetchService,
                                                  finishedCallback: finishedCallback)

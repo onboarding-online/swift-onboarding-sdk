@@ -9,6 +9,7 @@ import Foundation
 import ScreensGraph
 
 public extension OnboardingService {
+    
     static func prepareFullOnboardingFor(projectId: String,
                                          localJSONFileName: String,
                                          env: OnboardingEnvironment = .prod,
@@ -29,7 +30,8 @@ public extension OnboardingService {
                                           finishedCallback: @escaping OnboardingFinishResult) {
         let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: env)
         
-//        print("------- onboarding assets loading state \(preparationState)")
+        self.projectId = projectId
+        //print("------- onboarding assets loading state \(preparationState)")
         func startNew() {
             startOnboarding(projectId: projectId,
                             localJSONFileName: localJSONFileName,
@@ -43,7 +45,6 @@ public extension OnboardingService {
             OnboardingPreparationService.startPreparedOnboarding(projectId: projectId, env: env, finishedCallback: finishedCallback)
         }
         
-        
         switch preparationState {
         case .notStarted, .failed:
             startNew()
@@ -51,10 +52,10 @@ public extension OnboardingService {
             OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: env) { result in
                 switch result {
                 case .success:
+                    //print("------- onboarding assets downloaded")
                     startPrepared()
-//                    print("------- onboarding assets downloaded")
                 case .failure:
-//                    print("------- onboarding assets loading failed, restart onboarding")
+                //print("------- onboarding assets loading failed, restart onboarding")
                     startNew()
                 }
             }
@@ -62,6 +63,57 @@ public extension OnboardingService {
             startPrepared()
         }
     }
+    
+    func getScreenGraphWhenReady(projectId: String,
+                                          finishedCallback:  @escaping GenericResultCallback<ScreensGraph>) {
+        let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: .prod)
+        
+        self.projectId = projectId
+      
+        func getPrepared() {
+            if let screenGraph = OnboardingPreparationService.getScreenGraphFor(projectId: projectId) {
+                finishedCallback(.success(screenGraph))
+            } else {
+                finishedCallback(.failure(GenericError.init(errorCode: 5, localizedDescription: "Could not find ScreenGraph")))
+            }
+        }
+        
+        switch preparationState {
+        case .notStarted, .failed:
+            getScreenGraph(projectId: projectId, finishedCallback: finishedCallback)
+            print("")
+        case .preparing:
+            print("")
+
+            OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: .prod) { [weak self] result in
+                switch result {
+                case .success:
+                    print("------- onboarding assets downloaded")
+                    getPrepared()
+                case .failure:
+                    self?.getScreenGraph(projectId: projectId, finishedCallback: finishedCallback)
+                    print("------- onboarding assets loading failed, restart onboarding")
+                }
+            }
+        case .ready:
+            print("")
+            getPrepared()
+        }
+    }
+    
+    func getScreenGraph(projectId: String, finishedCallback: @escaping GenericResultCallback<ScreensGraph>) {
+        OnboardingLoadingService.loadScreenGraphFor(projectId: projectId, env: .prod) { [weak self](result)  in
+            finishedCallback(result)
+            switch result {
+            case .success(_):
+                print("loaded")
+            case .failure(let failure):
+                self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: failure.localizedDescription])
+            }
+        }
+    }
+    
+    
     
     func startOnboarding(projectId: String,
                          localJSONFileName: String,
@@ -79,7 +131,7 @@ public extension OnboardingService {
                                                            env: env,
                                                            appearance: appearance,
                                                            launchWithAnimation: launchWithAnimation)
-            
+            self.projectId = projectId
             loadOnboarding(configuration: loadConfiguration, finishedCallback: finishedCallback)
         } catch {
             finishedCallback(.failure(.init(error: error)))
@@ -109,6 +161,7 @@ public extension OnboardingService {
             let localScreenGraph = try OnboardingLoadingService.getOnboardingFromLocalJsonName(localJSONFileName)
             let config = RunConfiguration.init(screenGraph: localScreenGraph,
                                                launchWithAnimation: launchWithAnimation)
+            
             OnboardingService.shared.startOnboarding(configuration: config,
                                                      finishedCallback: finishedCallback)
         } catch {

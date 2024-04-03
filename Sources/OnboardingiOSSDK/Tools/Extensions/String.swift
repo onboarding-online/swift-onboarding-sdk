@@ -7,7 +7,20 @@
 
 import UIKit
 
-
+extension NSAttributedString {
+    
+    func replacing(placeholder:String, with valueString:String) -> NSAttributedString {
+        
+        if let range = self.string.range(of:placeholder) {
+            let nsRange = NSRange(range,in:valueString)
+            let mutableText = NSMutableAttributedString(attributedString: self)
+            mutableText.replaceCharacters(in: nsRange, with: valueString)
+            return mutableText as NSAttributedString
+        }
+        return self
+    }
+  
+}
 
 extension String {
     
@@ -25,6 +38,37 @@ extension String {
         return attributedString?.string
     }
     
+//    descriptionLabel.attributedText = getAttributedDescriptionText(for: "Register and get <b>all</b>\n<b>rewards cards</b> of our partners\n<b>in one</b> universal <b>card</b>", fontDescription: "ProximaNova-Regular", fontSize: 15)
+//
+//
+//
+//    func getAttributedDescriptionText(for descriptionString: String, fontDescription: String, fontSize: Int) -> NSAttributedString? {
+//        let paragraphStyle = NSMutableParagraphStyle()
+//        paragraphStyle.lineSpacing = 1.0
+//        paragraphStyle.alignment = .center
+//        paragraphStyle.minimumLineHeight = 18.0
+//
+//        let attributedString = NSMutableAttributedString()
+//        let splits = descriptionString.components(separatedBy: "\n")
+//        _ = splits.map { string in
+//            let modifiedFont = String(format:"<span style=\"font-family: '\(fontDescription)'; font-size: \(fontSize)\">%@</span>", string)
+//            let data = modifiedFont.data(using: String.Encoding.unicode, allowLossyConversion: true)
+//            let attr = try? NSMutableAttributedString(
+//                data: data ?? Data(),
+//                options: [
+//                    .documentType: NSAttributedString.DocumentType.html,
+//                    .characterEncoding: String.Encoding.utf8.rawValue
+//                ],
+//                documentAttributes: nil
+//            )
+//            attributedString.append(attr ?? NSMutableAttributedString())
+//            if string != splits.last {
+//                attributedString.append(NSAttributedString(string: "\n"))
+//            }
+//        }
+//        attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedString.length))
+//        return attributedString
+//    }
     
     func withoutHtmlTags() -> String {
         let str = self.replacingOccurrences(of: "<style>[^>]+</style>", with: "", options: .regularExpression, range: nil)

@@ -7,6 +7,16 @@
 
 import UIKit
 
+protocol OnboardingWindowManagerProtocol {
+    func getWindows() -> [UIWindow]
+    func getActiveWindow() -> UIWindow?
+    func getCurrentWindow() -> UIWindow?
+    func setNewRootViewController(_ viewController: UIViewController,
+                                  in window: UIWindow,
+                                  animated: Bool,
+                                  completion: (()->())?)
+}
+
 final class OnboardingWindowManager {
     
     static let shared = OnboardingWindowManager()
@@ -25,7 +35,8 @@ final class OnboardingWindowManager {
 }
 
 // MARK: - Open methods
-extension OnboardingWindowManager {
+extension OnboardingWindowManager: OnboardingWindowManagerProtocol {
+    
     func getWindows() -> [UIWindow] {
         UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
@@ -81,7 +92,9 @@ extension OnboardingWindowManager {
 
 // MARK: - Private methods
 private extension OnboardingWindowManager {
+    
     func getKeyWindow() -> UIWindow? {
         getWindows().first(where: \.isKeyWindow)
     }
+    
 }

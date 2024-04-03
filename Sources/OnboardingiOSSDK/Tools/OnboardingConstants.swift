@@ -36,6 +36,10 @@ protocol ImageProtocol {
     var image: Image { get }
 }
 
+protocol ImageOptionalProtocol {
+    var image: Image? { get }
+}
+
 protocol PickerItem: Equatable {
     var title: String { get }
 }
@@ -56,6 +60,10 @@ protocol FooterProtocol {
 
 protocol BaseScreenStyleProtocol {
     var styles: BasicScreenBlock { get }
+}
+
+protocol PaywallBaseScreenStyleProtocol {
+    var styles: ScreenBasicPaywallBlock { get }
 }
 
 protocol PermissionProtocol {
@@ -115,6 +123,11 @@ extension ScreenTwoColumnMultipleSelection: BaseScreenProtocol { }
 
 extension ScreenTwoColumnSingleSelection: BaseScreenProtocol { }
 
+extension ScreenBasicPaywall:  PaywallBaseScreenStyleProtocol { }
+
+
+
+
 extension Screen {
     
     public func customScreenValue() -> CustomScreen? {
@@ -133,6 +146,24 @@ extension Screen {
          
         return false
     }
+    
+    public func paywallScreenValue() -> ScreenBasicPaywall? {
+        switch self._struct {
+        case .typeScreenBasicPaywall(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    public func isPaywallScreen() -> Bool {
+        if paywallScreenValue() != nil {
+            return true
+        }
+         
+        return false
+    }
+    
     
 }
 

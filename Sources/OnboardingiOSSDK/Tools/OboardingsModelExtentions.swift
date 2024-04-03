@@ -120,23 +120,135 @@ final class LocaleHelper {
     }
 }
 
-extension BaseVideo {
-    
-    func assetUrlByLocal() -> Asset? {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
+protocol OnboardingLocalAssetProvider {
+    var l10n: [String: Asset] { get } /* Dictionary of localized Asset */
+    func assetUrlByLocale() -> Asset?
+}
+
+extension OnboardingLocalAssetProvider {
+    func assetUrlByLocale() -> Asset? {
+        let defaultLanguage = OnboardingService.shared.screenGraph?.defaultLanguage.rawValue
+        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n,
+                                                          defaultLanguage: defaultLanguage)
         
         return valueByLocale
+    }
+}
+protocol OnboardingLocalVideoAssetProvider: OnboardingLocalAssetProvider { }
+
+extension OnboardingLocalVideoAssetProvider {
+    
+    func urlToVideoAsset() async -> URL? {
+        let urlByLocale = assetUrlByLocale()
+        if let name = urlByLocale?.assetName {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+                return videoURL
+            }
+        }
+        
+        guard let stringURL = urlByLocale?.assetUrl?.origin else {
+            return nil
+        }
+        
+        if let name = stringURL.resourceNameWithoutExtension() {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+                return videoURL
+            }
+        }
+        
+        if let name = stringURL.resourceName() {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
+                return videoURL
+            }
+        }
+        
+        let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
+        if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
+            return storedURL
+        } else if let url = URL(string: stringURL) {
+            return url
+        }
+        return nil
+    }
+}
+
+extension BaseVideo: OnboardingLocalVideoAssetProvider { }
+
+protocol OnboardingLocalImageAssetProvider: OnboardingLocalAssetProvider { }
+
+extension OnboardingLocalImageAssetProvider {
+    
+    func loadImage() async -> UIImage? {
+        let urlByLocale = assetUrlByLocale()
+        
+        if let assetName = urlByLocale?.assetName,
+           let image = await getLocalImageWith(assetName: assetName) {
+            return image
+        } else if let url = urlByLocale?.assetUrl?.origin {
+            // Check local resources first
+            if let image = await getLocalImageWith(assetURL: url) {
+                return image
+            }
+            
+            return await AssetsLoadingService.shared.loadImage(from: url)
+        }
+        return nil
+    }
+    
+    private func getLocalImageWith(assetName: String) async -> UIImage? {
+        if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetName) {
+            return cachedImage
+        } else if let image = UIImage.init(named: assetName) {
+            AssetsLoadingService.shared.cacheImage(image, withName: assetName)
+            return image
+        }
+        return nil
+    }
+    
+    private func getLocalImageWith(assetURL: String) async -> UIImage? {
+        if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetURL) {
+            return cachedImage
+        } else if let imageName = assetURL.resourceName(),
+                  let image = await UIImage.createWith(name: imageName) {
+            AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
+            return image
+        }
+        return nil
+    }
+
+}
+
+extension Image: OnboardingLocalImageAssetProvider {
+
+    func imageContentMode() -> UIView.ContentMode? {
+        if let scaleMode = styles.scaleMode {
+            switch scaleMode {
+                
+            case .scaletofill:
+                return .scaleToFill
+            case .scaleaspectfit:
+                return .scaleAspectFit
+            case .scaleaspectfill:
+                return .scaleAspectFill
+            case .center:
+                return .center
+            case .top:
+                return .top
+            case .bottom:
+                return .bottom
+            case ._left:
+                return .left
+            case ._right:
+                return .right
+            }
+        }
+        return nil
     }
     
 }
 
-extension Image {
-    
-    func assetUrlByLocal() -> Asset? {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
-        
-        return valueByLocale
-    }
+
+extension BaseImage: OnboardingLocalImageAssetProvider { 
     
     func imageContentMode() -> UIView.ContentMode? {
         if let scaleMode = styles.scaleMode {
@@ -165,16 +277,6 @@ extension Image {
     
 }
 
-extension BaseImage {
-    
-    func assetUrlByLocal() -> Asset? {
-        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
-        
-        return valueByLocale
-    }
-    
-}
-
 extension BaseText {
     
     func textByLocale() -> String {
@@ -189,6 +291,56 @@ extension BaseText {
     
 }
 
+extension Badge {
+    
+    func textByLocale() -> String {
+        let valueByLocale = LocaleHelper.valueByLocaleFor(dict: l10n, defaultLanguage: OnboardingService.shared.screenGraph?.defaultLanguage.rawValue)
+        
+        return valueByLocale
+    }
+    
+    func textColor() -> UIColor {
+        return (self.styles.color ?? "#FFFFFF").hexStringToColor
+    }
+    
+}
+
+extension String {
+    
+    func applyWith(product: StoreKitProduct) -> String {
+        var text = self
+        
+        let price = product.localizedPrice
+        let duration = product.subscriptionDescription?.periodUnitCountLocalizedUnitName ?? ""
+        let pricePerDuration = "\(price)/\(duration)"
+
+        let pricePerWeek = product.localizedPricePerWeek() ?? ""
+        let pricePerMonth = product.localizedPricePerMonth() ?? ""
+
+        
+        let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
+        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+
+        let dict = ["@priceAndcurrency" : price,
+                    "@duration" : duration,
+                    "@price/duration" : pricePerDuration,
+                    "@price/week" : pricePerWeek,
+                    "@price/month" : pricePerMonth,
+
+                    "@introPrice": introOfferPrice,
+                    "@introDuration": introOfferDuration,
+        ]
+        
+        for key in dict.keys {
+            if let value = dict[key] {
+                text =  text.replacingOccurrences(of: key, with: value)
+            }
+        }
+        return text
+    }
+    
+}
+
 extension Text {
     
     func textByLocale() -> String {
@@ -196,6 +348,13 @@ extension Text {
         
         return valueByLocale
     }
+    
+    func textFor(product: StoreKitProduct) -> String {
+        let text = self.textByLocale().applyWith(product: product)
+    
+        return text
+    }
+    
     
     func textColor() -> UIColor {
         return (self.styles.color ?? "#FFFFFF").hexStringToColor
@@ -222,6 +381,24 @@ extension Text {
         let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
         
         return ceil(boundingBox.height)
+    }
+    
+    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?) -> CGFloat {
+        guard let product = product else {
+            return textHeightBy(textWidth: textWidth)
+        }
+        
+        let labelKey = self.textByLocale().applyWith(product: product)
+        if labelKey.isEmpty {
+            return 0.0
+        } else {
+            let font: UIFont = self.textFont()
+            
+            let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+            let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+            
+            return ceil(boundingBox.height)
+        }
     }
     
 }
@@ -254,6 +431,68 @@ protocol NextButton {
 }
 
 extension LabelBlock {
+    
+    func fontWeight(weight: Double) -> UIFont.Weight {
+        switch weight {
+        case 0...100.0:
+            return .ultraLight
+        case 100...200.0:
+            return .thin
+        case 200...300.0:
+            return .light
+        case 300...400.0:
+            return .regular
+        case 400...500.0:
+            return .medium
+        case 500...600.0:
+            return .semibold
+        case 600...700.0:
+            return .bold
+        case 700...800.0:
+            return .heavy
+        case 800...900.0:
+            return .black
+            
+        default:
+            return .regular
+        }
+    }
+    
+    func getFontSettings() -> UIFont? {
+        
+        let text = self
+        
+        if let fontSize = text.fontSize?.cgFloatValue {
+            var labelFont: UIFont
+
+            if let fontWeightRaw = text.fontWeight {
+                let fontWeght =  self.fontWeight(weight: fontWeightRaw)
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: fontWeght)
+            } else {
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: .regular)
+            }
+            
+            if let fontFamile = text.fontFamily {
+                switch fontFamile {
+                case .sfPro:
+                    break
+                case .sfProrounded:
+                    labelFont = labelFont.rounded()
+                case .sfMono:
+                    labelFont = labelFont.monospaced()
+                case .newYork:
+                    labelFont = labelFont.newYorked()
+                }
+            }
+            return  labelFont
+        }
+        
+        return nil
+    }
+}
+
+
+extension BadgeBlock {
     
     func fontWeight(weight: Double) -> UIFont.Weight {
         switch weight {
@@ -347,16 +586,24 @@ extension UIImageView  {
 
         switch checkbox.kind {
         case .circle:
-            imageName = isSelected ? "Circle_on" : "Circle_off"
+            if isSelected {
+                imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "circle_on_dark" : "Circle_on"
+            } else {
+                imageName = "Circle_off"
+            }
         case .square:
-            imageName = isSelected ? "Square_Rounded_on" : "Square_Rounded_off"
+            if isSelected {
+                imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "rounded_on_dark" : "Square_Rounded_on"
+            } else {
+                imageName = "Square_Rounded_off"
+            }
         }
         
         if let image = UIImage.init(named: "\(imageName).png", in: .module, with: nil) {
             self.image = image.withRenderingMode(.alwaysTemplate)
             let tintColor = isSelected ? checkbox.selectedBlock.styles.color : checkbox.styles.color
             
-            self.tintColor = tintColor?.hexStringToColor
+            self.tintColor = tintColor?.hexStringToColor ?? .clear
         }
     }
     
@@ -417,6 +664,37 @@ extension UILabel  {
         }
         
         self.apply(text: text.styles)
+    }
+    
+    func apply(badge: Badge?) {
+        guard let badge = badge else {
+            self.isHidden = true
+            return
+        }
+        
+        let titleLabelKey = badge.textByLocale()
+        
+        self.text = titleLabelKey
+        
+        if titleLabelKey.isEmpty {
+            self.isHidden = true
+        }
+        
+        self.apply(text: badge.styles)
+    }
+    
+    func apply(text: BadgeBlock?) {
+        guard let text = text else {
+            self.isHidden = true
+            return
+        }
+        
+        if let alignment = text.textAlign {
+            self.textAlignment = alignment.alignment()
+        }
+        
+        self.font = text.getFontSettings()
+        self.textColor = text.color?.hexStringToColor
     }
     
      public func apply(text: BaseText?) {
@@ -558,7 +836,61 @@ extension UIButton: UIImageLoader {
     
         self.layer.cornerRadius = button.styles.borderRadiusFloat()
         self.layer.borderWidth = button.styles.borderWidthFloat()
-        self.layer.borderColor = (button.styles.borderColor ?? "").hexStringToColor.cgColor
+        self.layer.borderColor = (button.styles.borderColor?.hexStringToColor ?? .clear).cgColor
+    }
+    
+    func apply(textLabel: Text?) {
+        guard let textLabel = textLabel else {
+            self.isHidden = true
+            return
+        }
+        
+        let text = textLabel.textByLocale()
+        
+        self.titleLabel?.font = textLabel.styles.getFontSettings()
+        self.setTitle(text, for: .normal)
+        
+        if let color = textLabel.styles.color?.hexStringToColor {
+            self.setTitleColor(color, for: .normal)
+        }
+    }
+    
+    func apply(button: Button?, product: StoreKitProduct) {
+        guard let button = button else {
+            self.isHidden = true
+            return
+        }
+        var text = ""
+        
+        switch button.content {
+        case .typeBaseImage(_):
+            break
+        case .typeBaseText(let value):
+            text = value.textByLocale().applyWith(product: product)
+            
+            self.setTitle(text, for: .normal)
+        }
+    }
+    
+    func apply(navLink: NavLink?, isBackButton: Bool = false) {
+        guard let button = navLink else {
+            self.isHidden = true
+            return
+        }
+        
+        switch button.content {
+        case .typeBaseImage(_): break
+
+        case .typeBaseText(let value):
+            let text = value.textByLocale()
+            
+            self.titleLabel?.font = value.styles.getFontSettings()
+            self.setTitle(text, for: .normal)
+            
+            if let color = value.styles.color?.hexStringToColor {
+                self.setTitleColor(color, for: .normal)
+            }
+        }
     }
     
 }
@@ -996,6 +1328,8 @@ extension Screen {
     
     func screenValueType() -> ValueTypes  {
         switch self._struct {
+        case .typeScreenBasicPaywall(_):
+            return ValueTypes.none
         case .typeScreenImageTitleSubtitles(_):
             return ValueTypes.none
         case .typeScreenProgressBarTitle(_):
@@ -1027,6 +1361,55 @@ extension Screen {
         case .typeScreenTitleSubtitlePicker(let value):
             return ValueTypes.init(rawValue: value.picker.dataType.rawValue) ?? ValueTypes.none
         }
+    }
+    
+}
+
+extension ScreensGraph {
+    
+    func allPurchaseProductIds() -> Set<String> {
+        var ids = [String]()
+        let paywalls = self.screens.compactMap({ $0.value.paywallScreenValue()?.subscriptions.items })
+       
+        for items in paywalls {
+            let oneScreenIds = items.compactMap({$0.subscriptionId})
+            ids.append(contentsOf: oneScreenIds)
+        }
+        
+        let setIds = Set(ids.map({$0}))
+
+        return setIds
+    }
+
+}
+
+extension ItemTypeSubscription {
+    
+    func isTwoLabelInAnyColumn() -> Bool {
+        let is2NonEmptyLabelsLeftColumn = !self.leftLabelTop.textByLocale().isEmpty && !self.leftLabelBottom.textByLocale().isEmpty
+        let is2NonEmptyLabelsRightColumn = !self.rightLabelTop.textByLocale().isEmpty && !self.rightLabelBottom.textByLocale().isEmpty
+        if is2NonEmptyLabelsLeftColumn || is2NonEmptyLabelsRightColumn {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func isLeftColumnEmpty() -> Bool {
+        let isEmpty = self.leftLabelTop.textByLocale().isEmpty && self.leftLabelBottom.textByLocale().isEmpty
+        return isEmpty
+    }
+    
+    func isRightColumnEmpty() -> Bool {
+        let isEmpty = self.rightLabelTop.textByLocale().isEmpty && self.rightLabelBottom.textByLocale().isEmpty
+        return isEmpty
+    }
+    
+    func isOneColumn() -> Bool {
+        if isLeftColumnEmpty() || isRightColumnEmpty() {
+            return true
+        }
+        return false
     }
     
 }

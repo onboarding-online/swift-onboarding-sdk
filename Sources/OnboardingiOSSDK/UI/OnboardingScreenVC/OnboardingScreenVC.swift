@@ -47,7 +47,7 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
     var isTimerFinished = false
 
     
-    private var footerController: OnboardingFooterVC? = nil
+    private var footerController: FooterVCProtocol? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,7 +140,7 @@ private extension OnboardingScreenVC {
     
     func setupScreenConfigAndScreenBodyContainer() {
         if let childScreen = onboardingViewControllerFor(screen: screen) {
-            addChildViewController(childScreen, andEmbedToView: childContainerView)
+            addChildViewController(childScreen, andEmbedToView: childScreen.isEmbedded ? childContainerView : view)
             self.childScreen = childScreen
         }
     }
@@ -198,32 +198,64 @@ fileprivate extension OnboardingScreenVC {
     
     func setupFooter() {
         if let footer = screenData?.footer, footer.isFooterAvailable()  {
-            let footerController = OnboardingFooterVC.instantiate(footer: footer)
-            addChildViewController(footerController, andEmbedToView: footerContainerView)
-            footerController.animationEnabled = screenData?.animationEnabled ?? true
+            
+            if (footer.kind ?? BasicFooterKind.vertical) == BasicFooterKind.horizontal {
+                let footerController = OnboardingFooterHorizontalVC.instantiate(footer: footer)
+                addChildViewController(footerController, andEmbedToView: footerContainerView)
+                footerController.animationEnabled = screenData?.animationEnabled ?? true
 
-            footerHeightConstraint.constant = footerController.calculateFooterHeight()
-            self.footerContainerBottomConstraint = footerController.bottomFooterConstrain
-            self.footerHeightConstraint = footerController.topFooterConstrain
-            
-            footerController.firstButtonAction = {[weak self](action) in
-                if let screen = self?.screen {
-                    OnboardingService.shared.eventRegistered(event: .firstFooterButtonPressed, params: [.screenID : screen.id, .screenName : screen.name])
+                footerHeightConstraint.constant = footerController.calculateFooterHeight()
+                self.footerContainerBottomConstraint = footerController.bottomFooterConstrain
+                self.footerHeightConstraint = footerController.topFooterConstrain
+                
+                footerController.firstButtonAction = {[weak self](action) in
+                    if let screen = self?.screen {
+                        OnboardingService.shared.eventRegistered(event: .firstFooterButtonPressed, params: [.screenID : screen.id, .screenName : screen.name])
+                    }
+                    
+                    self?.finishWith(action: action)
+                    self?.isTimerFinished = true
                 }
                 
-                self?.finishWith(action: action)
-                self?.isTimerFinished = true
-            }
-            
-            footerController.secondButtonAction = {[weak self](action) in
-                if let screen = self?.screen {
-                    OnboardingService.shared.eventRegistered(event: .secondFooterButtonPressed, params: [.screenID : screen.id, .screenName : screen.name])
+                footerController.secondButtonAction = {[weak self](action) in
+                    if let screen = self?.screen {
+                        OnboardingService.shared.eventRegistered(event: .secondFooterButtonPressed, params: [.screenID : screen.id, .screenName : screen.name])
+                    }
+                    
+                    self?.finishWith(action: action)
+                    self?.isTimerFinished = true
+                }
+                self.footerController = footerController
+            } else {
+                let footerController = OnboardingFooterVC.instantiate(footer: footer)
+                addChildViewController(footerController, andEmbedToView: footerContainerView)
+                footerController.animationEnabled = screenData?.animationEnabled ?? true
+
+                footerHeightConstraint.constant = footerController.calculateFooterHeight()
+                self.footerContainerBottomConstraint = footerController.bottomFooterConstrain
+                self.footerHeightConstraint = footerController.topFooterConstrain
+                
+                footerController.firstButtonAction = {[weak self](action) in
+                    if let screen = self?.screen {
+                        OnboardingService.shared.eventRegistered(event: .firstFooterButtonPressed, params: [.screenID : screen.id, .screenName : screen.name])
+                    }
+                    
+                    self?.finishWith(action: action)
+                    self?.isTimerFinished = true
                 }
                 
-                self?.finishWith(action: action)
-                self?.isTimerFinished = true
+                footerController.secondButtonAction = {[weak self](action) in
+                    if let screen = self?.screen {
+                        OnboardingService.shared.eventRegistered(event: .secondFooterButtonPressed, params: [.screenID : screen.id, .screenName : screen.name])
+                    }
+                    
+                    self?.finishWith(action: action)
+                    self?.isTimerFinished = true
+                }
+                self.footerController = footerController
             }
-            self.footerController = footerController
+            
+          
         } else {
             hideFooter()
         }
@@ -274,7 +306,7 @@ fileprivate extension OnboardingScreenVC {
 fileprivate extension OnboardingScreenVC {
     
     func setupTimer() {
-        if var timerDuration = screenData?.timer?.duration.doubleValue {
+        if let timerDuration = screenData?.timer?.duration.doubleValue {
 //            if timerDuration == 999.0 {
 //                timerDuration = 9.2
 //            }

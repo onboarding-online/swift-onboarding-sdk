@@ -8,7 +8,11 @@
 import UIKit
 import ScreensGraph
 
-class OnboardingFooterVC: UIViewController {
+protocol FooterVCProtocol {
+    func updateFooterDependsOn(userValueIsEmpty: Bool)
+}
+
+class OnboardingFooterVC: UIViewController, FooterVCProtocol {
 
     @IBOutlet weak var nextButton1: UIButton!
     @IBOutlet weak var containerButton1: UIView!
@@ -96,6 +100,18 @@ class OnboardingFooterVC: UIViewController {
         let betweenButtonsConstrain = stackView.spacing
 
         footerHeight = topConstrain  + bottomConstrain
+        
+//        if true {
+//            if let firstButton = footer.button1  {
+//                if let height = firstButton.styles.height {
+//                    nextButton1Height.constant = height
+//                }
+//
+//                footerHeight += nextButton1Height.constant
+//            }
+//        }
+            
+            
         if let firstButton = footer.button1 {
             if let height = firstButton.styles.height {
                 nextButton1Height.constant = height
