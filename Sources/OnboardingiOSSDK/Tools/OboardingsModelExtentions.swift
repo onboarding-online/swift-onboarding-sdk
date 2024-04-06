@@ -275,6 +275,32 @@ extension BaseImage: OnboardingLocalImageAssetProvider {
         return nil
     }
     
+    
+}
+
+extension MediaScaleMode {
+    
+    func imageContentMode() -> UIView.ContentMode? {
+            switch self {
+                
+            case .scaletofill:
+                return .scaleToFill
+            case .scaleaspectfit:
+                return .scaleAspectFit
+            case .scaleaspectfill:
+                return .scaleAspectFill
+            case .center:
+                return .center
+            case .top:
+                return .top
+            case .bottom:
+                return .bottom
+            case ._left:
+                return .left
+            case ._right:
+                return .right
+            }
+    }    
 }
 
 extension BaseText {
@@ -587,7 +613,7 @@ extension UIImageView  {
         switch checkbox.kind {
         case .circle:
             if isSelected {
-                imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "circle_on_dark" : "Circle_on"
+                imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "Circle_on_dark" : "Circle_on"
             } else {
                 imageName = "Circle_off"
             }

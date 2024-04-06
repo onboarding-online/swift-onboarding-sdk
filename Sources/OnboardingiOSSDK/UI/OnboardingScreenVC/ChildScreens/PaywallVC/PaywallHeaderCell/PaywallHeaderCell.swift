@@ -91,7 +91,7 @@ extension PaywallHeaderCell {
             imageViewContainerLeadingConstraint.constant = box.styles.paddingLeft ?? 0
         }
             
-        if let imageContentMode = screenData.image()?.imageContentMode() {
+        if let imageContentMode = screenData.media?.styles.scaleMode?.imageContentMode() {
             imageView.contentMode = imageContentMode
         } else {
             imageView.contentMode = .scaleAspectFit
@@ -111,6 +111,7 @@ extension PaywallHeaderCell {
         imageHeaderSetup()
         if screenData.media?.kind == .image {
             load(image: screenData.image(), in: imageView)
+//            load(image: screenData.image(), in: imageView)
         }
     }
     
@@ -159,14 +160,21 @@ private extension PaywallHeaderCell {
         titleLabel.apply(text: screenData.title)
         subtitleLabel.apply(text: screenData.subtitle)
         
-        contentStackView.addArrangedSubview(titleLabel)
-        contentStackView.addArrangedSubview(subtitleLabel)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let titleView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.styles)
+        let subTitleView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.styles)
+
+        contentStackView.addArrangedSubview(titleView)
+        contentStackView.addArrangedSubview(subTitleView)
         
         applyListSettings()
         
         let bulletStackView = UIStackView()
         bulletStackView.axis = .vertical
         bulletStackView.distribution = .fillProportionally
+        bulletStackView.alignment = .fill
         bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
         
         for item in screenData.list.items {
@@ -174,53 +182,110 @@ private extension PaywallHeaderCell {
             title.apply(text: item.title)
             let subTitle = buildLabel()
             subTitle.apply(text: item.subtitle)
+            
+            let titleView = wrapLabelInUIView(label: title)
+            let subTitleView = wrapLabelInUIView(label: subTitle)
+
             let checkmark = buildBulletCheckmark(image: item.image)
             checkmark.clipsToBounds = true
             
-            let vStack = UIStackView(arrangedSubviews: [title, subTitle])
+//            checkmark.translatesAutoresizingMaskIntoConstraints = false
+
+            let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
+            vStack.translatesAutoresizingMaskIntoConstraints = false
             vStack.distribution = .fill
-            vStack.alignment = .fill
+            vStack.alignment = .leading
             vStack.axis = .vertical
             vStack.spacing = 4
+               
             
-            vStack.setContentHuggingPriority(UILayoutPriority(250), for: .horizontal) // Для вертикального стека
-            vStack.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal) // Для вертикального стека
+            title.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
+            title.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
+
+            subTitle.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
+            subTitle.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
+
             
-            checkmark.setContentHuggingPriority(UILayoutPriority(240), for: .horizontal) // Для вертикального стека
-            checkmark.setContentCompressionResistancePriority(UILayoutPriority(755), for: .horizontal) // Для вертикального стека
+            titleView.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
+            subTitleView.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
+           
+            vStack.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
+            vStack.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
+            vStack.setContentHuggingPriority(.defaultHigh, for: .horizontal) // Для вертикального стека
+            vStack.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal) // Для вертикального стека
             
-            checkmark.setContentHuggingPriority(UILayoutPriority(240), for: .horizontal) // Для вертикального стека
-            checkmark.setContentCompressionResistancePriority(UILayoutPriority(755), for: .horizontal) // Для вертикального стека
+            
+            checkmark.setContentHuggingPriority(.defaultLow, for: .vertical) // Для вертикального стека
+            checkmark.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
+            
+            checkmark.setContentHuggingPriority(.defaultLow, for: .horizontal) // Для вертикального стека
+            checkmark.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal) // Для вертикального стека
+            
+          
+           
+            
             
             let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
-            hStack.distribution = .fillProportionally
+            hStack.distribution = .fill
             hStack.alignment = .leading
             hStack.axis = .horizontal
-            hStack.spacing = 0
-            
+            hStack.spacing = 16
+            hStack.translatesAutoresizingMaskIntoConstraints = false
+
             bulletStackView.addArrangedSubview(hStack)
+            bulletStackView.translatesAutoresizingMaskIntoConstraints = false
         }
+        contentStackView.translatesAutoresizingMaskIntoConstraints = false
+
         contentStackView.addArrangedSubview(bulletStackView)
         
         setupGradient()
     }
     
-    func applyListSettings() {
-//        blurView.isHidden = true
-//
-//        if let colorText = screenData.list.styles.backgroundColor {
-//            listBackground.backgroundColor = colorText.hexStringToColor
-//            blurView.isHidden = true
-//        } else {
-//            contentStackView.backgroundColor = .clear
-//        }
+    func wrapLabelInUIView(label: UILabel, padding: LabelBlock? = nil) -> UIView {
+        let containerView = UIView()
+        containerView.backgroundColor = .clear // Прозрачный фон для контейнера, можно изменить по желанию.
         
+        // Добавляем label в containerView.
+        containerView.addSubview(label)
+        
+        // Включаем использование Auto Layout для label.
+        label.translatesAutoresizingMaskIntoConstraints = false
+        if let padding = padding {
+            // Применяем ограничения к label для центрирования внутри containerView и добавления отступов.
+            
+            let bottom = -1 * (padding.paddingBottom ?? 0)
+            let trailing = -1 * (padding.paddingRight ?? 0)
+
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: padding.paddingTop ?? 0),
+                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+                label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: padding.paddingLeft ?? 0),
+                label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            ])
+        } else {
+            // Применяем ограничения к label для центрирования внутри containerView и добавления отступов.
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+                label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+                label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0)
+            ])
+        }
+        
+       
+        
+        return containerView
+    }
+    
+    func applyListSettings() {
         listBackground.layer.cornerRadius = screenData.list.styles.borderRadius ?? 0
         listBackground.layer.borderColor = (screenData.list.styles.borderColor?.hexStringToColor ?? .clear).cgColor
         listBackground.layer.borderWidth = screenData.list.styles.borderWidth ?? 0
         
-        listLeadingConstraint.constant = screenData.list.box.styles.paddingLeft ?? 24
-        listTrailingConstraint.constant = screenData.list.box.styles.paddingRight ?? 24
+        listBackground.backgroundColor =   screenData.list.styles.backgroundColor?.hexStringToColor ?? .clear
+        listLeadingConstraint.constant = 16.0 + (screenData.list.box.styles.paddingLeft ?? 24)
+        listTrailingConstraint.constant =  16.0 + (screenData.list.box.styles.paddingRight ?? 24)
         listBottomConstraint.constant = screenData.list.box.styles.paddingBottom ?? 24
 //
         listItemLeadingConstraint.constant = screenData.list.styles.paddingLeft ?? 4
@@ -240,7 +305,7 @@ private extension PaywallHeaderCell {
         imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         imageView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
 
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+//        imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
@@ -258,6 +323,24 @@ private extension PaywallHeaderCell {
     }
     
     func buildLabel() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+
+        return label
+    }
+    
+    func buildTitleLabelView() -> UIView {
+        let titleLabel = buildLabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        titleLabel.font = .systemFont(ofSize: 23, weight: .bold)
+        titleLabel.numberOfLines = 0
+        return titleLabel
+    }
+    
+    func buildLabelView() -> UIView
+    {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
