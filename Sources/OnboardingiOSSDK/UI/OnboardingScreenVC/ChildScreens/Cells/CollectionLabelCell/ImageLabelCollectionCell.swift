@@ -169,10 +169,12 @@ final class ImageLabelCollectionCell: UICollectionViewCell, UIImageLoader {
         }
     }
     
-    func setWith(item: ItemTypeSelection, styles: ListBlock, isSelected: Bool) {
+    func setWith(item: ItemTypeSelection, styles: ListBlock, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         titleLabel.apply(text: item.title)
         subtitleLabel.apply(text: item.subtitle)
-        setupImage(item: item)
+        setupImage(item: item,
+                   useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         
         checkbox.apply(checkbox: item.checkBox, isSelected: isSelected)
         //        let imageName = isSelected ? "Checkbox_circle_on" : "Checkbox_circle_off"
@@ -186,9 +188,11 @@ final class ImageLabelCollectionCell: UICollectionViewCell, UIImageLoader {
         backgroundContentView.apply(listStyle: styles)
     }
     
-    func setWith(item: ItemTypeRegular, styles: ListBlock, isSelected: Bool) {
+    func setWith(item: ItemTypeRegular, styles: ListBlock, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         titleLabel.apply(text: item.title)
-        setupImage(item: item)
+        setupImage(item: item,
+                   useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         
         checkbox.applyStaticCheckbox(isSelected: isSelected)
         checkbox.tintColor = .orange
@@ -212,12 +216,16 @@ extension ImageLabelCollectionCell {
         stackView.layoutIfNeeded()
     }
     
-    private func setupImage(item: ItemTypeSelection) {
-        load(image: item.image, in: cellImage)
+    private func setupImage(item: ItemTypeSelection,
+                            useLocalAssetsIfAvailable: Bool) {
+        load(image: item.image, in: cellImage,
+             useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
     
-    private func setupImage(item: ItemTypeRegular) {
-        load(image: item.image, in: cellImage)
+    private func setupImage(item: ItemTypeRegular,
+                            useLocalAssetsIfAvailable: Bool) {
+        load(image: item.image, in: cellImage,
+             useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
     
     func setupUIBy(type: SingleSelectionListItemType) {

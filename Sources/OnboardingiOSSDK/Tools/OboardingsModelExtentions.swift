@@ -138,17 +138,27 @@ protocol OnboardingLocalVideoAssetProvider: OnboardingLocalAssetProvider { }
 
 extension OnboardingLocalVideoAssetProvider {
     
-    func urlToVideoAsset() async -> URL? {
+    func urlToVideoAsset(useLocalAssetsIfAvailable: Bool) async -> URL? {
         let urlByLocale = assetUrlByLocale()
+        
+        guard let stringURL = urlByLocale?.assetUrl?.origin else {
+            return nil
+        }
+        
+        if !useLocalAssetsIfAvailable {
+            let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
+            if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
+                return storedURL
+            }
+        }
+        
+        
         if let name = urlByLocale?.assetName {
             if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
                 return videoURL
             }
         }
         
-        guard let stringURL = urlByLocale?.assetUrl?.origin else {
-            return nil
-        }
         
         if let name = stringURL.resourceNameWithoutExtension() {
             if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
@@ -178,8 +188,13 @@ protocol OnboardingLocalImageAssetProvider: OnboardingLocalAssetProvider { }
 
 extension OnboardingLocalImageAssetProvider {
     
-    func loadImage() async -> UIImage? {
+    func loadImage(useLocalAssetsIfAvailable: Bool) async -> UIImage? {
         let urlByLocale = assetUrlByLocale()
+        
+        if !useLocalAssetsIfAvailable,
+           let url = urlByLocale?.assetUrl?.origin {
+            return await AssetsLoadingService.shared.loadImage(from: url)
+        }
         
         if let assetName = urlByLocale?.assetName,
            let image = await getLocalImageWith(assetName: assetName) {

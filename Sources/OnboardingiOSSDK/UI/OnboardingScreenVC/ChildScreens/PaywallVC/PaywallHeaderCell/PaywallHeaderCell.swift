@@ -101,7 +101,8 @@ extension PaywallHeaderCell {
     func setWith() {
         setWithStyle()
         if screenData.media?.kind == .image {
-            load(image: screenData.image(), in: imageView)
+            load(image: screenData.image(), in: imageView,
+                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         }
     }
     
@@ -110,7 +111,8 @@ extension PaywallHeaderCell {
         setWithStyle()
         imageHeaderSetup()
         if screenData.media?.kind == .image {
-            load(image: screenData.image(), in: imageView)
+            load(image: screenData.image(), in: imageView,
+                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 //            load(image: screenData.image(), in: imageView)
         }
     }
@@ -148,6 +150,7 @@ extension PaywallHeaderCell {
 
 // MARK: - Private methods
 private extension PaywallHeaderCell {
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
     func setWithStyle() {
         contentStackView.arrangedSubviews.forEach { view in
@@ -309,7 +312,7 @@ private extension PaywallHeaderCell {
         NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
                                      imageView.heightAnchor.constraint(equalToConstant: height)])
         
-        applyScaleModeAndLoad(image: image, in: imageView)
+        applyScaleModeAndLoad(image: image, in: imageView, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         return imageView
     }
     

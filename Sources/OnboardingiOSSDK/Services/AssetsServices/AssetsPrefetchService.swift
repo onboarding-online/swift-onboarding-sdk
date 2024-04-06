@@ -169,7 +169,7 @@ private extension AssetsPrefetchService {
     func prefetchAssetsFor(screenStruct: ScreenStruct) async throws {
         switch screenStruct {
         case .typeScreenBasicPaywall(let value):
-            try await prefetchAssetsForPaywall(type: value, imageList: value.list.items)
+            try await prefetchAssetsFor(type: value, imageList: value.list.items)
         case .typeScreenImageTitleSubtitles(let value):
             try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenProgressBarTitle(let value):
@@ -237,48 +237,34 @@ private extension AssetsPrefetchService {
         }
     }
     
-    func prefetchAssetsForPaywall(type: Any, imageList: Any?) async throws {
+    func prefetchAssetsFor(type: Any, imageList: Any?) async throws {
         var allAssets = [AssetPrefetchType]()
-        if let sceenDataType = type as? ImageOptionalProtocol, let image =  sceenDataType.image {
-            let image: [AssetPrefetchType] = [.from(image: image)].compactMap({ $0 })
+        let useLocalAssetsIfAvailable: Bool = (type as? BaseScreenProtocol)?.useLocalAssetsIfAvailable ?? true
+        if let sceenDataType = type as? ImageProtocol {
+            let image: [AssetPrefetchType] = [.from(image: sceenDataType.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
             allAssets += image
         }
-        
+        if let sceenDataType = type as? ImageOptionalProtocol, let image =  sceenDataType.image {
+            let image: [AssetPrefetchType] = [.from(image: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
+            allAssets += image
+        }
         if let sceenDataType = type as? BaseScreenStyleProtocol {
-            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background)
+            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             allAssets += backgroundAssets
         }
         
         if let sceenDataType = type as? PaywallBaseScreenStyleProtocol {
-            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background)
+            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             allAssets += backgroundAssets
         }
         
-        let listAsset = prefetchAssetsFor(list: imageList)
+        let listAsset = prefetchAssetsFor(list: imageList, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         allAssets += listAsset
         
         try await load(assets: allAssets)
     }
     
-    func prefetchAssetsFor(type: Any, imageList: Any?) async throws {
-        var allAssets = [AssetPrefetchType]()
-        if let sceenDataType = type as? ImageProtocol {
-            let image: [AssetPrefetchType] = [.from(image: sceenDataType.image)].compactMap({ $0 })
-            allAssets += image
-        }
-        
-        if let sceenDataType = type as? BaseScreenStyleProtocol {
-            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background)
-            allAssets += backgroundAssets
-        }
-        
-        let listAsset = prefetchAssetsFor(list: imageList)
-        allAssets += listAsset
-        
-        try await load(assets: allAssets)
-    }
-    
-    func prefetchAssetsFor(list: Any?) -> [AssetPrefetchType]  {
+    func prefetchAssetsFor(list: Any?, useLocalAssetsIfAvailable: Bool) -> [AssetPrefetchType]  {
         if let imageList = list as? (any Sequence)  {
             let images = imageList.compactMap { item in
                 if let image =  item as? ImageProtocol {
@@ -287,27 +273,27 @@ private extension AssetsPrefetchService {
                 return nil
             }
             
-            let imageAssets = prefetchAssetsFor(type: images)
+            let imageAssets = prefetchAssetsFor(type: images, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             
             return imageAssets
         }
         return []
     }
     
-    func prefetchAssetsFor(type: [ImageProtocol]) -> [AssetPrefetchType]  {
+    func prefetchAssetsFor(type: [ImageProtocol], useLocalAssetsIfAvailable: Bool) -> [AssetPrefetchType]  {
         let images = type.map({ $0.image })
-        let imageAssets = images.compactMap({ AssetPrefetchType.from(image: $0) })
+        let imageAssets = images.compactMap({ AssetPrefetchType.from(image: $0, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable) })
         return imageAssets
     }
     
-    func assetsFor(backgroundStyle: BackgroundStyle) -> [AssetPrefetchType] {
+    func assetsFor(backgroundStyle: BackgroundStyle, useLocalAssetsIfAvailable: Bool) -> [AssetPrefetchType] {
         switch backgroundStyle.styles {
         case .typeBackgroundStyleColor:
             return []
         case .typeBackgroundStyleImage(let value):
-            return [.from(baseImage: value.image)].compactMap({ $0 })
+            return [.from(baseImage: value.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
         case .typeBackgroundStyleVideo(let value):
-            return [.from(baseVideo: value.video)].compactMap({ $0 })
+            return [.from(baseVideo: value.video, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
         }
     }
     
@@ -350,12 +336,12 @@ private extension AssetsPrefetchService {
 private extension AssetsPrefetchService {
     func load(asset: AssetPrefetchType) async throws  {
         switch asset {
-        case .image(let assetProvider):
-            if await assetProvider.loadImage() == nil {
+        case .image(let assetProvider, let useLocalAssetsIfAvailable):
+            if await assetProvider.loadImage(useLocalAssetsIfAvailable: useLocalAssetsIfAvailable) == nil {
                 throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
-        case .video(let assetProvider):
-            if await assetProvider.urlToVideoAsset() == nil {
+        case .video(let assetProvider, let useLocalAssetsIfAvailable):
+            if await assetProvider.urlToVideoAsset(useLocalAssetsIfAvailable: useLocalAssetsIfAvailable) == nil {
                 throw AssetsPrefetchError.imageLoadingError(.failedToLoadAsset)
             }
         }
@@ -439,21 +425,24 @@ enum AssetsPrefetchError: LocalizedError {
 }
 
 private enum AssetPrefetchType {
-    case image(_ assetProvider: OnboardingLocalImageAssetProvider)
-    case video(_ assetProvider: OnboardingLocalVideoAssetProvider)
+    case image(assetProvider: OnboardingLocalImageAssetProvider, useLocalAssetsIfAvailable: Bool)
+    case video(assetProvider: OnboardingLocalVideoAssetProvider, useLocalAssetsIfAvailable: Bool)
     
-    static func from(image: Image) -> AssetPrefetchType? {
+    static func from(image: Image,
+                     useLocalAssetsIfAvailable: Bool) -> AssetPrefetchType? {
         guard image.assetUrlByLocale() != nil else { return nil }
-        return .image(image)
+        return .image(assetProvider: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
     
-    static func from(baseImage: BaseImage) -> AssetPrefetchType? {
+    static func from(baseImage: BaseImage,
+                     useLocalAssetsIfAvailable: Bool) -> AssetPrefetchType? {
         guard baseImage.assetUrlByLocale() != nil else { return nil }
-        return .image(baseImage)
+        return .image(assetProvider: baseImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
     
-    static func from(baseVideo: BaseVideo) -> AssetPrefetchType? {
+    static func from(baseVideo: BaseVideo,
+                     useLocalAssetsIfAvailable: Bool) -> AssetPrefetchType? {
         guard baseVideo.assetUrlByLocale() != nil else { return nil }
-        return .video(baseVideo)
+        return .video(assetProvider: baseVideo, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
 }

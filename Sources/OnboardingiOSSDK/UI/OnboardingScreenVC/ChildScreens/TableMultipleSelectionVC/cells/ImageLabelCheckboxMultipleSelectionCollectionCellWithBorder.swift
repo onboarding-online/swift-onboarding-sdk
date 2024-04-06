@@ -53,14 +53,16 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder: UIColle
         }
     }
     
-    func setWith(list: MultipleSelectionList, item: ItemTypeSelection, isSelected: Bool) {
+    func setWith(list: MultipleSelectionList, item: ItemTypeSelection, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         setupUIBy(type: list.itemType)
 
         titleLabel.apply(text: item.title)
         subtitleLabel.apply(text: item.subtitle)
 
         if let config = cellConfig, !config.isImageHiddenFor(itemType: list.itemType)  {
-            loadImageFor(item: item)
+            loadImageFor(item: item,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         }
         
         checkbox.apply(checkbox: item.checkBox, isSelected: isSelected)
@@ -76,7 +78,8 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder: UIColle
         self.layoutIfNeeded()
     }
 
-    func setWith(list: SingleSelectionList, item: ItemTypeSelection, styles: ListBlock, isSelected: Bool) {
+    func setWith(list: SingleSelectionList, item: ItemTypeSelection, styles: ListBlock, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         setupUIBy(type: list.itemType)
 
         titleLabel.apply(text: item.title)
@@ -84,7 +87,8 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder: UIColle
         subtitleLabel.apply(text: item.subtitle)
         
         if !ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderConfigurator.isImageHiddenFor(itemType: list.itemType) {
-            loadImageFor(item: item)
+            loadImageFor(item: item,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         }
 
         checkbox.apply(checkbox: item.checkBox, isSelected: isSelected)
@@ -107,9 +111,9 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder: UIColle
         }
     }
     
-    func loadImageFor(item: ItemTypeSelection) {
+    func loadImageFor(item: ItemTypeSelection, useLocalAssetsIfAvailable: Bool) {
         if currentItem != item {
-            load(image: item.image, in: cellImage)
+            load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             currentItem = item
             setupImageContentMode(item: item)
         }
@@ -140,8 +144,8 @@ fileprivate extension ImageLabelCheckboxMultipleSelectionCollectionCellWithBorde
         allItemsHorizontalStackView.layoutIfNeeded()
     }
     
-    private func setupImage(item: ItemTypeSelection) {
-        load(image: item.image, in: cellImage)
+    private func setupImage(item: ItemTypeSelection, useLocalAssetsIfAvailable: Bool) {
+        load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
  
     func setupUIBy(type: MultipleSelectionListItemType) {

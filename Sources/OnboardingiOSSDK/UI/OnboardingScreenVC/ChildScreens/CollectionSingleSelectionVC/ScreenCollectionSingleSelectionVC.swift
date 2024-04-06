@@ -102,22 +102,26 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDataSource {
             return cell
         case .smallImageTitle:
             let cell = collectionView.dequeueCellOfType(SmallImageTitleCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         case .mediumImageTitle:
             let cell = collectionView.dequeueCellOfType(MediumImageTitleCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         case .bigImageTitle:
             let cell = collectionView.dequeueCellOfType(CollectionSelectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
 
         case .fullImage:
             let cell = collectionView.dequeueCellOfType(FullImageCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         }
@@ -260,7 +264,8 @@ private extension ScreenCollectionSingleSelectionVC {
 
 // MARK: - Setup methods
 private extension ScreenCollectionSingleSelectionVC {
-    
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
+
     func setup() {
         setupCollectionView()
         setupLabelsValue()

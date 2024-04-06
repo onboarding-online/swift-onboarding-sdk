@@ -60,7 +60,9 @@ class ScreenPickerTitleSubtitleVC: BaseChildScreenGraphViewController {
     
     func setupImage() {
         setupImageContentMode()
-        load(image: image, in: imageView)
+        load(image: image,
+             in: imageView,
+             useLocalAssetsIfAvailable: screenDataPicker.useLocalAssetsIfAvailable)
     }
     
     func setupImageContentMode() {

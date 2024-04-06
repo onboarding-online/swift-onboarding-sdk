@@ -48,6 +48,7 @@ protocol PickerScreenProtocol {
     var picker: Picker { get }
     var title: Text { get }
     var subtitle: Text { get }
+    var useLocalAssetsIfAvailable: Bool { get }
 }
 
 protocol NavigationBarProtocol {

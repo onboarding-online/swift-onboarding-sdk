@@ -39,9 +39,9 @@ public class BaseOnboardingScreen: UIViewController {
 
 extension BaseOnboardingScreen {
     
-    func updateBackground(image: BaseImage?) {
+    func updateBackground(image: BaseImage?, useLocalAssetsIfAvailable: Bool) {
         Task { @MainActor in
-            if let image = await image?.loadImage() {
+            if let image = await image?.loadImage(useLocalAssetsIfAvailable: useLocalAssetsIfAvailable) {
                 setBackgroundImage(image)
             }
         }

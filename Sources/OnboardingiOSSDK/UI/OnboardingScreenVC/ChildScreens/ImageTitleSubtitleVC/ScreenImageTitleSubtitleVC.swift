@@ -39,7 +39,7 @@ class ScreenImageTitleSubtitleVC: BaseChildScreenGraphViewController {
     }
     
     func setupImage() {
-        load(image: screenData.image, in: pageImage)
+        load(image: screenData.image, in: pageImage, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
     }
     
     func setupLabelsValue() {

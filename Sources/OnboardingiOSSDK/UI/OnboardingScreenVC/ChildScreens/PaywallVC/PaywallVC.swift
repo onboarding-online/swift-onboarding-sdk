@@ -619,6 +619,7 @@ private extension PaywallVC {
         setupBackground()
         setup(navigationBar: screenData.navigationBar)
     }
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
     func setupBackground() {
         backgroundView = backgroundContainerView
@@ -628,7 +629,7 @@ private extension PaywallVC {
             case .typeBackgroundStyleColor(let value):
                 backgroundContainerView.backgroundColor = value.color.hexStringToColor
             case .typeBackgroundStyleImage(let value):
-                updateBackground(image: value.image)
+                updateBackground(image: value.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             case .typeBackgroundStyleVideo:
                 setupBackgroundFor(screenId: screen.id,
                                    using: videoPreparationService)

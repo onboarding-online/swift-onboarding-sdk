@@ -52,12 +52,13 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellNoBorder: UICollect
         }
     }
     
-    func setWith(list: MultipleSelectionList, item: ItemTypeSelection, isSelected: Bool) {
+    func setWith(list: MultipleSelectionList, item: ItemTypeSelection, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         setupUIBy(type: list.itemType)
 
         if !(cellConfig?.isImageHiddenFor(itemType: list.itemType) ?? true) {
             setupImageContentMode(item: item)
-            loadImageFor(item: item)
+            loadImageFor(item: item, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         } else {
             cellImageWidthConstraint.constant = 0
             cellImageHeightConstraint.constant = 0
@@ -79,10 +80,10 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellNoBorder: UICollect
         self.layoutIfNeeded()
     }
     
-    func loadImageFor(item: ItemTypeSelection) {
+    func loadImageFor(item: ItemTypeSelection, useLocalAssetsIfAvailable: Bool) {
         if currentItem != item {
             setupImageContentMode(item: item)
-            load(image: item.image, in: cellImage)
+            load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             currentItem = item
         }
     }
@@ -118,8 +119,9 @@ fileprivate extension ImageLabelCheckboxMultipleSelectionCollectionCellNoBorder 
         allItemsHorizontalStackView.layoutIfNeeded()
     }
     
-    private func setupImage(item: ItemTypeSelection) {
-        load(image: item.image, in: cellImage)
+    private func setupImage(item: ItemTypeSelection,
+                            useLocalAssetsIfAvailable: Bool) {
+        load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
 }
 

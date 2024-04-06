@@ -48,9 +48,10 @@ final class BulletsImageLabelCollectionCell: UICollectionViewCell, UIImageLoader
         }
     }
 
-    func setWith(listType: RegularListItemType, item: ItemTypeRegular, styles: ListBlock, isSelected: Bool) {
+    func setWith(listType: RegularListItemType, item: ItemTypeRegular, styles: ListBlock, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         titleLabel.apply(text: item.title)
-        setupImage(item: item)
+        setupImage(item: item, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         backgroundContentView.apply(listStyle: styles)
         setupUIBy(type: listType)
         
@@ -82,8 +83,8 @@ fileprivate extension BulletsImageLabelCollectionCell {
         allItemsHorizontalStackView.layoutIfNeeded()
     }
     
-    func setupImage(item: ItemTypeRegular) {
-        load(image: item.image, in: cellImage)
+    func setupImage(item: ItemTypeRegular, useLocalAssetsIfAvailable: Bool) {
+        load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         setupImageContentMode(item: item)
     }
     

@@ -70,7 +70,8 @@ private extension VideoPreparationService {
             case .typeBackgroundStyleVideo(let value):
                 let video = value.video
                 let player = createNewPlayer()
-                screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player, video: video)
+                screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player, video: video,
+                                                                          useLocalAssetsIfAvailable: screen.useLocalAssetsIfAvailable)
             }
         }
         
@@ -78,7 +79,8 @@ private extension VideoPreparationService {
             if  let videoStruct = ChildControllerFabrika.videos(screen: screen) {
                 if  let video = videoStruct.video  {
                     let player = createNewPlayer()
-                    screenIdToPlayerDict[videoStruct.screenIdWithElementType] = PlayerPreparationDetails(player: player, video: video)
+                    screenIdToPlayerDict[videoStruct.screenIdWithElementType] = PlayerPreparationDetails(player: player, video: video,
+                                                                                                         useLocalAssetsIfAvailable: screen.useLocalAssetsIfAvailable)
                 }
             }
            
@@ -136,7 +138,8 @@ private extension VideoPreparationService {
                 let video = value.video
                 let player = createNewPlayer()
                 screenIdToPlayerDict[screenId] = PlayerPreparationDetails(player: player,
-                                                                          video: video)
+                                                                          video: video,
+                                                                          useLocalAssetsIfAvailable: screen.useLocalAssetsIfAvailable)
             }
         }
         preparePlayers()
@@ -165,7 +168,7 @@ private extension VideoPreparationService {
         updateStatusOf(screenId: screenId, to: .preparing)
         let video = preparationDetails.video
         Task { @MainActor in
-            if let videoURL = await video.urlToVideoAsset() {
+            if let videoURL = await video.urlToVideoAsset(useLocalAssetsIfAvailable: preparationDetails.useLocalAssetsIfAvailable) {
                 self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
             } else {
                 updateStatusOf(screenId: screenId, to: .failed)
@@ -220,12 +223,15 @@ private extension VideoPreparationService {
         let playerLayer: AVPlayerLayer
         let video: BaseVideo
         var status: PlayerPreparationStatus = .undefined
+        let useLocalAssetsIfAvailable: Bool
         
-        init(player: AVPlayer, video: BaseVideo, status: PlayerPreparationStatus = .undefined) {
+        init(player: AVPlayer, video: BaseVideo, status: PlayerPreparationStatus = .undefined,
+             useLocalAssetsIfAvailable: Bool) {
             self.player = player
             self.playerLayer = AVPlayerLayer(player: player)
             self.video = video
             self.status = status
+            self.useLocalAssetsIfAvailable = useLocalAssetsIfAvailable
         }
     }
 }

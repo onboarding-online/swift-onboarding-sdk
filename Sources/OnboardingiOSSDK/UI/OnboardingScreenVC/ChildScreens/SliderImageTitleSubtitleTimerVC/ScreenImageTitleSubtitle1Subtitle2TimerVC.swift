@@ -147,7 +147,8 @@ fileprivate extension  ScreenImageTitleSubtitle1Subtitle2TimerVC {
     }
     
     func setupImage(item: SliderItem) {
-        load(image: item.content.image, in: pageImage)
+        load(image: item.content.image, in: pageImage,
+             useLocalAssetsIfAvailable: screen?.useLocalAssetsIfAvailable ?? true)
     }
     
     func setupSliderFor(sliderItem: SliderItem) {
