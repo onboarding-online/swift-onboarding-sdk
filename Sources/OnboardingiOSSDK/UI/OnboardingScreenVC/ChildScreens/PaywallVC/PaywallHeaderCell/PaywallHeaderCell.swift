@@ -175,11 +175,12 @@ private extension PaywallHeaderCell {
         applyListSettings()
         
         let bulletStackView = UIStackView()
+        bulletStackView.translatesAutoresizingMaskIntoConstraints = false
         bulletStackView.axis = .vertical
         bulletStackView.distribution = .fillProportionally
         bulletStackView.alignment = .fill
         bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
-        
+
         for item in screenData.list.items {
             let title = buildLabel()
             title.apply(text: item.title)
@@ -188,11 +189,7 @@ private extension PaywallHeaderCell {
             
             let titleView = wrapLabelInUIView(label: title)
             let subTitleView = wrapLabelInUIView(label: subTitle)
-
             let checkmark = buildBulletCheckmark(image: item.image)
-            checkmark.clipsToBounds = true
-            
-//            checkmark.translatesAutoresizingMaskIntoConstraints = false
 
             let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
             vStack.translatesAutoresizingMaskIntoConstraints = false
@@ -200,46 +197,21 @@ private extension PaywallHeaderCell {
             vStack.alignment = .leading
             vStack.axis = .vertical
             vStack.spacing = 4
-               
-            
-            title.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
-            title.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
-
-            subTitle.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
-            subTitle.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
-
-            
-            titleView.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
-            subTitleView.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
-           
-            vStack.setContentHuggingPriority(.defaultHigh, for: .vertical) // Для вертикального стека
-            vStack.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
-            vStack.setContentHuggingPriority(.defaultHigh, for: .horizontal) // Для вертикального стека
-            vStack.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal) // Для вертикального стека
-            
-            
-            checkmark.setContentHuggingPriority(.defaultLow, for: .vertical) // Для вертикального стека
-            checkmark.setContentCompressionResistancePriority(.defaultHigh, for: .vertical) // Для вертикального стека
-            
-            checkmark.setContentHuggingPriority(.defaultLow, for: .horizontal) // Для вертикального стека
-            checkmark.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal) // Для вертикального стека
-            
-          
-           
             
             
             let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
-            hStack.distribution = .fill
-            hStack.alignment = .leading
-            hStack.axis = .horizontal
-            hStack.spacing = 16
             hStack.translatesAutoresizingMaskIntoConstraints = false
+            hStack.distribution = .fill
+            hStack.alignment = .center
+            hStack.axis = .horizontal
+            hStack.spacing = 0
+            DispatchQueue.main.async {
+                hStack.spacing = 16
+            }
 
             bulletStackView.addArrangedSubview(hStack)
-            bulletStackView.translatesAutoresizingMaskIntoConstraints = false
         }
         contentStackView.translatesAutoresizingMaskIntoConstraints = false
-
         contentStackView.addArrangedSubview(bulletStackView)
         
         setupGradient()
@@ -247,13 +219,10 @@ private extension PaywallHeaderCell {
     
     func wrapLabelInUIView(label: UILabel, padding: LabelBlock? = nil) -> UIView {
         let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear // Прозрачный фон для контейнера, можно изменить по желанию.
-        
-        // Добавляем label в containerView.
         containerView.addSubview(label)
         
-        // Включаем использование Auto Layout для label.
-        label.translatesAutoresizingMaskIntoConstraints = false
         if let padding = padding {
             // Применяем ограничения к label для центрирования внутри containerView и добавления отступов.
             
@@ -302,15 +271,15 @@ private extension PaywallHeaderCell {
         let height = image.styles.height ?? 24
        
         let imageView = UIImageView.init()
-//        
-        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        imageView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
-
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([imageView.widthAnchor.constraint(equalToConstant: width),
-                                     imageView.heightAnchor.constraint(equalToConstant: height)])
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.clipsToBounds = true
+        
+        let heightConstraint = imageView.heightAnchor.constraint(equalToConstant: height)
+        let widthConstraint = imageView.widthAnchor.constraint(equalToConstant: width)
+        widthConstraint.priority = UILayoutPriority(rawValue: 999)
+        
+        NSLayoutConstraint.activate([widthConstraint,
+                                     heightConstraint])
         
         applyScaleModeAndLoad(image: image, in: imageView, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         return imageView
