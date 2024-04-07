@@ -21,7 +21,9 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         cellLeading = 16 + (screenData.subscriptions.box.styles.paddingLeft ?? 0)
         cellTop = 16 + (screenData.subscriptions.box.styles.paddingTop ?? 0)
         cellBottom = 16 + (screenData.subscriptions.box.styles.paddingBottom ?? 0)
-
+        
+        checkboxSize =  checkBoxSizes(subscriptionItem: item)
+        
         let containerWidthWithoutPaddings: CGFloat = containerWidth - cellTrailing - cellLeading
         allItemsHorizontalStackViewSpacing = 0
         
@@ -113,6 +115,15 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let cellHeight = maxHeight + containerTop + containerBottom + 12
         
         return cellHeight
+    }
+    
+    
+    func checkBoxSizes(subscriptionItem: ItemTypeSubscription) -> CGFloat {
+        let height = subscriptionItem.checkBox.styles.height ?? 24
+        let top = subscriptionItem.checkBox.box.styles.paddingTop ?? 0
+        let bot =  subscriptionItem.checkBox.box.styles.paddingBottom ?? 0
+        
+        return height + top + bot
     }
     
     func isCheckboxHiddenFor(list: SubscriptionList) -> Bool {

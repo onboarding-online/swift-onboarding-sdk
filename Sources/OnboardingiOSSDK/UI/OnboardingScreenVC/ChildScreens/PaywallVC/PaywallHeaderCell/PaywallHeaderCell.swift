@@ -73,15 +73,17 @@ extension PaywallHeaderCell {
     func imageHeaderSetup() {
         var bottomPadding = screenData.media?.box.styles.paddingBottom ?? 0
 
+        bottomPadding *= -1
+
         if let verticalPosition = screenData.styles.imageVerticalPosition {
             if verticalPosition == .headerTop {
                 imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.topAnchor, constant: bottomPadding).isActive = true
             } else {
-                bottomPadding *= -1
+//                bottomPadding *= -1
                 imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
             }
         } else {
-            bottomPadding *= -1
+//            bottomPadding *= -1
             imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
@@ -194,7 +196,7 @@ private extension PaywallHeaderCell {
             let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
             vStack.translatesAutoresizingMaskIntoConstraints = false
             vStack.distribution = .fill
-            vStack.alignment = .leading
+            vStack.alignment = .fill
             vStack.axis = .vertical
             vStack.spacing = 4
             
