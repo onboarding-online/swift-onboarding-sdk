@@ -87,6 +87,8 @@ extension PaywallHeaderCell {
             imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
+        imageViewContainer.layer.cornerRadius = screenData.media?.styles.mainCornerRadius?.cgFloatValue ?? 0
+        
         if let box = screenData.media?.box {
             imageViewContainerTopConstraint.constant = box.styles.paddingTop ?? 0
             imageViewContainerTrailingConstraint.constant = box.styles.paddingRight ?? 0
@@ -195,11 +197,10 @@ private extension PaywallHeaderCell {
 
             let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
             vStack.translatesAutoresizingMaskIntoConstraints = false
-            vStack.distribution = .fill
+            vStack.distribution = .fillProportionally
             vStack.alignment = .fill
             vStack.axis = .vertical
             vStack.spacing = 4
-            
             
             let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
             hStack.translatesAutoresizingMaskIntoConstraints = false
@@ -210,6 +211,9 @@ private extension PaywallHeaderCell {
             DispatchQueue.main.async {
                 hStack.spacing = 16
             }
+            
+            hStack.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+            hStack.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
 
             bulletStackView.addArrangedSubview(hStack)
         }
