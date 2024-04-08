@@ -198,10 +198,16 @@ private extension PaywallHeaderCell {
                 let titleView = wrapLabelInUIView(label: title)
                 let subTitleView = wrapLabelInUIView(label: subTitle)
                 let checkmark = buildBulletCheckmark(image: item.image)
+                
+                titleView.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
+                titleView.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
+                
+                subTitleView.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
+                subTitleView.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
 
                 let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
                 vStack.translatesAutoresizingMaskIntoConstraints = false
-                vStack.distribution = .fillProportionally
+                vStack.distribution = .fill
                 vStack.alignment = .fill
                 vStack.axis = .vertical
                 vStack.spacing = 4
@@ -311,6 +317,12 @@ private extension PaywallHeaderCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
 
+        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
+        
+        label.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
+        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
+        
         return label
     }
     
