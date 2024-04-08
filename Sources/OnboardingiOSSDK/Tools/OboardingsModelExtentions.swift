@@ -1010,7 +1010,14 @@ extension UITextField {
             return
         }
         
-        self.placeholder = text.textByLocale()
+        let placeholderText = text.textByLocale()
+        let placeholderColor = text.styles.color?.hexStringToColor ?? .lightGray
+        
+        self.attributedPlaceholder = NSAttributedString(
+            string: placeholderText,
+            attributes: [NSAttributedString.Key.foregroundColor: placeholderColor]
+        )
+        
         self.apply(text: text.styles)
     }
     
