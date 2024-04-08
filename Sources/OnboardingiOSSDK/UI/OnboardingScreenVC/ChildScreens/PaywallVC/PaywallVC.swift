@@ -68,7 +68,7 @@ public final class PaywallVC: BaseScreenGraphViewController {
     }
     
     func setupTopConstraint() {
-//        collectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 0).isActive = true
+        collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
 
     }
     
@@ -198,7 +198,7 @@ extension PaywallVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
             
             return cell
-        case .listSubscription:
+        case .listSubscription, .oneTimePurchase:
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
@@ -209,17 +209,17 @@ extension PaywallVC: UICollectionViewDataSource {
                 cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             return cell
-        case .oneTimePurchase:
-            let index = indexPath.row
-            let isSelected = selectedIndex == index
-            let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            let currentProduct = self.products[index]
-
-            if let item = itemFor(product: currentProduct) {
-                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
-            }
-            
-            return cell
+//        case .oneTimePurchase:
+//            let index = indexPath.row
+//            let isSelected = selectedIndex == index
+//            let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
+//            let currentProduct = self.products[index]
+//
+//            if let item = itemFor(product: currentProduct) {
+//                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+//            }
+//            
+//            return cell
         case .tileSubscription:
             let index = indexPath.row
             let isSelected = selectedIndex == index
@@ -293,7 +293,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             height = collectionView.bounds.height - calculateHeaderSize(in: sections) - sectionsSpacing
         case .tileSubscription:
             return Constants.subscriptionTileItemSize
-        case .listSubscription:
+        case .listSubscription, .oneTimePurchase:
             let currentProduct = self.products[indexPath.row]
             
             if let item = itemFor(product: currentProduct) {
@@ -306,8 +306,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         case .separator:
             height = PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
 
-        default:
-            height = row.height
         }
         height = max(0, height)
         return .init(width: collectionView.bounds.width, height: height)
@@ -333,7 +331,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         let items = rowsFor(section: section)
                         numberOfItems = items.count
                     }
-    
                     
                     var itemsHeight: CGFloat = 0.0
                     
@@ -761,19 +758,6 @@ extension PaywallVC {
         case listSubscription
         case tileSubscription
         case loading
-        
-        var height: CGFloat {
-            switch self {
-            case .header, .loading:
-                return 0
-            case .separator:
-                return 1
-            case .listSubscription, .oneTimePurchase:
-                return Constants.subscriptionListItemHeight
-            case .tileSubscription:
-                return Constants.subscriptionTileItemSize.height
-            }
-        }
     }
     
     func allSections() -> [SectionType] {
@@ -792,9 +776,9 @@ extension PaywallVC {
         case .separator:
             return [.separator]
         case .items:
-            if isLoadingProducts {
-                return [.loading]
-            }
+//            if isLoadingProducts {
+//                return [.loading]
+//            }
 
             switch style {
             case .subscriptionsList:
@@ -831,7 +815,7 @@ extension PaywallVC {
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
         static let sectionsSpacing: CGFloat = { UIScreen.isIphoneSE1 ? 0 : 0 }()
-        static let listItemsSpacing: CGFloat = { 4 }()
+        static let listItemsSpacing: CGFloat = { 8 }()
 
         static let subscriptionListItemHeight: CGFloat = { UIScreen.isIphoneSE1 ? 60 : 120 }()
 
