@@ -67,6 +67,10 @@ public final class PaywallVC: BaseScreenGraphViewController {
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
+    func setupTopConstraint() {
+//        collectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 0).isActive = true
+
+    }
     
     func loadProducts() {
 //        delegate?.onboardingChildScreenUpdate(value: nil,
@@ -428,13 +432,13 @@ private extension PaywallVC {
         
         self.isLoadingProducts = false
         
-//        DispatchQueue.main.async {
-//            self.setViewForLoadedProducts()
-//        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.async {
             self.setViewForLoadedProducts()
         }
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//            self.setViewForLoadedProducts()
+//        }
     }
     
     func setViewForLoadedProducts() {
@@ -446,11 +450,8 @@ private extension PaywallVC {
             bottomView.setupPaymentDetailsLabel(content: currentProduct)
         }
 
-        
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
         OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
-
-
 //        collectionView.reloadData()
     }
     
@@ -501,12 +502,14 @@ private extension PaywallVC {
                 
 //                finishWith(action: screenData.footer.purchase?.action)
             } catch OnboardingPaywallError.cancelled {
+                setViewBusy(false)
                 OnboardingService.shared.eventRegistered(event: .purchaseCanceled, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
 
                 if shouldCloseOnPurchaseCancel {
                     close()
                 }
             } catch {
+                setViewBusy(false)
                 handleError(error, message: "Failed to purchase", retryAction: { [weak self] in
                     self?.purchaseSelectedProduct()
                 })
@@ -568,7 +571,7 @@ private extension PaywallVC {
                 
             } catch {
                 // An error occurred while retrieving the receipt
-                print("Error retrieving the receipt: \(error)")
+//                print("Error retrieving the receipt: \(error)")
             }
         }
     }
