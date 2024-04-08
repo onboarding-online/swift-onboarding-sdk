@@ -111,14 +111,16 @@ extension PaywallHeaderCell {
     }
     
     func setWith(paywallData: ScreenBasicPaywall) {
-        screenData = paywallData
-        setWithStyle()
-        imageHeaderSetup()
-        if screenData.media?.kind == .image {
-            load(image: screenData.image(), in: imageView,
-                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
-//            load(image: screenData.image(), in: imageView)
+        DispatchQueue.main.async {[weak self]  in
+            self?.screenData = paywallData
+            self?.setWithStyle()
+            self?.imageHeaderSetup()
+            if self?.screenData.media?.kind == .image, let strongSelf = self {
+                strongSelf.load(image: strongSelf.screenData.image(), in: strongSelf.imageView, useLocalAssetsIfAvailable: strongSelf.useLocalAssetsIfAvailable)
+            }
+            
         }
+        
     }
     
     func setupBackgroundFor(screenId: String,
@@ -167,63 +169,67 @@ private extension PaywallHeaderCell {
         titleLabel.apply(text: screenData.title)
         subtitleLabel.apply(text: screenData.subtitle)
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+//        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+//        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        let titleView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.styles)
-        let subTitleView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.styles)
+        let titleView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
+        let subTitleView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
 
         contentStackView.addArrangedSubview(titleView)
         contentStackView.addArrangedSubview(subTitleView)
         
         applyListSettings()
         
-        let bulletStackView = UIStackView()
-        bulletStackView.translatesAutoresizingMaskIntoConstraints = false
-        bulletStackView.axis = .vertical
-        bulletStackView.distribution = .fillProportionally
-        bulletStackView.alignment = .fill
-        bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
+        if !screenData.list.items.isEmpty {
+            let bulletStackView = UIStackView()
+            bulletStackView.translatesAutoresizingMaskIntoConstraints = false
+            bulletStackView.axis = .vertical
+            bulletStackView.distribution = .fillProportionally
+            bulletStackView.alignment = .fill
+            bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
 
-        for item in screenData.list.items {
-            let title = buildLabel()
-            title.apply(text: item.title)
-            let subTitle = buildLabel()
-            subTitle.apply(text: item.subtitle)
             
-            let titleView = wrapLabelInUIView(label: title)
-            let subTitleView = wrapLabelInUIView(label: subTitle)
-            let checkmark = buildBulletCheckmark(image: item.image)
+            for item in screenData.list.items {
+                let title = buildLabel()
+                title.apply(text: item.title)
+                let subTitle = buildLabel()
+                subTitle.apply(text: item.subtitle)
+                
+                let titleView = wrapLabelInUIView(label: title)
+                let subTitleView = wrapLabelInUIView(label: subTitle)
+                let checkmark = buildBulletCheckmark(image: item.image)
 
-            let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
-            vStack.translatesAutoresizingMaskIntoConstraints = false
-            vStack.distribution = .fillProportionally
-            vStack.alignment = .fill
-            vStack.axis = .vertical
-            vStack.spacing = 4
-            
-            let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
-            hStack.translatesAutoresizingMaskIntoConstraints = false
-            hStack.distribution = .fill
-            hStack.alignment = .center
-            hStack.axis = .horizontal
-            hStack.spacing = 0
-            DispatchQueue.main.async {
-                hStack.spacing = 16
+                let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
+                vStack.translatesAutoresizingMaskIntoConstraints = false
+                vStack.distribution = .fillProportionally
+                vStack.alignment = .fill
+                vStack.axis = .vertical
+                vStack.spacing = 4
+                
+                let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
+                hStack.translatesAutoresizingMaskIntoConstraints = false
+                hStack.distribution = .fill
+                hStack.alignment = .center
+                hStack.axis = .horizontal
+                hStack.spacing = 0
+                DispatchQueue.main.async {
+                    hStack.spacing = 16
+                }
+                
+                hStack.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+                hStack.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
+
+                bulletStackView.addArrangedSubview(hStack)
             }
-            
-            hStack.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
-            hStack.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
-
-            bulletStackView.addArrangedSubview(hStack)
+            contentStackView.translatesAutoresizingMaskIntoConstraints = false
+            contentStackView.addArrangedSubview(bulletStackView)
         }
-        contentStackView.translatesAutoresizingMaskIntoConstraints = false
-        contentStackView.addArrangedSubview(bulletStackView)
+       
         
         setupGradient()
     }
     
-    func wrapLabelInUIView(label: UILabel, padding: LabelBlock? = nil) -> UIView {
+    func wrapLabelInUIView(label: UILabel, padding: BoxBlock? = nil) -> UIView {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear // Прозрачный фон для контейнера, можно изменить по желанию.
