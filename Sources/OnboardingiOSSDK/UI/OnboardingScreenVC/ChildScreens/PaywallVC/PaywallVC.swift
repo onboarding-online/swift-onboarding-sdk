@@ -34,7 +34,6 @@ public final class PaywallVC: BaseScreenGraphViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomView: PaywallBottomView!
-    @IBOutlet weak var gradientView: GradientView!
     
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var headerView: UIView!
@@ -57,8 +56,8 @@ public final class PaywallVC: BaseScreenGraphViewController {
         productIds = ids
         
         //TODO: remove when new types will be added
-        switch screenData.subscriptions.itemType {
-        case .subscriptionListItemType5:
+        switch screenData.subscriptions.subscriptionViewKind {
+        case .vertical:
             style = .subscriptionsTiles
         default:
             style = .subscriptionsList
@@ -515,7 +514,7 @@ private extension PaywallVC {
                 OnboardingService.shared.eventRegistered(event: .purchaseFailed, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .error: error.localizedDescription])
 
             }
-            setViewBusy(false)
+//            setViewBusy(false)
         }
     }
     
@@ -526,7 +525,9 @@ private extension PaywallVC {
 
                 if product.type == .oneTimePurchase {
                     if let receipt = try await paymentService.lastPurchaseReceipts() {
-                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
+                        setViewBusy(false)
+
+//                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
                         
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
@@ -540,13 +541,15 @@ private extension PaywallVC {
                         finishWith(action: screenData.footer.purchase?.action)
 
                     } else {
+                        setViewBusy(false)
                         finishWith(action: screenData.footer.purchase?.action)
                     }
                 } else {
                     if let receipt = try await paymentService.activeSubscriptionReceipt() {
-                        
+                        setViewBusy(false)
+
                         DispatchQueue.main.async {[weak self] in
-                            print("[trnsaction_id]-> \(receipt.originalTransactionId)")
+//                            print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                             let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
                             OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: self?.screen.id ?? "none", .screenName: self?.screen.name ?? "none", .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                             
@@ -557,10 +560,8 @@ private extension PaywallVC {
                             self?.finishWith(action: self?.screenData.footer.purchase?.action)
 
                         }
-                       
-
-                      
                     } else {
+                        setViewBusy(false)
                         finishWith(action: screenData.footer.purchase?.action)
                     }
                 }
@@ -695,6 +696,15 @@ private extension PaywallVC {
         }
         NSLayoutConstraint.activate([horizontalConstraint])
 
+        if let restoreAlignment = navigationBar.styles.restoreHorizontalAlignment {
+            switch restoreAlignment {
+            case ._left:
+                horizontalConstraint = closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
+            case ._right:
+                break
+            }
+        }
+        
         switch navigationBar.styles.closeAppearance {
         case .visibleaftertimer:
             if let time = navigationBar.styles.closeVisibleAfterTimerValue {

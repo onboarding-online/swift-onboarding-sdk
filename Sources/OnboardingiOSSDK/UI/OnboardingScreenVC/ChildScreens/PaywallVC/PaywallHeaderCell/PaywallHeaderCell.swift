@@ -79,11 +79,9 @@ extension PaywallHeaderCell {
             if verticalPosition == .headerTop {
                 imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.topAnchor, constant: bottomPadding).isActive = true
             } else {
-//                bottomPadding *= -1
                 imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
             }
         } else {
-//            bottomPadding *= -1
             imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
@@ -118,9 +116,7 @@ extension PaywallHeaderCell {
             if self?.screenData.media?.kind == .image, let strongSelf = self {
                 strongSelf.load(image: strongSelf.screenData.image(), in: strongSelf.imageView, useLocalAssetsIfAvailable: strongSelf.useLocalAssetsIfAvailable)
             }
-            
         }
-        
     }
     
     func setupBackgroundFor(screenId: String,
