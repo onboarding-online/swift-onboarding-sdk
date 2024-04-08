@@ -11,6 +11,9 @@ import ScreensGraph
 final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
     @IBOutlet private weak var imageViewContainer: UIView!
+    
+    @IBOutlet private weak var mediaContainer: UIView!
+
     @IBOutlet private weak var imageViewContainerTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var imageViewContainerBottomConstraint: NSLayoutConstraint!
     @IBOutlet private weak var imageViewContainerLeadingConstraint: NSLayoutConstraint!
@@ -26,7 +29,6 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
     @IBOutlet private weak var listLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var listTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var listBottomConstraint: NSLayoutConstraint!
-    
     
     @IBOutlet private weak var listItemLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var listItemTrailingConstraint: NSLayoutConstraint!
@@ -85,12 +87,13 @@ extension PaywallHeaderCell {
             imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
-        imageViewContainer.layer.cornerRadius = screenData.media?.styles.mainCornerRadius?.cgFloatValue ?? 0
+        mediaContainer.layer.cornerRadius = screenData.media?.styles.mainCornerRadius?.cgFloatValue ?? 0
         
         if let box = screenData.media?.box {
             imageViewContainerTopConstraint.constant = box.styles.paddingTop ?? 0
             imageViewContainerTrailingConstraint.constant = box.styles.paddingRight ?? 0
             imageViewContainerLeadingConstraint.constant = box.styles.paddingLeft ?? 0
+//            imageViewContainerBottomConstraint.constant = box.styles.paddingBottom ?? 0
         }
             
         if let imageContentMode = screenData.media?.styles.scaleMode?.imageContentMode() {
@@ -122,7 +125,7 @@ extension PaywallHeaderCell {
 
         if self.videoBackground == nil {
             self.videoBackground = VideoBackground()
-            self.videoBackground!.play(in: self.imageViewContainer,
+            self.videoBackground!.play(in: self.mediaContainer,
                                         using: preparedData)
         }
     }

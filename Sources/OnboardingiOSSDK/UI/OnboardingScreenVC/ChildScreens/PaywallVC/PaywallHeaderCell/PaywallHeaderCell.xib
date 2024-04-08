@@ -21,25 +21,37 @@
                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
                         <rect key="frame" x="0.0" y="0.0" width="408" height="344"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
-                                <rect key="frame" x="0.0" y="0.0" width="398" height="344"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JnK-Xm-Qvp">
                                 <rect key="frame" x="0.0" y="0.0" width="408" height="344"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
+                                        <rect key="frame" x="0.0" y="0.0" width="408" height="344"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
+                                        <rect key="frame" x="0.0" y="0.0" width="408" height="344"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemTealColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="XhN-oE-JNC"/>
+                                    <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="ZEI-hM-2S3"/>
+                                    <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="bDW-pH-6Ns"/>
+                                    <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="eA4-DH-FrW"/>
+                                    <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="JnK-Xm-Qvp" secondAttribute="top" id="gDW-e5-Nwy"/>
+                                    <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="JnK-Xm-Qvp" secondAttribute="leading" id="kwY-yk-dHd"/>
+                                    <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="JnK-Xm-Qvp" secondAttribute="top" id="pTU-Jf-Rwg"/>
+                                    <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="JnK-Xm-Qvp" secondAttribute="leading" id="uwP-rZ-CLE"/>
+                                </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemYellowColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="1Ti-bd-EMm"/>
-                            <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="2dY-qa-Mrg"/>
-                            <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="9Y9-FC-FrS"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" priority="10" id="KRE-f8-T5Y"/>
-                            <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" priority="900" id="SpB-KJ-J8U"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="jU4-rZ-3FB"/>
-                            <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" constant="10" id="lQu-pz-ELc"/>
-                            <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="woF-nx-oRb"/>
+                            <constraint firstAttribute="trailing" secondItem="JnK-Xm-Qvp" secondAttribute="trailing" id="H6W-jP-DSq"/>
+                            <constraint firstItem="JnK-Xm-Qvp" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="K6g-oQ-Rpo"/>
+                            <constraint firstAttribute="bottom" secondItem="JnK-Xm-Qvp" secondAttribute="bottom" id="Maj-hn-J1Y"/>
+                            <constraint firstItem="JnK-Xm-Qvp" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="Wys-nW-e7i"/>
                         </constraints>
                     </view>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Cii-tw-ukF">
@@ -83,10 +95,10 @@
                 <outlet property="gradientView" destination="Jze-sG-Veo" id="e6w-Lj-w5z"/>
                 <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
                 <outlet property="imageViewContainer" destination="qbw-eF-EJ0" id="YYG-u0-TvD"/>
-                <outlet property="imageViewContainerBottomConstraint" destination="SpB-KJ-J8U" id="1NR-zh-ZpV"/>
-                <outlet property="imageViewContainerLeadingConstraint" destination="woF-nx-oRb" id="x2a-R3-wmf"/>
-                <outlet property="imageViewContainerTopConstraint" destination="9Y9-FC-FrS" id="qAA-s6-Y3I"/>
-                <outlet property="imageViewContainerTrailingConstraint" destination="lQu-pz-ELc" id="oX1-HJ-kBB"/>
+                <outlet property="imageViewContainerBottomConstraint" destination="Maj-hn-J1Y" id="GNn-i0-GLh"/>
+                <outlet property="imageViewContainerLeadingConstraint" destination="K6g-oQ-Rpo" id="1dj-V8-yRn"/>
+                <outlet property="imageViewContainerTopConstraint" destination="Wys-nW-e7i" id="r8l-JM-uDW"/>
+                <outlet property="imageViewContainerTrailingConstraint" destination="H6W-jP-DSq" id="za3-wZ-725"/>
                 <outlet property="imageViewTopConstraint" destination="Zfx-Jb-9IW" id="ws2-6b-Lx7"/>
                 <outlet property="listBackground" destination="Lag-yb-nxE" id="CU5-M7-MBP"/>
                 <outlet property="listBottomConstraint" destination="Uno-hq-I1S" id="F79-zL-5Tx"/>
@@ -96,13 +108,14 @@
                 <outlet property="listItemTrailingConstraint" destination="ZFp-bW-aEt" id="9Ja-Bp-FFB"/>
                 <outlet property="listLeadingConstraint" destination="Ne4-yO-zkh" id="rf8-WQ-aZ4"/>
                 <outlet property="listTrailingConstraint" destination="Qiv-99-8HV" id="eNh-2O-l3T"/>
+                <outlet property="mediaContainer" destination="JnK-Xm-Qvp" id="8bh-lh-p04"/>
             </connections>
             <point key="canvasLocation" x="319.08396946564886" y="-7.746478873239437"/>
         </collectionViewCell>
     </objects>
     <resources>
-        <systemColor name="systemYellowColor">
-            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemTealColor">
+            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
