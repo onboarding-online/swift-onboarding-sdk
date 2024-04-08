@@ -54,21 +54,21 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
 
 }
 
-extension ScreenBasicPaywall {
-   
-    func image()-> BaseImage? {
-        switch self.media?.content {
-        case .typeMediaImage(let image):
-            return image.image
-        default:
-            return nil
-        }
-    }
-    
-}
 
 // MARK: - Open methods
 extension PaywallHeaderCell {
+    
+    
+    func setWith(paywallData: ScreenBasicPaywall) {
+        DispatchQueue.main.async {[weak self]  in
+            self?.screenData = paywallData
+            self?.setWithStyle()
+            self?.imageHeaderSetup()
+            if self?.screenData.media?.kind == .image, let strongSelf = self {
+                strongSelf.load(image: strongSelf.screenData.image(), in: strongSelf.imageView, useLocalAssetsIfAvailable: strongSelf.useLocalAssetsIfAvailable)
+            }
+        }
+    }
     
     func imageHeaderSetup() {
         var bottomPadding = screenData.media?.box.styles.paddingBottom ?? 0
@@ -100,24 +100,7 @@ extension PaywallHeaderCell {
         }
     }
     
-    func setWith() {
-        setWithStyle()
-        if screenData.media?.kind == .image {
-            load(image: screenData.image(), in: imageView,
-                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
-        }
-    }
-    
-    func setWith(paywallData: ScreenBasicPaywall) {
-        DispatchQueue.main.async {[weak self]  in
-            self?.screenData = paywallData
-            self?.setWithStyle()
-            self?.imageHeaderSetup()
-            if self?.screenData.media?.kind == .image, let strongSelf = self {
-                strongSelf.load(image: strongSelf.screenData.image(), in: strongSelf.imageView, useLocalAssetsIfAvailable: strongSelf.useLocalAssetsIfAvailable)
-            }
-        }
-    }
+
     
     func setupBackgroundFor(screenId: String,
                             using preparationService: VideoPreparationService) {
@@ -171,8 +154,13 @@ private extension PaywallHeaderCell {
         let titleView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
         let subTitleView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
 
-        contentStackView.addArrangedSubview(titleView)
-        contentStackView.addArrangedSubview(subTitleView)
+        if !screenData.title.textByLocale().isEmpty {
+            contentStackView.addArrangedSubview(titleView)
+        }
+        
+        if !screenData.subtitle.textByLocale().isEmpty {
+            contentStackView.addArrangedSubview(subTitleView)
+        }
         
         applyListSettings()
         
@@ -233,19 +221,16 @@ private extension PaywallHeaderCell {
             contentStackView.addArrangedSubview(bulletStackView)
         }
        
-        
         setupGradient()
     }
     
     func wrapLabelInUIView(label: UILabel, padding: BoxBlock? = nil) -> UIView {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.backgroundColor = .clear // Прозрачный фон для контейнера, можно изменить по желанию.
+        containerView.backgroundColor = .clear
         containerView.addSubview(label)
         
         if let padding = padding {
-            // Применяем ограничения к label для центрирования внутри containerView и добавления отступов.
-            
             let bottom = -1 * (padding.paddingBottom ?? 0)
             let trailing = -1 * (padding.paddingRight ?? 0)
 
@@ -256,7 +241,6 @@ private extension PaywallHeaderCell {
                 label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
             ])
         } else {
-            // Применяем ограничения к label для центрирования внутри containerView и добавления отступов.
             NSLayoutConstraint.activate([
                 label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
                 label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
@@ -264,8 +248,6 @@ private extension PaywallHeaderCell {
                 label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0)
             ])
         }
-        
-       
         
         return containerView
     }

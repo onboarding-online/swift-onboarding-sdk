@@ -293,6 +293,19 @@ extension BaseImage: OnboardingLocalImageAssetProvider {
     
 }
 
+extension ScreenBasicPaywall {
+   
+    func image()-> BaseImage? {
+        switch self.media?.content {
+        case .typeMediaImage(let image):
+            return image.image
+        default:
+            return nil
+        }
+    }
+    
+}
+
 extension MediaScaleMode {
     
     func imageContentMode() -> UIView.ContentMode? {
