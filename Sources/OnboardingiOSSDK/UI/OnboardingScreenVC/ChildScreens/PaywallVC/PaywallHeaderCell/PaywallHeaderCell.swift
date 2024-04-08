@@ -191,6 +191,12 @@ private extension PaywallHeaderCell {
                 let subTitle = buildLabel()
                 subTitle.apply(text: item.subtitle)
                 
+                title.adjustsFontSizeToFitWidth = true
+                title.minimumScaleFactor = 0.5
+                
+                subTitle.adjustsFontSizeToFitWidth = true
+                subTitle.minimumScaleFactor = 0.5
+                
                 let titleView = wrapLabelInUIView(label: title)
                 let subTitleView = wrapLabelInUIView(label: subTitle)
                 let checkmark = buildBulletCheckmark(image: item.image)
@@ -312,6 +318,9 @@ private extension PaywallHeaderCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
+        
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
 
         label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
         label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
@@ -366,6 +375,10 @@ private extension PaywallHeaderCell {
             gradientView.isHidden = true
         }
     
+        if screenData.media == nil {
+            gradientView.isHidden = true
+        }
+        
         gradientView.gradientDirection = .bottomToTop
     }
 }
