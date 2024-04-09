@@ -682,7 +682,7 @@ private extension PaywallVC {
         }
     
         closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
-        closeButton.tintColor = close.styles.backgroundColor?.hexStringToColor ?? .black
+        closeButton.tintColor = close.textColor()
         
         var horizontalConstraint = closeButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)
    

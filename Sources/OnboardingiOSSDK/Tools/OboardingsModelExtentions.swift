@@ -849,6 +849,19 @@ extension VerticalAlignment {
 }
 
 
+extension Button {
+    
+    func textColor() -> UIColor {
+        switch self.content {
+        case .typeBaseImage(_):
+            return .black
+        case .typeBaseText(let value):
+            return value.textColor()            
+        }
+    }
+    
+}
+
 extension UIButton: UIImageLoader {
    
     func apply(button: Button?, isBackButton: Bool = false) {

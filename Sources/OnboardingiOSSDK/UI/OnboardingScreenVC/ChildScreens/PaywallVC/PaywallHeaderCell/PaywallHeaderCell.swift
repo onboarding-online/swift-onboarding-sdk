@@ -36,13 +36,9 @@ final class PaywallHeaderCell: UICollectionViewCell, UIImageLoader {
     @IBOutlet private weak var listItemTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var listItemBottomConstraint: NSLayoutConstraint!
 
-    @IBOutlet private weak var gradientHeightConstraint: NSLayoutConstraint!
-
     private var videoBackground: VideoBackground? = nil
 
     @IBOutlet private weak var listBackground: UIView!
-
-    @IBOutlet weak var blurView: UIVisualEffectView!
     
     private var screenData: ScreenBasicPaywall! = nil
     
@@ -75,16 +71,19 @@ extension PaywallHeaderCell {
     func imageHeaderSetup() {
         var bottomPadding = screenData.media?.box.styles.paddingBottom ?? 0
 
-        bottomPadding *= -1
 
         if let verticalPosition = screenData.styles.imageVerticalPosition {
             if verticalPosition == .headerTop {
-                imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.topAnchor, constant: bottomPadding).isActive = true
+                mediaContainer.bottomAnchor.constraint(equalTo: listBackground.topAnchor, constant: bottomPadding).isActive = true
             } else {
-                imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
+                bottomPadding *= -1
+
+                mediaContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
             }
         } else {
-            imageViewContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
+            bottomPadding *= -1
+
+            mediaContainer.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor, constant: bottomPadding).isActive = true
         }
         
         mediaContainer.layer.cornerRadius = screenData.media?.styles.mainCornerRadius?.cgFloatValue ?? 0
@@ -340,7 +339,7 @@ private extension PaywallHeaderCell {
             case .typeGradient(let gradient):
                 if var height = gradient.heightPercentage {
                     height = height / 100
-                    gradientView.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier:  height).isActive = true
+                    gradientView.heightAnchor.constraint(equalTo: mediaContainer.heightAnchor, multiplier:  height).isActive = true
                 } else {
                     gradientView.isHidden = true
                 }
