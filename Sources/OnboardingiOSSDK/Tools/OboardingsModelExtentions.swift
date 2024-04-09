@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import ScreensGraph
+import AVFoundation
 
 extension ScreensGraph {
     
@@ -328,7 +329,20 @@ extension MediaScaleMode {
             case ._right:
                 return .right
             }
-    }    
+    }
+    
+    func videoContentMode() -> AVLayerVideoGravity? {
+            switch self {
+            case .scaletofill:
+                return .resize
+            case .scaleaspectfit:
+                return .resizeAspect
+            case .scaleaspectfill:
+                return .resizeAspectFill
+            default:
+                return .resizeAspectFill
+            }
+    }
 }
 
 extension BaseText {
