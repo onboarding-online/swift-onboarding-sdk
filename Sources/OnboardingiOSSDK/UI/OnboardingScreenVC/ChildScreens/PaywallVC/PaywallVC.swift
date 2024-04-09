@@ -447,8 +447,11 @@ private extension PaywallVC {
             bottomView.setupPaymentDetailsLabel(content: currentProduct)
         }
 
-        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
-        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
+        if screenData.animationEnabled {
+            OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
+            OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
+        }
+       
 //        collectionView.reloadData()
     }
     
