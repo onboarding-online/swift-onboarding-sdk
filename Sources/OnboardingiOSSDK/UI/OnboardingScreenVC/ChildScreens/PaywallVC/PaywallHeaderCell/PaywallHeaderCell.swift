@@ -74,6 +74,8 @@ extension PaywallHeaderCell {
 
         if let verticalPosition = screenData.styles.imageVerticalPosition {
             if verticalPosition == .headerTop {
+                bottomPadding *= -1
+
                 mediaContainer.bottomAnchor.constraint(equalTo: listBackground.topAnchor, constant: bottomPadding).isActive = true
             } else {
                 bottomPadding *= -1
