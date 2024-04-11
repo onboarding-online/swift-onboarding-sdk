@@ -124,12 +124,13 @@ extension PaywallHeaderCell {
     
     func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
 
-        if let mode = screenData.media?.styles.scaleMode?.videoContentMode() {
-            videoBackground?.videoGravity = mode
-        }
+
         
         if self.videoBackground == nil {
             self.videoBackground = VideoBackground()
+            if let mode = screenData.media?.styles.scaleMode?.videoContentMode() {
+                videoBackground?.videoGravity = mode
+            }
             self.videoBackground!.play(in: self.mediaContainer,
                                         using: preparedData)
         }
