@@ -307,6 +307,28 @@ extension ScreenBasicPaywall {
     
 }
 
+extension Media {
+    
+    func image()-> BaseImage? {
+        switch self.content {
+        case .typeMediaImage(let image):
+            return image.image
+        default:
+            return nil
+        }
+    }
+    
+    func video()-> BaseVideo? {
+        switch self.content {
+        case .typeMediaVideo(let image):
+            return image.video
+        default:
+            return nil
+        }
+    }
+    
+}
+
 extension MediaScaleMode {
     
     func imageContentMode() -> UIView.ContentMode? {

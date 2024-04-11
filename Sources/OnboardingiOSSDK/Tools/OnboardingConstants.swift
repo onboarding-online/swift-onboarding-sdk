@@ -65,6 +65,7 @@ protocol BaseScreenStyleProtocol {
 
 protocol PaywallBaseScreenStyleProtocol {
     var styles: ScreenBasicPaywallBlock { get }
+    var media: Media? { get }
 }
 
 protocol PermissionProtocol {

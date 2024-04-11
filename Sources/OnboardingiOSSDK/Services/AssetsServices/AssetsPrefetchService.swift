@@ -240,22 +240,26 @@ private extension AssetsPrefetchService {
     func prefetchAssetsFor(type: Any, imageList: Any?) async throws {
         var allAssets = [AssetPrefetchType]()
         let useLocalAssetsIfAvailable: Bool = (type as? BaseScreenProtocol)?.useLocalAssetsIfAvailable ?? true
-        if let sceenDataType = type as? ImageProtocol {
-            let image: [AssetPrefetchType] = [.from(image: sceenDataType.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
+        if let screenDataType = type as? ImageProtocol {
+            let image: [AssetPrefetchType] = [.from(image: screenDataType.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
             allAssets += image
         }
-        if let sceenDataType = type as? ImageOptionalProtocol, let image =  sceenDataType.image {
+        if let screenDataType = type as? ImageOptionalProtocol, let image =  screenDataType.image {
             let image: [AssetPrefetchType] = [.from(image: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
             allAssets += image
         }
-        if let sceenDataType = type as? BaseScreenStyleProtocol {
-            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+        if let screenDataType = type as? BaseScreenStyleProtocol {
+            let backgroundAssets = assetsFor(backgroundStyle: screenDataType.styles.background, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             allAssets += backgroundAssets
         }
         
-        if let sceenDataType = type as? PaywallBaseScreenStyleProtocol {
-            let backgroundAssets = assetsFor(backgroundStyle: sceenDataType.styles.background, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+        if let screenDataType = type as? PaywallBaseScreenStyleProtocol {
+            let backgroundAssets = assetsFor(backgroundStyle: screenDataType.styles.background, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            let mediaAssets = assetsFor(media: screenDataType.media, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            
             allAssets += backgroundAssets
+            allAssets += mediaAssets
+
         }
         
         let listAsset = prefetchAssetsFor(list: imageList, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
@@ -293,6 +297,17 @@ private extension AssetsPrefetchService {
         case .typeBackgroundStyleImage(let value):
             return [.from(baseImage: value.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
         case .typeBackgroundStyleVideo(let value):
+            return [.from(baseVideo: value.video, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
+        }
+    }
+    
+    func assetsFor(media: Media?, useLocalAssetsIfAvailable: Bool) -> [AssetPrefetchType] {
+        guard let media = media else { return [] }
+        
+        switch media.content {
+        case .typeMediaImage(let value):
+            return [.from(baseImage: value.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
+        case .typeMediaVideo(let value):
             return [.from(baseVideo: value.video, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)].compactMap({ $0 })
         }
     }
