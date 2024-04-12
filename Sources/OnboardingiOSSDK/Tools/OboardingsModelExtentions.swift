@@ -1439,7 +1439,7 @@ extension Screen {
     func screenValueType() -> ValueTypes  {
         switch self._struct {
         case .typeScreenBasicPaywall(_):
-            return ValueTypes.none
+            return ValueTypes.string
         case .typeScreenImageTitleSubtitles(_):
             return ValueTypes.none
         case .typeScreenProgressBarTitle(_):

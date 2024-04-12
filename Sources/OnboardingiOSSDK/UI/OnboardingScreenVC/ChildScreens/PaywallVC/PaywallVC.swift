@@ -491,7 +491,8 @@ private extension PaywallVC {
 
         let selectedProduct = products[selectedIndex]
         OnboardingService.shared.eventRegistered(event: .purchaseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: selectedProduct.id])
-
+        self.value = selectedProduct.id
+        
         setViewBusy(true)
         Task {
             do {
