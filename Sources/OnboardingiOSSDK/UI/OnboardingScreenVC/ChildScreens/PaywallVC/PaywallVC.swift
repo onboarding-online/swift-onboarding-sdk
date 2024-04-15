@@ -58,9 +58,9 @@ public final class PaywallVC: BaseScreenGraphViewController {
         //TODO: remove when new types will be added
         switch screenData.subscriptions.subscriptionViewKind {
         case .vertical:
-            style = .subscriptionsTiles
-        default:
             style = .subscriptionsList
+        default:
+            style = .subscriptionsTiles
         }
         
         loadProducts()
