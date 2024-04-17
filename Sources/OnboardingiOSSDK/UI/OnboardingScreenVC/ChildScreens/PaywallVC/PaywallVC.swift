@@ -28,8 +28,10 @@ public final class PaywallVC: BaseScreenGraphViewController {
     public var productIds: [String] = []
     public var style: Style = .subscriptionsList
     var shouldCloseOnPurchaseCancel = false
-    
-    public var dismissalHandler: (() -> ())!
+        
+    public var closePaywallHandler: ((PaywallVC) -> ())? = nil
+    public var purchaseHandler: ((PaywallVC, OnboardingPaymentReceipt?) -> ())? = nil
+
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -500,8 +502,6 @@ private extension PaywallVC {
                 
                 sendReceiptInfo(product: selectedProduct)
                 self.value = selectedProduct.id
-                
-//                finishWith(action: screenData.footer.purchase?.action)
             } catch OnboardingPaywallError.cancelled {
                 setViewBusy(false)
                 OnboardingService.shared.eventRegistered(event: .purchaseCanceled, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
@@ -518,7 +518,6 @@ private extension PaywallVC {
                 OnboardingService.shared.eventRegistered(event: .purchaseFailed, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .error: error.localizedDescription])
 
             }
-//            setViewBusy(false)
         }
     }
     
@@ -529,7 +528,6 @@ private extension PaywallVC {
 
                 if product.type == .oneTimePurchase {
                     if let receipt = try await paymentService.lastPurchaseReceipts() {
-                        setViewBusy(false)
 
 //                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
@@ -542,15 +540,18 @@ private extension PaywallVC {
                         
                         OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
 
-                        finishWith(action: screenData.footer.purchase?.action)
+                        closeScreenAfterPurchase(receipt: receipt)
+//                        setViewBusy(false)
+//                        finishWith(action: screenData.footer.purchase?.action)
 
                     } else {
-                        setViewBusy(false)
-                        finishWith(action: screenData.footer.purchase?.action)
+                        closeScreenAfterPurchase(receipt: nil)
+//                        setViewBusy(false)
+//                        finishWith(action: screenData.footer.purchase?.action)
                     }
                 } else {
                     if let receipt = try await paymentService.activeSubscriptionReceipt() {
-                        setViewBusy(false)
+                        
 
                         DispatchQueue.main.async {[weak self] in
 //                            print("[trnsaction_id]-> \(receipt.originalTransactionId)")
@@ -561,20 +562,31 @@ private extension PaywallVC {
                             
                             OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) {error in
                             }
-                            self?.finishWith(action: self?.screenData.footer.purchase?.action)
-
+                            
+                            self?.closeScreenAfterPurchase(receipt: receipt)
+//                            setViewBusy(false)
+//                            self?.finishWith(action: self?.screenData.footer.purchase?.action)
                         }
                     } else {
-                        setViewBusy(false)
-                        finishWith(action: screenData.footer.purchase?.action)
+                        closeScreenAfterPurchase(receipt: nil)
+//                        setViewBusy(false)
+//                        finishWith(action: screenData.footer.purchase?.action)
                     }
                 }
-                
             } catch {
                 // An error occurred while retrieving the receipt
 //                print("Error retrieving the receipt: \(error)")
             }
         }
+    }
+    
+    func closeScreenAfterPurchase(receipt: OnboardingPaymentReceipt?) {
+        if let purchase = purchaseHandler {
+            _ = purchase(self, receipt)
+        }
+        
+        setViewBusy(false)
+        finishWith(action: screenData.footer.purchase?.action)
     }
     
     func finishWith(action: Action?) {
@@ -587,13 +599,21 @@ private extension PaywallVC {
     
     @objc func closeButtonPressed() {
 //        guard !isBusy else { return }
-                
+
+        if let closeHandler = closePaywallHandler {
+            _ = closeHandler(self)
+        }
+        
         OnboardingService.shared.eventRegistered(event: .paywallCloseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name])
 
         finishWith(action: screenData.navigationBar.close?.action)
     }
     
     func close() {
+        if let closeHandler = closePaywallHandler {
+            _ = closeHandler(self)
+        }
+        
         finishWith(action: screenData.footer.purchase?.action)
     }
     
