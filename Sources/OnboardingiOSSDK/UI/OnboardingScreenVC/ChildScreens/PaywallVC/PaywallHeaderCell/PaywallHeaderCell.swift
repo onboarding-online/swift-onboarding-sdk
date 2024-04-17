@@ -157,8 +157,8 @@ private extension PaywallHeaderCell {
         titleLabel.apply(text: screenData.title)
         subtitleLabel.apply(text: screenData.subtitle)
         
-//        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-//        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let titleView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
         let subTitleView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
@@ -198,18 +198,18 @@ private extension PaywallHeaderCell {
                 let subTitleView = wrapLabelInUIView(label: subTitle)
                 let checkmark = buildBulletCheckmark(image: item.image)
                 
-                titleView.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
-                titleView.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
-                
-                subTitleView.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
-                subTitleView.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
+                let vStack = UIStackView.init()
 
-                let vStack = UIStackView(arrangedSubviews: [titleView, subTitleView])
                 vStack.translatesAutoresizingMaskIntoConstraints = false
                 vStack.distribution = .fill
                 vStack.alignment = .fill
                 vStack.axis = .vertical
                 vStack.spacing = 4
+                
+                DispatchQueue.main.async {
+                    vStack.addArrangedSubview(titleView)
+                    vStack.addArrangedSubview(subTitleView)
+                }
                 
                 let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
                 hStack.translatesAutoresizingMaskIntoConstraints = false
