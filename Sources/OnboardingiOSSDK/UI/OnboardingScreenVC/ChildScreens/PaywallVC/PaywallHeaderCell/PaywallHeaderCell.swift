@@ -152,23 +152,18 @@ private extension PaywallHeaderCell {
         }
         
         let titleLabel = buildTitleLabel()
-        let subtitleLabel = buildLabel()
+        let subtitleLabel = buildTitleLabel()
         
         titleLabel.apply(text: screenData.title)
         subtitleLabel.apply(text: screenData.subtitle)
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        let titleView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
-        let subTitleView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
 
         if !screenData.title.textByLocale().isEmpty {
-            contentStackView.addArrangedSubview(titleView)
+            contentStackView.addArrangedSubview(titleLabel)
         }
         
         if !screenData.subtitle.textByLocale().isEmpty {
-            contentStackView.addArrangedSubview(subTitleView)
+            contentStackView.addArrangedSubview(subtitleLabel)
         }
         
         applyListSettings()
@@ -187,15 +182,8 @@ private extension PaywallHeaderCell {
                 title.apply(text: item.title)
                 let subTitle = buildLabel()
                 subTitle.apply(text: item.subtitle)
-                
-                title.adjustsFontSizeToFitWidth = true
-                title.minimumScaleFactor = 0.5
-                
-                subTitle.adjustsFontSizeToFitWidth = true
-                subTitle.minimumScaleFactor = 0.5
-                
-                let titleView = wrapLabelInUIView(label: title)
-                let subTitleView = wrapLabelInUIView(label: subTitle)
+                                
+
                 let checkmark = buildBulletCheckmark(image: item.image)
                 
                 let vStack = UIStackView.init()
@@ -207,8 +195,10 @@ private extension PaywallHeaderCell {
                 vStack.spacing = 4
                 
                 DispatchQueue.main.async {
-                    vStack.addArrangedSubview(titleView)
-                    vStack.addArrangedSubview(subTitleView)
+//                    vStack.addArrangedSubview(titleView)
+//                    vStack.addArrangedSubview(subTitleView)
+                    vStack.addArrangedSubview(title)
+                    vStack.addArrangedSubview(subTitle)
                 }
                 
                 let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
@@ -313,11 +303,11 @@ private extension PaywallHeaderCell {
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
 
-        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
-        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
-        
-        label.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
-        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
+//        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+//        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
+//        
+//        label.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
+//        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
         
         return label
     }
