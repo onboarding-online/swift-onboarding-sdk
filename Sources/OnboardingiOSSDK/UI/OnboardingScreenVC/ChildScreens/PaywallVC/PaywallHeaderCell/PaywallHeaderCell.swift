@@ -189,7 +189,7 @@ private extension PaywallHeaderCell {
                 let vStack = UIStackView.init()
 
                 vStack.translatesAutoresizingMaskIntoConstraints = false
-                vStack.distribution = .fill
+                vStack.distribution = .fillProportionally
                 vStack.alignment = .fill
                 vStack.axis = .vertical
                 vStack.spacing = 4
