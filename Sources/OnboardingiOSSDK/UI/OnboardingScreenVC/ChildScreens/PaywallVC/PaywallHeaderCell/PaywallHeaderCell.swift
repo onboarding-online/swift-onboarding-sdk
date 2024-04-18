@@ -154,16 +154,22 @@ private extension PaywallHeaderCell {
         let titleLabel = buildLabel()
         let subtitleLabel = buildLabel()
         
+        
+       
         titleLabel.apply(text: screenData.title)
         subtitleLabel.apply(text: screenData.subtitle)
         
+        let titleLabelView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
+        let subtitleLabelView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
+        
+        
 
         if !screenData.title.textByLocale().isEmpty {
-            contentStackView.addArrangedSubview(titleLabel)
+            contentStackView.addArrangedSubview(titleLabelView)
         }
         
         if !screenData.subtitle.textByLocale().isEmpty {
-            contentStackView.addArrangedSubview(subtitleLabel)
+            contentStackView.addArrangedSubview(subtitleLabelView)
         }
         
         applyListSettings()
