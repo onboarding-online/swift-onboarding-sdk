@@ -54,24 +54,29 @@ public final class PaywallVC: BaseScreenGraphViewController {
         super.viewDidLoad()
         
         setup()
+        setupSubscriptionType()
+        setupProducts()
+       
+        loadProducts()
+        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
+    }
+    
+    func setupProducts() {
         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
         productIds = ids
-        
-        //TODO: remove when new types will be added
+    }
+    
+    func setupSubscriptionType() {
         switch screenData.subscriptions.subscriptionViewKind {
         case .vertical:
             style = .subscriptionsList
         default:
             style = .subscriptionsTiles
         }
-        
-        loadProducts()
-        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
     func setupTopConstraint() {
         collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
-
     }
     
     func loadProducts() {
@@ -416,8 +421,6 @@ private extension PaywallVC {
         URL(string: "https://google.com")! // TODO: - Set TAC URL
     }
     
-
-    
     func didLoadProducts(_ products: [StoreKitProduct]) {
         self.products = products
         if let item = screenData.subscriptions.items.first(where: {$0.isSelected}) {
@@ -434,10 +437,6 @@ private extension PaywallVC {
         DispatchQueue.main.async {
             self.setViewForLoadedProducts()
         }
-        
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//            self.setViewForLoadedProducts()
-//        }
     }
     
     func setViewForLoadedProducts() {

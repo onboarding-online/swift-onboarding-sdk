@@ -306,8 +306,8 @@ private extension PaywallHeaderCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
+//        label.adjustsFontSizeToFitWidth = true
+//        label.minimumScaleFactor = 0.5
 
 //        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
 //        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
