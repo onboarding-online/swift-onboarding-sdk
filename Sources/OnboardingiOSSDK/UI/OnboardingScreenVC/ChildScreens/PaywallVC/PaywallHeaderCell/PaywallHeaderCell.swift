@@ -151,8 +151,8 @@ private extension PaywallHeaderCell {
             view.removeFromSuperview()
         }
         
-        let titleLabel = buildTitleLabel()
-        let subtitleLabel = buildTitleLabel()
+        let titleLabel = buildLabel()
+        let subtitleLabel = buildLabel()
         
         titleLabel.apply(text: screenData.title)
         subtitleLabel.apply(text: screenData.subtitle)
