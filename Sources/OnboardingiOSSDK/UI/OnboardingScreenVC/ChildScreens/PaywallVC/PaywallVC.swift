@@ -61,6 +61,7 @@ public final class PaywallVC: BaseScreenGraphViewController {
         setupSubscriptionType()
         setupProducts()
        
+        activityIndicator.color = screenData.loader?.styles.color?.hexStringToColor ?? .gray
         loadProducts()
         OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
