@@ -38,6 +38,10 @@ public final class PaywallVC: BaseScreenGraphViewController {
     @IBOutlet weak var bottomView: PaywallBottomView!
     
     @IBOutlet weak var closeButton: UIButton!
+
+//    var closeButton: UIButton!
+    var restoreButton: UIButton!
+
     @IBOutlet weak var headerView: UIView!
     @IBOutlet private weak var backgroundContainerView: UIView!
 
@@ -152,6 +156,8 @@ public final class PaywallVC: BaseScreenGraphViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        setup(navigationBar: screenData.navigationBar)
+
 //        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
 //        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
         navigationController?.isNavigationBarHidden = true
@@ -608,6 +614,10 @@ private extension PaywallVC {
         finishWith(action: screenData.navigationBar.close?.action)
     }
     
+    @objc func restoreButtonPressed() {
+        restoreProducts()
+    }
+    
     func close() {
         if let closeHandler = closePaywallHandler {
             _ = closeHandler(self)
@@ -641,7 +651,6 @@ private extension PaywallVC {
     
     func setup() {
         setupBackground()
-        setup(navigationBar: screenData.navigationBar)
     }
     var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
@@ -699,46 +708,81 @@ private extension PaywallVC {
     }
 
     func setup(navigationBar: PaywallNavigationBar) {
-        guard let close = navigationBar.close else {
+        if let alignment = navigationBar.styles.closeHorizontalAlignment, screenData.navigationBar.close != nil {
+            switch alignment {
+            case ._left:
+                addCloseButton(isRightSide: false)
+                addRestoreButton(isRightSide: false)
+            case ._right:
+                addCloseButton(isRightSide: true)
+                addRestoreButton(isRightSide: true)
+            }
+        } else {
+            addRestoreButton(isRightSide: false)
+            closeButton.isHidden = true
+        }
+    }
+    
+    func isRestoreInHeader() -> Bool {
+        return screenData.navigationBar.restore != nil
+    }
+    
+    func addCloseButton(isRightSide: Bool) {
+        guard screenData.navigationBar.close != nil else {
             closeButton.isHidden = true
             return
         }
-    
+        
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.tintColor = screenData.navigationBar.close?.textColor()
         closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
-        closeButton.tintColor = close.textColor()
+
+        NSLayoutConstraint.activate([
+            closeButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0),
+            closeButton.widthAnchor.constraint(equalToConstant: 40),
+            closeButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
         
-        var horizontalConstraint = closeButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)
-   
-        if let alignment = navigationBar.styles.closeHorizontalAlignment {
-            switch alignment {
-            case ._left:
-                horizontalConstraint = closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
-            case ._right:
+        if isRightSide {
+            NSLayoutConstraint.activate([closeButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)])
+        } else {
+            NSLayoutConstraint.activate([closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)])
+        }
+        if let appearance = screenData.navigationBar.styles.closeAppearance,
+           let time = screenData.navigationBar.styles.closeVisibleAfterTimerValue {
+            switch  appearance {
+            case .visibleaftertimer:
+                    closeButton.isHidden = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + time) {[weak self]  in
+                        self?.closeButton.isHidden = false
+                    }
+            default:
                 break
             }
         }
-        NSLayoutConstraint.activate([horizontalConstraint])
+    }
+    
+    
+    func addRestoreButton(isRightSide: Bool) {
+        if isRestoreInHeader() {
+            restoreButton = UIButton()
+            headerView.addSubview(restoreButton)
+            restoreButton.translatesAutoresizingMaskIntoConstraints = false
+            restoreButton.addTarget(self, action: #selector(restoreButtonPressed), for: .touchUpInside)
 
-        if let restoreAlignment = navigationBar.styles.restoreHorizontalAlignment {
-            switch restoreAlignment {
-            case ._left:
-                horizontalConstraint = closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
-            case ._right:
-                break
-            }
-        }
-        
-        switch navigationBar.styles.closeAppearance {
-        case .visibleaftertimer:
-            if let time = navigationBar.styles.closeVisibleAfterTimerValue {
-                closeButton.isHidden = true
+            restoreButton.apply(textLabel: screenData.navigationBar.restore)
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + time) {[weak self]  in
-                    self?.closeButton.isHidden = false
-                }
+            NSLayoutConstraint.activate([
+                restoreButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0),
+                restoreButton.heightAnchor.constraint(equalToConstant: 40),
+                restoreButton.widthAnchor.constraint(equalToConstant: 120)
+            ])
+            
+            if isRightSide {
+                NSLayoutConstraint.activate([restoreButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 8)])
+            } else {
+                NSLayoutConstraint.activate([restoreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -8)])
             }
-        default:
-            break
         }
     }
     
