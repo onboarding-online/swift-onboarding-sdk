@@ -399,20 +399,20 @@ extension String {
     
     func applyWith(product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) -> String {
         var text = self
+        let currencyFormateForPrice = currencyFormat?.formatStyle() ?? .currency
         
-        let price = product.localizedPrice
+        let price =  product.skProduct.localizedPriceFor(currencyFormat: currencyFormateForPrice) ?? ""
         let duration = product.subscriptionDescription?.periodUnitCountLocalizedUnitName ?? ""
         let pricePerDuration = "\(price)/\(duration)"
 
-        let pricePerWeek = product.localizedPricePerWeek() ?? ""
-        let pricePerMonth = product.localizedPricePerMonth() ?? ""
+        let pricePerWeek = product.localizedPricePerWeek(currencyFormat: currencyFormateForPrice) ?? ""
+        let pricePerMonth = product.localizedPricePerMonth(currencyFormat: currencyFormateForPrice) ?? ""
 
-        let reachPrice = product.skProduct.localizedPriceFor(currencyFormat: currencyFormat?.formatStyle() ?? .currency) ?? ""
         
         let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
         let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
 
-        let dict = ["@priceAndcurrency" : reachPrice,
+        let dict = ["@priceAndcurrency" : price,
                     "@duration" : duration,
                     "@price/duration" : pricePerDuration,
                     "@price/week" : pricePerWeek,

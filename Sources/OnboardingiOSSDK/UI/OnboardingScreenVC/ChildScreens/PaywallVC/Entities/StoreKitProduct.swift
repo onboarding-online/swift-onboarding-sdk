@@ -105,10 +105,10 @@ struct StoreKitProduct: Hashable {
         }
     }
     
-    func localizedPricePerWeek() -> String? {
+    func localizedPricePerWeek(currencyFormat: NumberFormatter.Style) -> String? {
         guard let price = pricePerWeek() else { return nil }
         
-        return skProduct.localizedPriceFor(price)
+        return skProduct.localizedPriceFor(price, currencyFormat: currencyFormat)
     }
     
     
@@ -129,9 +129,9 @@ struct StoreKitProduct: Hashable {
         }
     }
     
-    func localizedPricePerMonth() -> String? {
+    func localizedPricePerMonth(currencyFormat: NumberFormatter.Style) -> String? {
         guard let price = pricePerMonth() else { return nil }
         
-        return skProduct.localizedPriceFor(price)
+        return skProduct.localizedPriceFor(price, currencyFormat: currencyFormat)
     }
 }

@@ -39,6 +39,10 @@ extension SKProduct {
         SKProduct.localizedPriceFor(price: value as NSNumber, locale: self.priceLocale)
     }
     
+    func localizedPriceFor(_ value: Double, currencyFormat: NumberFormatter.Style) -> String? {
+        SKProduct.localizedPriceFor(price: value as NSNumber, locale: self.priceLocale, currencyFormat: currencyFormat)
+    }
+    
     fileprivate static func localizedPriceFor(price: NSNumber, locale: Locale) -> String? {
         let formatter = SKProduct.formatter
         formatter.locale = locale
