@@ -66,10 +66,10 @@ extension PaywallTileSubscriptionCell {
         setupCheckboxWith(list: listWithStyles)
         setupCheckBoxSizes(subscriptionItem: subscriptionItem)
         
-        mainContainerBottomConstraint.constant = listWithStyles.styles.paddingBottom ?? 16
-        mainContainerTopConstraint.constant = listWithStyles.styles.paddingTop ?? 16
-        mainContainerTrailingConstraint.constant = listWithStyles.styles.paddingRight ?? 16
-        mainContainerLeadingConstraint.constant = listWithStyles.styles.paddingLeft ?? 16
+        mainContainerBottomConstraint.constant = listWithStyles.styles.paddingBottom ?? 0
+        mainContainerTopConstraint.constant = listWithStyles.styles.paddingTop ?? 0
+        mainContainerTrailingConstraint.constant = listWithStyles.styles.paddingRight ?? 0
+        mainContainerLeadingConstraint.constant = listWithStyles.styles.paddingLeft ?? 0
 
     }
     
