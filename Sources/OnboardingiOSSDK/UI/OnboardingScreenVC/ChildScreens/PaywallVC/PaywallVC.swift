@@ -891,7 +891,7 @@ extension PaywallVC {
                     if itemFor(product: product) != nil {
                         switch product.type {
                         case .oneTimePurchase:
-                            return .oneTimePurchase
+                            return .listSubscription
                         case .subscription(_):
                             return .listSubscription
                         }
@@ -904,7 +904,7 @@ extension PaywallVC {
                 return products.compactMap { product in
                     switch product.type {
                     case .oneTimePurchase:
-                        return .oneTimePurchase
+                        return .tileSubscription
                     case .subscription(_):
                         return .tileSubscription
                     }
