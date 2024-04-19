@@ -397,7 +397,7 @@ extension Badge {
 
 extension String {
     
-    func applyWith(product: StoreKitProduct) -> String {
+    func applyWith(product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) -> String {
         var text = self
         
         let price = product.localizedPrice
@@ -407,11 +407,12 @@ extension String {
         let pricePerWeek = product.localizedPricePerWeek() ?? ""
         let pricePerMonth = product.localizedPricePerMonth() ?? ""
 
+        let reachPrice = product.skProduct.localizedPriceFor(currencyFormat: currencyFormat?.formatStyle() ?? .currency) ?? ""
         
         let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
         let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
 
-        let dict = ["@priceAndcurrency" : price,
+        let dict = ["@priceAndcurrency" : reachPrice,
                     "@duration" : duration,
                     "@price/duration" : pricePerDuration,
                     "@price/week" : pricePerWeek,
@@ -439,8 +440,8 @@ extension Text {
         return valueByLocale
     }
     
-    func textFor(product: StoreKitProduct) -> String {
-        let text = self.textByLocale().applyWith(product: product)
+    func textFor(product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) -> String {
+        let text = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
     
         return text
     }
@@ -473,12 +474,12 @@ extension Text {
         return ceil(boundingBox.height)
     }
     
-    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?) -> CGFloat {
+    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?,  currencyFormat: CurrencyFormatKind?) -> CGFloat {
         guard let product = product else {
             return textHeightBy(textWidth: textWidth)
         }
         
-        let labelKey = self.textByLocale().applyWith(product: product)
+        let labelKey = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
         if labelKey.isEmpty {
             return 0.0
         } else {
@@ -958,7 +959,7 @@ extension UIButton: UIImageLoader {
         }
     }
     
-    func apply(button: Button?, product: StoreKitProduct) {
+    func apply(button: Button?, product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) {
         guard let button = button else {
             self.isHidden = true
             return
@@ -969,7 +970,7 @@ extension UIButton: UIImageLoader {
         case .typeBaseImage(_):
             break
         case .typeBaseText(let value):
-            text = value.textByLocale().applyWith(product: product)
+            text = value.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
             
             self.setTitle(text, for: .normal)
         }

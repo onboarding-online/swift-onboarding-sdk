@@ -31,6 +31,7 @@ final class PaywallTileSubscriptionCell: UICollectionViewCell {
     private var currentSavedMoneyViewConstraints: [NSLayoutConstraint] = []
     
     private var item: ItemTypeSubscription! = nil
+    var currencyFormatKind: CurrencyFormatKind?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -64,8 +65,8 @@ extension PaywallTileSubscriptionCell {
         durationLabel.apply(text: subscriptionItem.leftLabelTop)
         pricePerMonthLabel.apply(text: subscriptionItem.leftLabelBottom)
         
-        durationLabel.text =  subscriptionItem.leftLabelTop.textFor(product: product)
-        pricePerMonthLabel.text = subscriptionItem.leftLabelBottom.textFor(product: product)
+        durationLabel.text =  subscriptionItem.leftLabelTop.textFor(product: product, currencyFormat: currencyFormatKind)
+        pricePerMonthLabel.text = subscriptionItem.leftLabelBottom.textFor(product: product, currencyFormat: currencyFormatKind)
     }
     
 }

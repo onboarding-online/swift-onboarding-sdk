@@ -9,6 +9,36 @@ import UIKit
 import ScreensGraph
 import StoreKit
 
+
+extension CurrencyFormatKind {
+    
+    func formatStyle() -> NumberFormatter.Style {
+        switch self {
+        case ._none:
+            return NumberFormatter.Style.none
+        case .decimal:
+            return NumberFormatter.Style.decimal
+        case .currency:
+            return NumberFormatter.Style.currency
+        case .percent:
+            return NumberFormatter.Style.percent
+        case .scientific:
+            return NumberFormatter.Style.scientific
+        case .spellOut:
+            return NumberFormatter.Style.spellOut
+        case .ordinal:
+            return NumberFormatter.Style.ordinal
+        case .currencyISOCode:
+            return NumberFormatter.Style.currencyISOCode
+        case .currencyPlural:
+            return NumberFormatter.Style.currencyPlural
+        case .currencyAccounting:
+            return NumberFormatter.Style.currencyAccounting
+        }
+    }
+    
+}
+
 // TODO: - Check for canMakePayments before showing paywall 
 public final class PaywallVC: BaseScreenGraphViewController {
     
@@ -60,6 +90,8 @@ public final class PaywallVC: BaseScreenGraphViewController {
         setup()
         setupSubscriptionType()
         setupProducts()
+        
+        bottomView.currencyFormatKind = screenData.currencyFormat
        
         activityIndicator.color = screenData.loader?.styles.color?.hexStringToColor ?? .gray
         loadProducts()
@@ -216,7 +248,7 @@ extension PaywallVC: UICollectionViewDataSource {
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            
+            cell.currencyFormatKind =  screenData.currencyFormat
             let currentProduct = self.products[index]
 
             if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
@@ -238,6 +270,7 @@ extension PaywallVC: UICollectionViewDataSource {
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
+            cell.currencyFormatKind =  screenData.currencyFormat
 
             let currentProduct = self.products[index]
 
@@ -268,7 +301,7 @@ extension PaywallVC: UICollectionViewDelegate {
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
                 let currentProduct = self.products[selectedIndex]
-                bottomView.setupPaymentDetailsLabel(content: currentProduct)
+                bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
 
                 OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
                 OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
@@ -311,7 +344,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             let currentProduct = self.products[indexPath.row]
             
             if let item = itemFor(product: currentProduct) {
-                height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+                height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
             } else {
                 height = max(40, height)
                 print("row height \(height)")
@@ -354,7 +387,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     
                     for product in  self.products {
                         if let item = itemFor(product: product) {
-                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width)
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
                         }
                     }
                     
@@ -452,7 +485,7 @@ private extension PaywallVC {
         
         if products.count - 1 >= selectedIndex {
             let currentProduct = products[selectedIndex]
-            bottomView.setupPaymentDetailsLabel(content: currentProduct)
+            bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
         }
 
         if screenData.animationEnabled {
