@@ -83,6 +83,8 @@ public final class PaywallVC: BaseScreenGraphViewController {
     private var screenData: ScreenBasicPaywall! = nil
 
     let cellConfigurator =  PaywallCellWithBorderConfigurator()
+    
+    private var constants: PaywallCollectionConstants!
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,6 +92,11 @@ public final class PaywallVC: BaseScreenGraphViewController {
         setup()
         setupSubscriptionType()
         setupProducts()
+        
+        constants = PaywallCollectionConstants.init()
+    
+        constants.leadingConstraint = 16 +  (screenData.subscriptions.box.styles.paddingLeft ?? 0)
+        constants.trailingConstraint = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
         
         bottomView.currencyFormatKind = screenData.currencyFormat
        
@@ -331,7 +338,9 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             let sectionsSpacing = CGFloat(sections.count - 1) * Constants.sectionsSpacing
             height = collectionView.bounds.height - calculateHeaderSize(in: sections) - sectionsSpacing
         case .tileSubscription:
-            return Constants.subscriptionTileItemSize
+            
+            return calculateItemCellSize()
+//            return Constants.subscriptionTileItemSize
         case .listSubscription, .oneTimePurchase:
             let currentProduct = self.products[indexPath.row]
             
@@ -392,7 +401,8 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     }
 
-                    contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
+                    contentSize += calculateItemCellSize().height + itemsHeight
+//                    contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
                 }
             }
         }
@@ -422,12 +432,17 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             case .subscriptionsList:
                 return .zero
             case .subscriptionsTiles:
-                let containerWidth = collectionView.bounds.width
-                let items = rowsFor(section: section)
-                let tilesWidth = CGFloat(items.count) * Constants.subscriptionTileItemSize.width
-                let tilesSpacing: CGFloat = 20
-                let sideSpace = containerWidth - tilesWidth - tilesSpacing
-                return .init(top: 0, left: sideSpace / 2, bottom: 0, right: sideSpace / 2)
+//                let containerWidth = collectionView.bounds.width
+//                let items = rowsFor(section: section)
+                
+//                let tilesWidth = CGFloat(items.count) * calculateItemCellSize().width
+                
+//                let tilesWidth = CGFloat(items.count) * Constants.subscriptionTileItemSize.width
+//                let tilesSpacing: CGFloat = 20
+//                let sideSpace = containerWidth - tilesWidth - tilesSpacing
+                return .init(top: 0, left: constants.leadingConstraint, bottom: 0, right: constants.trailingConstraint)
+
+//                return .init(top: 0, left: sideSpace / 2, bottom: 0, right: sideSpace / 2)
             }
         }
     }
@@ -901,9 +916,33 @@ extension PaywallVC {
             }
         }
     }
+    
+    
+}
+
+struct PaywallCollectionConstants {
+
+//    list.box.styles.paddingLeft ?? 0
+//    screenData.subscriptions
+    var leadingConstraint: CGFloat = 16
+    var trailingConstraint: CGFloat = 16
+    
+    let centerGapConstraint: CGFloat = 16
+        
+    let magicGapForCellWidthCalculation: CGFloat = 3
+
+
 }
 
 extension PaywallVC {
+    
+    func calculateItemCellSize() -> CGSize {
+        let width = collectionView.bounds.width
+        let spaces = constants.trailingConstraint + constants.trailingConstraint +  (constants.centerGapConstraint)
+        let cellWidth = ((width - spaces)  / 2) - constants.magicGapForCellWidthCalculation
+
+        return .init(width: cellWidth, height: cellWidth)
+    }
     
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()
