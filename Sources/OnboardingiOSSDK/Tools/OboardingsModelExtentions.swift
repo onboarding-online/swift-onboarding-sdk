@@ -410,7 +410,13 @@ extension String {
 
         
         let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
-        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+//        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+        var introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+
+        if let intro = product.discounts.first {
+            introOfferPrice =  product.skProduct.localizedPriceFor(intro.price, currencyFormat: currencyFormateForPrice) ?? introOfferPrice
+        }
+       
 
         let dict = ["@priceAndcurrency" : price,
                     "@duration" : duration,
