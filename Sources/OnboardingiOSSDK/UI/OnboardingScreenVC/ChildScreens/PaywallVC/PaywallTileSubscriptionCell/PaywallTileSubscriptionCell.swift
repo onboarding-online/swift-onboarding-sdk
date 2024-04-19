@@ -141,7 +141,7 @@ private extension PaywallTileSubscriptionCell {
     
     func setupCheckboxWith(list: SubscriptionList) {
         switch list.itemType {
-        case .subscriptionListItemType5:
+        case .checkboxLabels:
             checkboxStackContainerTopConstraint.constant = 20
             checkboxStackContainer.alignment = .leading
         case .labelsCheckbox:

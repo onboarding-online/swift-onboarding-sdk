@@ -255,17 +255,6 @@ extension PaywallVC: UICollectionViewDataSource {
                 cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             return cell
-//        case .oneTimePurchase:
-//            let index = indexPath.row
-//            let isSelected = selectedIndex == index
-//            let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-//            let currentProduct = self.products[index]
-//
-//            if let item = itemFor(product: currentProduct) {
-//                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
-//            }
-//            
-//            return cell
         case .tileSubscription:
             let index = indexPath.row
             let isSelected = selectedIndex == index

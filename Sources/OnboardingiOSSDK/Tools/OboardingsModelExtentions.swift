@@ -407,7 +407,6 @@ extension String {
 
         let pricePerWeek = product.localizedPricePerWeek(currencyFormat: currencyFormateForPrice) ?? ""
         let pricePerMonth = product.localizedPricePerMonth(currencyFormat: currencyFormateForPrice) ?? ""
-
         
         let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
 //        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
@@ -417,7 +416,6 @@ extension String {
             introOfferPrice =  product.skProduct.localizedPriceFor(intro.price, currencyFormat: currencyFormateForPrice) ?? introOfferPrice
         }
        
-
         let dict = ["@priceAndcurrency" : price,
                     "@duration" : duration,
                     "@price/duration" : pricePerDuration,
