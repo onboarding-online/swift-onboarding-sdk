@@ -13,6 +13,13 @@ final class PaywallTileSubscriptionCell: UICollectionViewCell {
     @IBOutlet private weak var contentContainerView: UIView!
     @IBOutlet private weak var checkboxStackContainer: UIStackView!
     
+    @IBOutlet private weak var labelsStackContainer: UIStackView!
+
+    @IBOutlet private weak var mainContainerLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var mainContainerTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var mainContainerTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var mainContainerBottomConstraint: NSLayoutConstraint!
+    
     @IBOutlet private weak var checkbox: UIImageView!
     @IBOutlet private weak var checkBoxContainerView: UIView!
     
@@ -58,6 +65,11 @@ extension PaywallTileSubscriptionCell {
         setupLabels(subscriptionItem: subscriptionItem, product: product)
         setupCheckboxWith(list: listWithStyles)
         setupCheckBoxSizes(subscriptionItem: subscriptionItem)
+        
+        mainContainerBottomConstraint.constant = listWithStyles.styles.paddingBottom ?? 16
+        mainContainerTopConstraint.constant = listWithStyles.styles.paddingTop ?? 16
+        mainContainerTrailingConstraint.constant = listWithStyles.styles.paddingRight ?? 16
+        mainContainerLeadingConstraint.constant = listWithStyles.styles.paddingLeft ?? 16
 
     }
     
@@ -142,27 +154,37 @@ private extension PaywallTileSubscriptionCell {
     func setupCheckboxWith(list: SubscriptionList) {
         switch list.itemType {
         case .checkboxLabels:
-            checkboxStackContainerTopConstraint.constant = 20
+//            checkboxStackContainerTopConstraint.constant = 20
+            NSLayoutConstraint.activate([
+                labelsStackContainer.topAnchor.constraint(equalTo: checkboxStackContainer.bottomAnchor, constant: 0),
+            ])
+            
             checkboxStackContainer.alignment = .leading
         case .labelsCheckbox:
-            checkboxStackContainerTopConstraint.constant = 20
+            NSLayoutConstraint.activate([
+                labelsStackContainer.topAnchor.constraint(equalTo: checkboxStackContainer.bottomAnchor, constant: 0),
+            ])
+//            checkboxStackContainerTopConstraint.constant = 20
             checkboxStackContainer.alignment = .trailing
         default:
+            NSLayoutConstraint.activate([
+                labelsStackContainer.topAnchor.constraint(equalTo: contentContainerView.topAnchor, constant: 0),
+            ])
             checkBoxContainerView.isHidden = true
         }
     }
     
-    func setCheckmarkPosition(_ position: CheckmarkPosition) {
-        
-        switch position {
-        case .left:
-            checkboxStackContainerTopConstraint.constant = 20
-            checkboxStackContainer.alignment = .leading
-        case .center:
-            checkboxStackContainerTopConstraint.constant = 30
-            checkboxStackContainer.alignment = .center
-        }
-    }
+//    func setCheckmarkPosition(_ position: CheckmarkPosition) {
+//        
+//        switch position {
+//        case .left:
+//            checkboxStackContainerTopConstraint.constant = 20
+//            checkboxStackContainer.alignment = .leading
+//        case .center:
+//            checkboxStackContainerTopConstraint.constant = 30
+//            checkboxStackContainer.alignment = .center
+//        }
+//    }
     
     func setupCheckBoxSizes(subscriptionItem: ItemTypeSubscription) {
         checkBoxHeight.constant = subscriptionItem.checkBox.styles.width ?? 24
