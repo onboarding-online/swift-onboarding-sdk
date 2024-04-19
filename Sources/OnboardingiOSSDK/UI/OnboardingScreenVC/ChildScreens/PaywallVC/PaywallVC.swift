@@ -301,6 +301,9 @@ extension PaywallVC: UICollectionViewDelegate {
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
                 let currentProduct = self.products[selectedIndex]
+                
+                self.value = currentProduct.id
+
                 bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
 
                 OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
