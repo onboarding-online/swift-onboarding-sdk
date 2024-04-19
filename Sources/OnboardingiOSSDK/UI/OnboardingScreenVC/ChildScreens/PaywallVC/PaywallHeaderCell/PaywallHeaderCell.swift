@@ -309,11 +309,11 @@ private extension PaywallHeaderCell {
 //        label.adjustsFontSizeToFitWidth = true
 //        label.minimumScaleFactor = 0.5
 
-//        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
-//        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
+        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
 //        
-//        label.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
-//        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
+        label.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
+        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
         
         return label
     }
