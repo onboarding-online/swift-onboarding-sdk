@@ -79,7 +79,7 @@ public extension OnboardingService {
                     let paywall = PaywallVC.instantiate(paymentService: paymentService, screen: screen, screenData: screenData, videoPreparationService: videoService)
                     
                     Task { @MainActor in
-//                            try? await self.prefetchService?.prefetchAssetsFor(screen: screen)
+                            try? await self.prefetchService?.prefetchAssetsFor(screen: screen)
                             finishedCallback(.success(paywall))
                     }
                     
@@ -93,6 +93,7 @@ public extension OnboardingService {
             
         }
     }
+    
     
     func getScreenGraphWhenReady(projectId: String,
                                  localJSONFileName: String,

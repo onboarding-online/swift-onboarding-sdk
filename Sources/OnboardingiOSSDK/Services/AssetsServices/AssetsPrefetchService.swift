@@ -11,7 +11,7 @@ import ScreensGraph
 typealias AssetsPrefetchResult = Result<Void, AssetsPrefetchError>
 typealias AssetsPrefetchResultCallback = (AssetsPrefetchResult)->()
 
-final class AssetsPrefetchService {
+public final class AssetsPrefetchService {
     
     let screenGraph: ScreensGraph
     
@@ -102,6 +102,30 @@ extension AssetsPrefetchService {
     func clear() {
         AssetsLoadingService.shared.clear()
     }
+    
+    public func prefetchAssetsFor(screen: Screen) async throws {
+        guard !isScreenAssetsPrefetched(screenId: screen.id) else {
+            return
+        }
+        
+        log(message: "Will prefetch assets for \(screen.id)")
+        do {
+            try await prefetchAssetsFor(screenStruct: screen._struct)
+            log(message: "Did prefetch assets for \(screen.id)")
+            serialQueue.sync {
+                _ = preloadedScreenIds.insert(screen.id)
+            }
+            notifyWaitersFor(screenId: screen.id, result: .success(Void()))
+        } catch {
+            log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
+            serialQueue.sync {
+                _ = failedScreenIds.insert(screen.id)
+            }
+            notifyWaitersFor(screenId: screen.id, result: .failure(.prefetchFailed))
+            throw error
+        }
+    }
+    
 }
 
 // MARK: - Private methods
@@ -143,28 +167,7 @@ private extension AssetsPrefetchService {
         }
     }
     
-    func prefetchAssetsFor(screen: Screen) async throws {
-        guard !isScreenAssetsPrefetched(screenId: screen.id) else {
-            return
-        }
-        
-        log(message: "Will prefetch assets for \(screen.id)")
-        do {
-            try await prefetchAssetsFor(screenStruct: screen._struct)
-            log(message: "Did prefetch assets for \(screen.id)")
-            serialQueue.sync {
-                _ = preloadedScreenIds.insert(screen.id)
-            }
-            notifyWaitersFor(screenId: screen.id, result: .success(Void()))
-        } catch {
-            log(message: "Did fail to prefetch assets for \(screen.id) with error: \(error.localizedDescription)")
-            serialQueue.sync {
-                _ = failedScreenIds.insert(screen.id)
-            }
-            notifyWaitersFor(screenId: screen.id, result: .failure(.prefetchFailed))
-            throw error
-        }
-    }
+   
     
     func prefetchAssetsFor(screenStruct: ScreenStruct) async throws {
         switch screenStruct {
