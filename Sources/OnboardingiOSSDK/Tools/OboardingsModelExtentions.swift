@@ -142,6 +142,12 @@ extension OnboardingLocalVideoAssetProvider {
     func urlToVideoAsset(useLocalAssetsIfAvailable: Bool) async -> URL? {
         let urlByLocale = assetUrlByLocale()
         
+        if let name = urlByLocale?.assetName {
+            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+                return videoURL
+            }
+        }
+        
         guard let stringURL = urlByLocale?.assetUrl?.origin else {
             return nil
         }
@@ -152,14 +158,6 @@ extension OnboardingLocalVideoAssetProvider {
                 return storedURL
             }
         }
-        
-        
-        if let name = urlByLocale?.assetName {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                return videoURL
-            }
-        }
-        
         
         if let name = stringURL.resourceNameWithoutExtension() {
             if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
