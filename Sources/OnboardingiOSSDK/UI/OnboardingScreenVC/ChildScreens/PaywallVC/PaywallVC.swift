@@ -88,7 +88,7 @@ public final class PaywallVC: BaseScreenGraphViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.hidesBottomBarWhenPushed = true
         setup()
         setupSubscriptionType()
         setupProducts()
