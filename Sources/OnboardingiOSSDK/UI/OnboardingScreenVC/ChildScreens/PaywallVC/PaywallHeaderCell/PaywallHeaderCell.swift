@@ -151,6 +151,12 @@ private extension PaywallHeaderCell {
             view.removeFromSuperview()
         }
         
+        if screenData.list.items.count == 1 {
+            contentStackView.distribution = .fillProportionally
+        } else {
+            contentStackView.distribution = .fill
+        }
+        
         let titleLabel = buildLabel()
         let subtitleLabel = buildLabel()
        
@@ -160,7 +166,7 @@ private extension PaywallHeaderCell {
         let titleLabelView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
         let subtitleLabelView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
         
-        
+       
 
         if !screenData.title.textByLocale().isEmpty {
             contentStackView.addArrangedSubview(titleLabelView)
