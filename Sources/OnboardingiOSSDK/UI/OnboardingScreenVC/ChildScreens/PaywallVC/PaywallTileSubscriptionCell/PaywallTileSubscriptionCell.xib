@@ -24,11 +24,11 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9s4-xJ-JB3">
                                 <rect key="frame" x="0.0" y="0.0" width="200" height="196"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="TnT-wZ-9Ay">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="TnT-wZ-9Ay">
                                         <rect key="frame" x="0.0" y="0.0" width="200" height="16"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="200" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="bln-Y1-Ufl">
-                                                <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
+                                                <rect key="frame" x="184" y="0.0" width="16" height="16"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7GG-US-1c0">
                                                         <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
