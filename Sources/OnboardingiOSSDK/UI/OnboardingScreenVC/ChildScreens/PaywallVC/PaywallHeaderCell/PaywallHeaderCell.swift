@@ -185,7 +185,15 @@ private extension PaywallHeaderCell {
             bulletStackView.axis = .vertical
             bulletStackView.distribution = .fillProportionally
             bulletStackView.alignment = .fill
-            bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
+            if let spacing = screenData.list.styles.itemsSpacing {
+                if spacing == 0 {
+                    bulletStackView.spacing = 1
+                } else {
+                    bulletStackView.spacing = spacing
+                }
+            } else {
+                bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
+            }
 
             
             for item in screenData.list.items {
