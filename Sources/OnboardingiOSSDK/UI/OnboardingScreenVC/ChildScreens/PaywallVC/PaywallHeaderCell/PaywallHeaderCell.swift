@@ -155,6 +155,7 @@ private extension PaywallHeaderCell {
             contentStackView.distribution = .fillProportionally
         } else {
             contentStackView.distribution = .fill
+            
         }
         
         let titleLabel = buildLabel()
@@ -199,7 +200,7 @@ private extension PaywallHeaderCell {
                 let vStack = UIStackView.init()
 
                 vStack.translatesAutoresizingMaskIntoConstraints = false
-                vStack.distribution = .fillProportionally
+                vStack.distribution = .fill
                 vStack.alignment = .fill
                 vStack.axis = .vertical
                 vStack.spacing = 4
@@ -211,6 +212,7 @@ private extension PaywallHeaderCell {
                     vStack.addArrangedSubview(subTitle)
                 }
                 
+                checkmark.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
                 let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
                 hStack.translatesAutoresizingMaskIntoConstraints = false
                 hStack.distribution = .fill
@@ -221,8 +223,8 @@ private extension PaywallHeaderCell {
                     hStack.spacing = 16
                 }
                 
-                hStack.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
-                hStack.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
+//                hStack.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+//                hStack.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
 
                 bulletStackView.addArrangedSubview(hStack)
             }
@@ -287,7 +289,7 @@ private extension PaywallHeaderCell {
         
         let heightConstraint = imageView.heightAnchor.constraint(equalToConstant: height)
         let widthConstraint = imageView.widthAnchor.constraint(equalToConstant: width)
-        widthConstraint.priority = UILayoutPriority(rawValue: 999)
+        widthConstraint.priority = UILayoutPriority(rawValue: 1000)
         
         NSLayoutConstraint.activate([widthConstraint,
                                      heightConstraint])
@@ -310,13 +312,13 @@ private extension PaywallHeaderCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
+//        label.adjustsFontSizeToFitWidth = true
+//        label.minimumScaleFactor = 0.5
 
         label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
         label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
 //        
-        label.setContentHuggingPriority(UILayoutPriority(300), for: .vertical) // Для вертикального стека
+        label.setContentHuggingPriority(UILayoutPriority(1000), for: .vertical) // Для вертикального стека
         label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical) // Для вертикального стека
         
         return label

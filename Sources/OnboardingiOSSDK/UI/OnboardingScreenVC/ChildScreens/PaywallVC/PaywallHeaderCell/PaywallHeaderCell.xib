@@ -18,17 +18,17 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
-                        <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
                         <subviews>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JnK-Xm-Qvp">
-                                <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
+                                <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
-                                        <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
-                                        <rect key="frame" x="0.0" y="960" width="800" height="240"/>
+                                        <rect key="frame" x="0.0" y="240" width="800" height="60"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                 </subviews>
@@ -42,6 +42,7 @@
                                     <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="JnK-Xm-Qvp" secondAttribute="leading" id="kwY-yk-dHd"/>
                                     <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="JnK-Xm-Qvp" secondAttribute="top" id="pTU-Jf-Rwg"/>
                                     <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="JnK-Xm-Qvp" secondAttribute="leading" id="uwP-rZ-CLE"/>
+                                    <constraint firstAttribute="height" priority="250" constant="300" id="y5W-tb-Z30"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -53,13 +54,13 @@
                             <constraint firstItem="JnK-Xm-Qvp" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="Wys-nW-e7i"/>
                         </constraints>
                     </view>
-                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Cii-tw-ukF">
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Cii-tw-ukF">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                         <subviews>
-                            <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" translatesAutoresizingMaskIntoConstraints="NO" id="Lag-yb-nxE">
+                            <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="300" verticalCompressionResistancePriority="850" translatesAutoresizingMaskIntoConstraints="NO" id="Lag-yb-nxE">
                                 <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
+                                    <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="850" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
                                         <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </stackView>
