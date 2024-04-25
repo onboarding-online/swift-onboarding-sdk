@@ -194,7 +194,6 @@ private extension PaywallHeaderCell {
             } else {
                 bulletStackView.spacing = screenData.list.styles.itemsSpacing ?? 8
             }
-
             
             for item in screenData.list.items {
                 let title = buildLabel()
@@ -220,7 +219,7 @@ private extension PaywallHeaderCell {
                     vStack.addArrangedSubview(subTitle)
                 }
                 
-                checkmark.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикального стека
+                checkmark.setContentCompressionResistancePriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
                 let hStack = UIStackView(arrangedSubviews: [checkmark, vStack])
                 hStack.translatesAutoresizingMaskIntoConstraints = false
                 hStack.distribution = .fill
@@ -228,7 +227,11 @@ private extension PaywallHeaderCell {
                 hStack.axis = .horizontal
                 hStack.spacing = 0
                 DispatchQueue.main.async {
-                    hStack.spacing = 16
+                    if let width = item.image.styles.width, let height = item.image.styles.width, width == 0,  height == 0 {
+                        hStack.spacing = 1
+                    } else {
+                        hStack.spacing = 16
+                    }
                 }
                 
 //                hStack.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
@@ -288,9 +291,12 @@ private extension PaywallHeaderCell {
     }
     
     func buildBulletCheckmark(image: Image) -> UIImageView {
-        let width = image.styles.width ?? 24
-        let height = image.styles.height ?? 24
+        var width = image.styles.width ?? 1
+        var height = image.styles.height ?? 1
        
+        width = width == 0 ? 1 : width
+        height = height == 0 ? 1 : height
+
         let imageView = UIImageView.init()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.clipsToBounds = true
