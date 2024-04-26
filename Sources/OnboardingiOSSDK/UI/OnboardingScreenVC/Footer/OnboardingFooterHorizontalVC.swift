@@ -17,7 +17,6 @@ class OnboardingFooterHorizontalVC: UIViewController, FooterVCProtocol {
     @IBOutlet weak var containerButton2: UIView!
 
     @IBOutlet weak var stackView: UIStackView!
-
     
     @IBOutlet var nextButton1Height: NSLayoutConstraint!
     @IBOutlet var nextButton2Height: NSLayoutConstraint!
@@ -115,24 +114,8 @@ class OnboardingFooterHorizontalVC: UIViewController, FooterVCProtocol {
 private extension OnboardingFooterHorizontalVC {
     
     func setupButtonOrientation() {
-//        let leftColumnSize = (subscriptionItem.styles.leftLabelColumnWidthPercentage ?? 60)/100.00
-//        let rightColumnSize = 1 - leftColumnSize
-        
-//        leftStack.spacing = item.styles.columnVerticalPadding ?? 4
-//        rightStack.spacing = item.styles.columnVerticalPadding ?? 4
-//        
-//        containerStack.spacing = item.styles.columnHorizontalPadding ?? 4
-//
-//        let isLeftColumnEmpty = subscriptionItem.leftLabelBottom.textByLocale().isEmpty &&  subscriptionItem.leftLabelTop.textByLocale().isEmpty
-//
-//        let isRightColumnEmpty = subscriptionItem.rightLabelTop.textByLocale().isEmpty &&  subscriptionItem.rightLabelBottom.textByLocale().isEmpty
-
-//        if  isLeftColumnEmpty ||  isRightColumnEmpty{
-//
-//        } else {
-        nextButton1.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.29).isActive = true
-        nextButton2.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.69).isActive = true
-//        }
+        let leftColumnSize = ((footer.styles?.leftButtonWidthPercentage ?? 50)/100.00)
+        nextButton1.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: leftColumnSize).isActive = true
     }
     
     func setupNextButton() {

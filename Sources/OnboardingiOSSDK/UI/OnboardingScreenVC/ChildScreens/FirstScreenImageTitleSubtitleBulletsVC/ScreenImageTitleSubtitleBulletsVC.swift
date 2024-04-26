@@ -82,7 +82,8 @@ extension ScreenImageTitleSubtitleBulletsVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueCellOfType(BulletsImageLabelCollectionCell.self, forIndexPath: indexPath)
             cell.cellConfig = cellConfigurator
             
-            cell.setWith(listType: screenData.list.itemType, item: item, styles: screenData.list.styles, isSelected: true)
+            cell.setWith(listType: screenData.list.itemType, item: item, styles: screenData.list.styles, isSelected: true,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
         case .label(let text):
             let cell = collectionView.dequeueCellOfType(CollectionLabelCell.self, forIndexPath: indexPath)
@@ -182,6 +183,7 @@ private extension ScreenImageTitleSubtitleBulletsVC {
 
 // MARK: - Setup methods
 private extension ScreenImageTitleSubtitleBulletsVC {
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
     func setup() {
         setupCollectionView()
@@ -211,7 +213,7 @@ private extension ScreenImageTitleSubtitleBulletsVC {
     }
     
     func setupLabelsValue() {
-        load(image: screenData.image, in: iconImage)
+        load(image: screenData.image, in: iconImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         titleLabel.apply(text: screenData.title)
     }
     

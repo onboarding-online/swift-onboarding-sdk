@@ -82,7 +82,8 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDataSo
         case .item(let item):
             let cell = collectionView.dequeueCellOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
             cell.cellConfig = cellConfigurator
-            cell.setWith(list: screenData.list, item: item, styles: screenData.list.styles, isSelected: false)
+            cell.setWith(list: screenData.list, item: item, styles: screenData.list.styles, isSelected: false,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
         case .label(let text):
             
@@ -230,6 +231,7 @@ private extension ScreenOneItemPerRowSingleSelectionCollectionVC {
 
 // MARK: - Setup methods
 private extension ScreenOneItemPerRowSingleSelectionCollectionVC {
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
     func setup() {
         setupCollectionView()

@@ -56,6 +56,8 @@ final class PaywallListSubscriptionCell: UICollectionViewCell {
     private var item: ItemTypeSubscription? = nil
     private var list: SubscriptionList? = nil
     
+    var currencyFormatKind: CurrencyFormatKind?
+
     
     let badgeView = UIView()
     let badgeLabel = UILabel()
@@ -126,10 +128,10 @@ extension PaywallListSubscriptionCell {
         rightLabelTop.apply(text: subscriptionItem.rightLabelTop)
         rightLabelBottom.apply(text: subscriptionItem.rightLabelBottom)
 
-        leftLabelTop.text =  subscriptionItem.leftLabelTop.textFor(product: product)
-        leftLabelBottom.text = subscriptionItem.leftLabelBottom.textFor(product: product)
-        rightLabelTop.text = subscriptionItem.rightLabelTop.textFor(product: product)
-        rightLabelBottom.text = subscriptionItem.rightLabelBottom.textFor(product: product)
+        leftLabelTop.text =  subscriptionItem.leftLabelTop.textFor(product: product, currencyFormat: currencyFormatKind)
+        leftLabelBottom.text = subscriptionItem.leftLabelBottom.textFor(product: product, currencyFormat: currencyFormatKind)
+        rightLabelTop.text = subscriptionItem.rightLabelTop.textFor(product: product, currencyFormat: currencyFormatKind)
+        rightLabelBottom.text = subscriptionItem.rightLabelBottom.textFor(product: product, currencyFormat: currencyFormatKind)
     }
 
 }

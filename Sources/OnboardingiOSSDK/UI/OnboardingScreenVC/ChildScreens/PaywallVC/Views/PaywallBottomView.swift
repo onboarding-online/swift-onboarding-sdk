@@ -34,6 +34,7 @@ final class PaywallBottomView: UIView {
     var additionalInfoLabel: UILabel!
     var additionalInfoLabelContainer = UIView.init()
 
+    var currencyFormatKind: CurrencyFormatKind?
     
     weak var delegate: PaywallBottomViewDelegate?
     
@@ -69,12 +70,12 @@ final class PaywallBottomView: UIView {
         additionalInfoLabel.text = content
     }
     
-    func setupPaymentDetailsLabel(content: StoreKitProduct) {
-        if let text = footer.autoRenewLabel?.textFor(product: content) {
+    func setupPaymentDetailsLabel(content: StoreKitProduct, currencyFormat: CurrencyFormatKind?) {
+        if let text = footer.autoRenewLabel?.textFor(product: content, currencyFormat: currencyFormatKind) {
             additionalInfoLabel.text = text
         }
         
-        buyButton.apply(button: footer.purchase, product: content)
+        buyButton.apply(button: footer.purchase, product: content, currencyFormat: currencyFormatKind)
     }
     
     func setupPaymentDetailsForPurchaseButtonWith(product: StoreKitProduct) {

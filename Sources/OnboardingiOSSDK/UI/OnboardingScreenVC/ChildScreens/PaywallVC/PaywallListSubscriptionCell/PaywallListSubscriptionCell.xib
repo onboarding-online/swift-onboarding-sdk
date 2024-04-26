@@ -27,7 +27,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="538" height="57"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" verticalHuggingPriority="200" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="Keo-f3-Pv3">
-                                                <rect key="frame" x="0.0" y="20.666666666666657" width="16" height="16.000000000000007"/>
+                                                <rect key="frame" x="0.0" y="20.666666666666664" width="16" height="16"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1hQ-Lh-rVr">
                                                         <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
@@ -47,7 +47,7 @@
                                                 </constraints>
                                             </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="751" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="QUJ-zw-9BT">
-                                                <rect key="frame" x="16" y="26.666666666666657" width="522" height="4"/>
+                                                <rect key="frame" x="16" y="26.666666666666664" width="522" height="4"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="6Dg-FU-sgv">
                                                         <rect key="frame" x="0.0" y="0.0" width="261" height="4"/>
@@ -98,10 +98,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BKp-ZB-Lch">
-                                <rect key="frame" x="32" y="-12" width="474" height="24"/>
+                                <rect key="frame" x="16" y="-12" width="506" height="24"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gvg-Ws-wbj">
-                                        <rect key="frame" x="4" y="0.0" width="466" height="24"/>
+                                        <rect key="frame" x="4" y="0.0" width="498" height="24"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -120,13 +120,13 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" id="6Bo-sJ-00h"/>
-                            <constraint firstItem="BKp-ZB-Lch" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" constant="32" id="91k-Ia-xiK"/>
+                            <constraint firstItem="BKp-ZB-Lch" firstAttribute="leading" secondItem="S5s-Dr-Ix9" secondAttribute="leading" constant="16" id="EMF-re-OiD"/>
                             <constraint firstItem="BKp-ZB-Lch" firstAttribute="centerX" secondItem="uhh-6B-Hi4" secondAttribute="centerX" priority="700" id="OQV-kq-ZfT"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" id="PEn-vx-dI2"/>
                             <constraint firstItem="BKp-ZB-Lch" firstAttribute="top" secondItem="uhh-6B-Hi4" secondAttribute="top" constant="-12" id="QIf-cj-jyk"/>
                             <constraint firstAttribute="bottom" secondItem="S5s-Dr-Ix9" secondAttribute="bottom" id="WhH-d6-9QT"/>
+                            <constraint firstItem="BKp-ZB-Lch" firstAttribute="trailing" secondItem="S5s-Dr-Ix9" secondAttribute="trailing" priority="900" constant="-16" id="Xxe-FS-g5N"/>
                             <constraint firstItem="S5s-Dr-Ix9" firstAttribute="leading" secondItem="uhh-6B-Hi4" secondAttribute="leading" id="gIZ-O1-6Ar"/>
-                            <constraint firstAttribute="trailing" secondItem="BKp-ZB-Lch" secondAttribute="trailing" priority="900" constant="32" id="sVP-Fg-G4A"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -166,8 +166,8 @@
                 <outlet property="rightLabelTop" destination="nh0-fV-a0E" id="kei-BM-1HK"/>
                 <outlet property="rightStack" destination="zo4-a7-Dq4" id="O4U-7m-2MS"/>
                 <outlet property="saveMoneyCentering" destination="OQV-kq-ZfT" id="h3T-Bs-wnG"/>
-                <outlet property="saveMoneyLeading" destination="91k-Ia-xiK" id="yPx-T9-09e"/>
-                <outlet property="saveMoneyTrailing" destination="sVP-Fg-G4A" id="CNU-nH-d4J"/>
+                <outlet property="saveMoneyLeading" destination="EMF-re-OiD" id="3ST-ph-FYH"/>
+                <outlet property="saveMoneyTrailing" destination="Xxe-FS-g5N" id="hWd-sg-btC"/>
                 <outlet property="savedMoneyLabel" destination="gvg-Ws-wbj" id="Jdh-2Y-bYw"/>
                 <outlet property="savedMoneyViewContainer" destination="BKp-ZB-Lch" id="bpp-sd-x61"/>
             </connections>

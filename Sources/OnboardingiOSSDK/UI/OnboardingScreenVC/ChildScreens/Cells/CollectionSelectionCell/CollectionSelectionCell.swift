@@ -26,9 +26,11 @@ final class CollectionSelectionCell: UICollectionViewCell, UIImageLoader {
         super.awakeFromNib()
     }
     
-    func setWith(list: TwoColumnMultipleSelectionList, item: ItemTypeSelection, isSelected: Bool) {
+    func setWith(list: TwoColumnMultipleSelectionList, item: ItemTypeSelection, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         title.apply(text: item.title)
-        loadImageFor(item: item)
+        loadImageFor(item: item,
+                     useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
         if isSelected {
             backgroundContentView.apply(listStyle: list.selectedBlock.styles)
@@ -38,9 +40,11 @@ final class CollectionSelectionCell: UICollectionViewCell, UIImageLoader {
         setupEmptyStateForTitleAndSubtitle()
     }
     
-    func setWith(list: TwoColumnSingleSelectionList, item: ItemTypeSelection, isSelected: Bool) {
+    func setWith(list: TwoColumnSingleSelectionList, item: ItemTypeSelection, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         title.apply(text: item.title)
-        loadImageFor(item: item)
+        loadImageFor(item: item,
+                     useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
         if isSelected {
             backgroundContentView.apply(listStyle: list.selectedBlock.styles)
@@ -57,10 +61,12 @@ final class CollectionSelectionCell: UICollectionViewCell, UIImageLoader {
         }
     }
     
-    func loadImageFor(item: ItemTypeSelection) {
+    func loadImageFor(item: ItemTypeSelection,
+                      useLocalAssetsIfAvailable: Bool) {
         if currentItem != item {
             setupImageContentMode(item: item)
-            load(image: item.image, in: image)
+            load(image: item.image, in: image,
+                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             currentItem = item
         }
     }

@@ -31,7 +31,7 @@ final class OnboardingLoadingService {
         let buildVersion = Bundle.main.releaseVersionNumber
         
         let baseURL = OnboardingServiceConfig.baseUrl
-        
+
         let url = "\(baseURL)/v1/onboarding?schemaVersion=\(sdkVersion)&buildVersion=\(buildVersion)"
        
         return url
@@ -41,8 +41,9 @@ final class OnboardingLoadingService {
         let sdkVersion = ScreensGraphVersion.value
         let buildVersion = Bundle.main.releaseVersionNumber
         
+//        let baseURL = OnboardingServiceConfig.baseUrl
         let baseURL = OnboardingServiceConfig.baseUrl
-        
+
         var url = "\(baseURL)/v1/onboarding?schemaVersion=\(sdkVersion)&buildVersion=\(buildVersion)"
         if case .qa = environment {
             url += "&stage=Qa"

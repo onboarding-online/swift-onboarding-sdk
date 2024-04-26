@@ -270,6 +270,7 @@ fileprivate extension OnboardingScreenVC {
 }
 
 fileprivate extension OnboardingScreenVC {
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
     func setupBackground() {
         if let background = self.screenData?.styles.background {
@@ -277,7 +278,8 @@ fileprivate extension OnboardingScreenVC {
             case .typeBackgroundStyleColor(let value):
                 backgroundContainerView.backgroundColor = value.color.hexStringToColor
             case .typeBackgroundStyleImage(let value):
-                updateBackground(image: value.image)
+                updateBackground(image: value.image,
+                                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             case .typeBackgroundStyleVideo:
                 setupBackgroundFor(screenId: screen.id,
                                    using: videoPreparationService)

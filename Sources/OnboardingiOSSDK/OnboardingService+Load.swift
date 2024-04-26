@@ -64,8 +64,42 @@ public extension OnboardingService {
         }
     }
     
+    func getPaywall(paywallId: String,
+                    projectId: String,
+                    localJSONFileName: String,
+                    env: OnboardingEnvironment = .prod,
+                    useLocalJSONAfterTimeOut: Double,
+                    finishedCallback:  @escaping GenericResultCallback<PaywallVC>) {
+        
+        self.getScreenGraphWhenReady(projectId: projectId, localJSONFileName:localJSONFileName, useLocalJSONAfterTimeOut: useLocalJSONAfterTimeOut) {(result) in
+            switch result {
+            case .success(let screenGraph):
+                let videoService = VideoPreparationService.init(screenGraph: screenGraph)
+                if  let screen = screenGraph.screens[paywallId], let screenData = screen.paywallScreenValue(), let paymentService = OnboardingService.shared.paymentService {
+                    let paywall = PaywallVC.instantiate(paymentService: paymentService, screen: screen, screenData: screenData, videoPreparationService: videoService)
+                    
+                    Task { @MainActor in
+                            try? await self.prefetchService?.prefetchAssetsFor(screen: screen)
+                            finishedCallback(.success(paywall))
+                    }
+                    
+                } else {
+                    finishedCallback(.failure(GenericError.init(errorCode: 10, localizedDescription: "Paywall not found")))
+                }
+                
+            case .failure(let error):
+                finishedCallback(.failure(GenericError.init(errorCode: 10, localizedDescription: "Paywall not found")))
+            }
+            
+        }
+    }
+    
+    
     func getScreenGraphWhenReady(projectId: String,
-                                          finishedCallback:  @escaping GenericResultCallback<ScreensGraph>) {
+                                 localJSONFileName: String,
+                                 env: OnboardingEnvironment = .prod,
+                                 useLocalJSONAfterTimeOut: Double,
+                                 finishedCallback:  @escaping GenericResultCallback<ScreensGraph>) {
         let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: .prod)
         
         self.projectId = projectId
@@ -80,18 +114,17 @@ public extension OnboardingService {
         
         switch preparationState {
         case .notStarted, .failed:
-            getScreenGraph(projectId: projectId, finishedCallback: finishedCallback)
+            getScreenGraph(projectId: projectId, localJSONFileName: localJSONFileName, useLocalJSONAfterTimeOut: useLocalJSONAfterTimeOut, finishedCallback: finishedCallback)
             print("")
         case .preparing:
             print("")
-
-            OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: .prod) { [weak self] result in
+            OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: env) { [weak self] result in
                 switch result {
                 case .success:
                     print("------- onboarding assets downloaded")
                     getPrepared()
                 case .failure:
-                    self?.getScreenGraph(projectId: projectId, finishedCallback: finishedCallback)
+                    self?.getScreenGraph(projectId: projectId, localJSONFileName: localJSONFileName, useLocalJSONAfterTimeOut: useLocalJSONAfterTimeOut, finishedCallback: finishedCallback)
                     print("------- onboarding assets loading failed, restart onboarding")
                 }
             }
@@ -101,15 +134,50 @@ public extension OnboardingService {
         }
     }
     
-    func getScreenGraph(projectId: String, finishedCallback: @escaping GenericResultCallback<ScreensGraph>) {
-        OnboardingLoadingService.loadScreenGraphFor(projectId: projectId, env: .prod) { [weak self](result)  in
-            finishedCallback(result)
+    func getScreenGraph(projectId: String, 
+                        localJSONFileName: String,
+                        env: OnboardingEnvironment = .prod,
+                        useLocalJSONAfterTimeOut: Double,
+                        finishedCallback: @escaping GenericResultCallback<ScreensGraph>) {
+                
+        let loadingState = OnboardingLoadingService.LoadingState()
+
+        OnboardingLoadingService.loadScreenGraphFor(projectId: projectId, env: env) { [weak self](result)  in
             switch result {
             case .success(_):
                 print("loaded")
+                if loadingState.shouldProceedWithLoadedOnboarding() {
+                    finishedCallback(result)
+                }
             case .failure(let failure):
+                do {
+                    guard loadingState.shouldProceedWithLoadedOnboarding() else { return }
+
+                    let localPath = try OnboardingLoadingService.getUrlFor(jsonName: localJSONFileName)
+                    let localScreenGraph = try OnboardingLoadingService.getOnboardingFromLocalPath(localPath: localPath)
+                    finishedCallback(.success(localScreenGraph))
+
+                } catch {
+                    finishedCallback(result)
+                }
+                
                 self?.systemEventRegistered(event: .JSONLoadingFailure, params: [.error: failure.localizedDescription])
             }
+        }
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + useLocalJSONAfterTimeOut) {
+            guard loadingState.shouldProceedWithOnboardingFromLocalPath() else { return }
+
+            do {
+                let localPath = try OnboardingLoadingService.getUrlFor(jsonName: localJSONFileName)
+                let localScreenGraph = try OnboardingLoadingService.getOnboardingFromLocalPath(localPath: localPath)
+                finishedCallback(.success(localScreenGraph))
+
+            } catch {
+                finishedCallback(.failure(GenericError.init(errorCode: 25, localizedDescription: "json not found")))
+            }
+            
         }
     }
     

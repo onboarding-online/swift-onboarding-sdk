@@ -32,7 +32,7 @@ public final class OnboardingService {
     private var initialRootViewController: UIViewController?
     private var navigationController: OnboardingNavigationController?
     private var launchWithAnimation: Bool = false
-    private var prefetchService: AssetsPrefetchService?
+    public var prefetchService: AssetsPrefetchService?
     private var videoPreparationService: VideoPreparationService?
     private var currentLoadingViewController: UIViewController?
 

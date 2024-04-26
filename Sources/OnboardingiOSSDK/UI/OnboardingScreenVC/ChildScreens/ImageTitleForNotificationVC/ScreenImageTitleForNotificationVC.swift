@@ -31,7 +31,8 @@ class ScreenImageTitleForNotificationVC: BaseChildScreenGraphViewController {
     }
     
     func setupImage() {
-        load(image: screenData.tooltip.image, in: pageImage)
+        load(image: screenData.tooltip.image, in: pageImage,
+             useLocalAssetsIfAvailable: screenData?.useLocalAssetsIfAvailable ?? true)
     }
     
     func setupLabelsValue() {

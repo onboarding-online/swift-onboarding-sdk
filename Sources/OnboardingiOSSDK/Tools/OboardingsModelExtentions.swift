@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import ScreensGraph
+import AVFoundation
 
 extension ScreensGraph {
     
@@ -136,10 +137,42 @@ extension OnboardingLocalAssetProvider {
 }
 protocol OnboardingLocalVideoAssetProvider: OnboardingLocalAssetProvider { }
 
+
+
+extension CurrencyFormatKind {
+    
+    func formatStyle() -> NumberFormatter.Style {
+        switch self {
+        case ._none:
+            return NumberFormatter.Style.none
+        case .decimal:
+            return NumberFormatter.Style.decimal
+        case .currency:
+            return NumberFormatter.Style.currency
+        case .percent:
+            return NumberFormatter.Style.percent
+        case .scientific:
+            return NumberFormatter.Style.scientific
+        case .spellOut:
+            return NumberFormatter.Style.spellOut
+        case .ordinal:
+            return NumberFormatter.Style.ordinal
+        case .currencyISOCode:
+            return NumberFormatter.Style.currencyISOCode
+        case .currencyPlural:
+            return NumberFormatter.Style.currencyPlural
+        case .currencyAccounting:
+            return NumberFormatter.Style.currencyAccounting
+        }
+    }
+
+}
+
 extension OnboardingLocalVideoAssetProvider {
     
-    func urlToVideoAsset() async -> URL? {
+    func urlToVideoAsset(useLocalAssetsIfAvailable: Bool) async -> URL? {
         let urlByLocale = assetUrlByLocale()
+        
         if let name = urlByLocale?.assetName {
             if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
                 return videoURL
@@ -148,6 +181,13 @@ extension OnboardingLocalVideoAssetProvider {
         
         guard let stringURL = urlByLocale?.assetUrl?.origin else {
             return nil
+        }
+        
+        if !useLocalAssetsIfAvailable {
+            let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
+            if let storedURL = AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video) {
+                return storedURL
+            }
         }
         
         if let name = stringURL.resourceNameWithoutExtension() {
@@ -178,8 +218,13 @@ protocol OnboardingLocalImageAssetProvider: OnboardingLocalAssetProvider { }
 
 extension OnboardingLocalImageAssetProvider {
     
-    func loadImage() async -> UIImage? {
+    func loadImage(useLocalAssetsIfAvailable: Bool) async -> UIImage? {
         let urlByLocale = assetUrlByLocale()
+        
+        if !useLocalAssetsIfAvailable,
+           let url = urlByLocale?.assetUrl?.origin {
+            return await AssetsLoadingService.shared.loadImage(from: url)
+        }
         
         if let assetName = urlByLocale?.assetName,
            let image = await getLocalImageWith(assetName: assetName) {
@@ -275,6 +320,80 @@ extension BaseImage: OnboardingLocalImageAssetProvider {
         return nil
     }
     
+    
+}
+
+extension ScreenBasicPaywall {
+   
+    func image()-> BaseImage? {
+        switch self.media?.content {
+        case .typeMediaImage(let image):
+            return image.image
+        default:
+            return nil
+        }
+    }
+    
+}
+
+extension Media {
+    
+    func image()-> BaseImage? {
+        switch self.content {
+        case .typeMediaImage(let image):
+            return image.image
+        default:
+            return nil
+        }
+    }
+    
+    func video()-> BaseVideo? {
+        switch self.content {
+        case .typeMediaVideo(let image):
+            return image.video
+        default:
+            return nil
+        }
+    }
+    
+}
+
+extension MediaScaleMode {
+    
+    func imageContentMode() -> UIView.ContentMode? {
+            switch self {
+                
+            case .scaletofill:
+                return .scaleToFill
+            case .scaleaspectfit:
+                return .scaleAspectFit
+            case .scaleaspectfill:
+                return .scaleAspectFill
+            case .center:
+                return .center
+            case .top:
+                return .top
+            case .bottom:
+                return .bottom
+            case ._left:
+                return .left
+            case ._right:
+                return .right
+            }
+    }
+    
+    func videoContentMode() -> AVLayerVideoGravity? {
+            switch self {
+            case .scaletofill:
+                return .resize
+            case .scaleaspectfit:
+                return .resizeAspect
+            case .scaleaspectfill:
+                return .resizeAspectFill
+            default:
+                return .resizeAspectFill
+            }
+    }
 }
 
 extension BaseText {
@@ -307,20 +426,25 @@ extension Badge {
 
 extension String {
     
-    func applyWith(product: StoreKitProduct) -> String {
+    func applyWith(product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) -> String {
         var text = self
+        let currencyFormateForPrice = currencyFormat?.formatStyle() ?? .currency
         
-        let price = product.localizedPrice
+        let price =  product.skProduct.localizedPriceFor(currencyFormat: currencyFormateForPrice) ?? ""
         let duration = product.subscriptionDescription?.periodUnitCountLocalizedUnitName ?? ""
         let pricePerDuration = "\(price)/\(duration)"
 
-        let pricePerWeek = product.localizedPricePerWeek() ?? ""
-        let pricePerMonth = product.localizedPricePerMonth() ?? ""
-
+        let pricePerWeek = product.localizedPricePerWeek(currencyFormat: currencyFormateForPrice) ?? ""
+        let pricePerMonth = product.localizedPricePerMonth(currencyFormat: currencyFormateForPrice) ?? ""
         
         let introOfferDuration = product.discounts.first?.period.periodUnitCountLocalizedUnitName ?? ""
-        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+//        let introOfferPrice = product.discounts.first?.localizedPrice ?? ""
+        var introOfferPrice = product.discounts.first?.localizedPrice ?? ""
 
+        if let intro = product.discounts.first {
+            introOfferPrice =  product.skProduct.localizedPriceFor(intro.price, currencyFormat: currencyFormateForPrice) ?? introOfferPrice
+        }
+       
         let dict = ["@priceAndcurrency" : price,
                     "@duration" : duration,
                     "@price/duration" : pricePerDuration,
@@ -349,8 +473,8 @@ extension Text {
         return valueByLocale
     }
     
-    func textFor(product: StoreKitProduct) -> String {
-        let text = self.textByLocale().applyWith(product: product)
+    func textFor(product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) -> String {
+        let text = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
     
         return text
     }
@@ -383,12 +507,12 @@ extension Text {
         return ceil(boundingBox.height)
     }
     
-    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?) -> CGFloat {
+    func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?,  currencyFormat: CurrencyFormatKind?) -> CGFloat {
         guard let product = product else {
             return textHeightBy(textWidth: textWidth)
         }
         
-        let labelKey = self.textByLocale().applyWith(product: product)
+        let labelKey = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
         if labelKey.isEmpty {
             return 0.0
         } else {
@@ -587,7 +711,7 @@ extension UIImageView  {
         switch checkbox.kind {
         case .circle:
             if isSelected {
-                imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "circle_on_dark" : "Circle_on"
+                imageName = (checkbox.styles.isBackgroundFilled ?? false) ? "Circle_on_dark" : "Circle_on"
             } else {
                 imageName = "Circle_off"
             }
@@ -795,6 +919,19 @@ extension VerticalAlignment {
 }
 
 
+extension Button {
+    
+    func textColor() -> UIColor {
+        switch self.content {
+        case .typeBaseImage(_):
+            return .black
+        case .typeBaseText(let value):
+            return value.textColor()            
+        }
+    }
+    
+}
+
 extension UIButton: UIImageLoader {
    
     func apply(button: Button?, isBackButton: Bool = false) {
@@ -855,7 +992,7 @@ extension UIButton: UIImageLoader {
         }
     }
     
-    func apply(button: Button?, product: StoreKitProduct) {
+    func apply(button: Button?, product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) {
         guard let button = button else {
             self.isHidden = true
             return
@@ -866,7 +1003,7 @@ extension UIButton: UIImageLoader {
         case .typeBaseImage(_):
             break
         case .typeBaseText(let value):
-            text = value.textByLocale().applyWith(product: product)
+            text = value.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
             
             self.setTitle(text, for: .normal)
         }
@@ -956,7 +1093,14 @@ extension UITextField {
             return
         }
         
-        self.placeholder = text.textByLocale()
+        let placeholderText = text.textByLocale()
+        let placeholderColor = text.styles.color?.hexStringToColor ?? .lightGray
+        
+        self.attributedPlaceholder = NSAttributedString(
+            string: placeholderText,
+            attributes: [NSAttributedString.Key.foregroundColor: placeholderColor]
+        )
+        
         self.apply(text: text.styles)
     }
     
@@ -1329,7 +1473,7 @@ extension Screen {
     func screenValueType() -> ValueTypes  {
         switch self._struct {
         case .typeScreenBasicPaywall(_):
-            return ValueTypes.none
+            return ValueTypes.string
         case .typeScreenImageTitleSubtitles(_):
             return ValueTypes.none
         case .typeScreenProgressBarTitle(_):
