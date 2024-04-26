@@ -85,7 +85,8 @@ extension ScreenImageTitleSubtitleMultiSelectionListVC: UICollectionViewDataSour
             let index = indexPath.row
             let isSelected =  selectedItem.contains(index)
                 
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
         case .label(let text):
             let cell = collectionView.dequeueCellOfType(CollectionLabelCell.self, forIndexPath: indexPath)
@@ -211,7 +212,8 @@ private extension ScreenImageTitleSubtitleMultiSelectionListVC {
 
 // MARK: - Setup methods
 private extension ScreenImageTitleSubtitleMultiSelectionListVC {
-   
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
+    
     func setup() {
         setupCollectionView()
         setupLabelsValue()
@@ -229,7 +231,8 @@ private extension ScreenImageTitleSubtitleMultiSelectionListVC {
     }
     
     func setupLabelsValue() {
-        load(image: screenData.image, in: iconImage)
+        load(image: screenData.image, in: iconImage,
+             useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
     
     func setupImageContentMode() {

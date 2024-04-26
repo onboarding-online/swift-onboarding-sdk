@@ -15,13 +15,15 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
     var cellBottom: CGFloat = 24
     var labelHorizontalSpacing: CGFloat = 4
     
-    func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat) -> CGFloat {
+    func calculateHeightFor(item: ItemTypeSubscription, product: StoreKitProduct?, screenData: ScreenBasicPaywall, containerWidth: CGFloat,  currencyFormat: CurrencyFormatKind?) -> CGFloat {
         ///cell size
         cellTrailing = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
         cellLeading = 16 + (screenData.subscriptions.box.styles.paddingLeft ?? 0)
         cellTop = 16 + (screenData.subscriptions.box.styles.paddingTop ?? 0)
         cellBottom = 16 + (screenData.subscriptions.box.styles.paddingBottom ?? 0)
-
+        
+        checkboxSize =  checkBoxSizes(subscriptionItem: item)
+        
         let containerWidthWithoutPaddings: CGFloat = containerWidth - cellTrailing - cellLeading
         allItemsHorizontalStackViewSpacing = 0
         
@@ -78,9 +80,9 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         }
 
         ///Left column height
-        let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product)
+        let leftColumnHeight = item.leftLabelTop.textHeightBy(textWidth: leftColumnSizeValue, product: product, currencyFormat: currencyFormat) +  item.leftLabelBottom.textHeightBy(textWidth: leftColumnSizeValue, product: product, currencyFormat: currencyFormat)
         ///Right column height
-        let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product)
+        let rightColumnHeight = item.rightLabelTop.textHeightBy(textWidth: rightColumnSizeValue, product: product, currencyFormat: currencyFormat) +  item.rightLabelBottom.textHeightBy(textWidth: rightColumnSizeValue, product: product, currencyFormat: currencyFormat)
 
         let floatMaxHeightColumnWidth: Double
         if leftColumnHeight >= rightColumnHeight {
@@ -93,11 +95,11 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
             floatMaxHeightColumnWidth = rightColumnSizeValue
         }
 
-        let titleHeight = titleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
+        let titleHeight = titleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product, currencyFormat: currencyFormat)
 
         totalLabelsBlockHeight += titleHeight > 0.0 ? titleHeight : 0
         
-        subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product)
+        subtitleHeight = subtitleText.textHeightBy(textWidth: floatMaxHeightColumnWidth, product: product, currencyFormat: currencyFormat)
         totalLabelsBlockHeight += subtitleHeight > 0.0 ? subtitleHeight : 0
                   
         //Add gap between labels if there are 2 labels
@@ -113,6 +115,15 @@ final class PaywallCellWithBorderConfigurator: CellConfigurator {
         let cellHeight = maxHeight + containerTop + containerBottom + 12
         
         return cellHeight
+    }
+    
+    
+    func checkBoxSizes(subscriptionItem: ItemTypeSubscription) -> CGFloat {
+        let height = subscriptionItem.checkBox.styles.height ?? 24
+        let top = subscriptionItem.checkBox.box.styles.paddingTop ?? 0
+        let bot =  subscriptionItem.checkBox.box.styles.paddingBottom ?? 0
+        
+        return height + top + bot
     }
     
     func isCheckboxHiddenFor(list: SubscriptionList) -> Bool {

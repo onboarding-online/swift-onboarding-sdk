@@ -17,6 +17,7 @@ final class FullImageCollectionCell: UICollectionViewCell, UIImageLoader {
     @IBOutlet private weak var image: UIImageView!
     
     var currentItem: ItemTypeSelection?
+    var useLocalAssetsIfAvailable: Bool = true
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,7 +25,8 @@ final class FullImageCollectionCell: UICollectionViewCell, UIImageLoader {
         self.image.contentMode = .scaleToFill
     }
     
-    func setWith(list: TwoColumnMultipleSelectionList, item: ItemTypeSelection, isSelected: Bool) {
+    func setWith(list: TwoColumnMultipleSelectionList, item: ItemTypeSelection, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         loadImageFor(item: item)
 
         if isSelected {
@@ -35,7 +37,8 @@ final class FullImageCollectionCell: UICollectionViewCell, UIImageLoader {
     }
     
     
-    func setWith(list: TwoColumnSingleSelectionList, item: ItemTypeSelection, isSelected: Bool) {
+    func setWith(list: TwoColumnSingleSelectionList, item: ItemTypeSelection, isSelected: Bool,
+                 useLocalAssetsIfAvailable: Bool) {
         loadImageFor(item: item)
                         
         if isSelected {
@@ -46,15 +49,15 @@ final class FullImageCollectionCell: UICollectionViewCell, UIImageLoader {
     }
     
     
-    func loadImageFor(item: ItemTypeSelection) {
+    private func loadImageFor(item: ItemTypeSelection) {
         if currentItem != item {
             setupImageContentMode(item: item)
-            load(image: item.image, in: image)
+            load(image: item.image, in: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             currentItem = item
         }
     }
     
-    func setupImageContentMode(item: ItemTypeSelection) {
+    private func setupImageContentMode(item: ItemTypeSelection) {
         if let imageContentMode = item.image.imageContentMode() {
             image.contentMode = imageContentMode
         } else {

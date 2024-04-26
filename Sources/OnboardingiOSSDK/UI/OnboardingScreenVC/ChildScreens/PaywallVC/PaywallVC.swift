@@ -28,15 +28,18 @@ public final class PaywallVC: BaseScreenGraphViewController {
     public var productIds: [String] = []
     public var style: Style = .subscriptionsList
     var shouldCloseOnPurchaseCancel = false
-    
-    public var dismissalHandler: (() -> ())!
-    
+        
+    public var closePaywallHandler: ((PaywallVC) -> ())? = nil
+    public var purchaseHandler: ((PaywallVC, OnboardingPaymentReceipt?) -> ())? = nil
+
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomView: PaywallBottomView!
-    @IBOutlet weak var gradientView: GradientView!
     
     @IBOutlet weak var closeButton: UIButton!
+
+    var restoreButton: UIButton!
+
     @IBOutlet weak var headerView: UIView!
     @IBOutlet private weak var backgroundContainerView: UIView!
 
@@ -48,31 +51,71 @@ public final class PaywallVC: BaseScreenGraphViewController {
     private var screenData: ScreenBasicPaywall! = nil
 
     let cellConfigurator =  PaywallCellWithBorderConfigurator()
+    
+    private var constants: PaywallCollectionConstants!
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.hidesBottomBarWhenPushed = true
         setup()
+        setupSubscriptionType()
+        setupProducts()
+        
+        baseAppearanceSetup()
+        loadProducts()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        setup(navigationBar: screenData.navigationBar)
+        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
+
+        navigationController?.isNavigationBarHidden = true
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
+    }
+    
+}
+
+extension PaywallVC {
+    
+    func baseAppearanceSetup() {
+        constants = PaywallCollectionConstants.init()
+    
+        constants.leadingConstraint = 16 +  (screenData.subscriptions.box.styles.paddingLeft ?? 0)
+        constants.trailingConstraint = 16 + (screenData.subscriptions.box.styles.paddingRight ?? 0)
+        
+        bottomView.currencyFormatKind = screenData.currencyFormat
+       
+        activityIndicator.color = screenData.loader?.styles.color?.hexStringToColor ?? .gray
+    }
+    
+    func setupProducts() {
         let ids = screenData.subscriptions.items.compactMap({$0.subscriptionId})
         productIds = ids
-        
-        //TODO: remove when new types will be added
-        switch screenData.subscriptions.itemType {
-        case .subscriptionListItemType5:
+    }
+    
+    func setupSubscriptionType() {
+        switch screenData.subscriptions.subscriptionViewKind {
+        case .vertical:
+            style = .subscriptionsList
+        case .horizontal:
             style = .subscriptionsTiles
         default:
             style = .subscriptionsList
         }
-        
-        loadProducts()
-        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
+    func setupTopConstraint() {
+        collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+    }
     
     func loadProducts() {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Will load products",
-//                                              logAnalytics: true)
         print( "Will load products")
         if var skProducts = paymentService.cashedProductsWith(ids:  Set(productIds)),  productIds.count == skProducts.count {
             skProducts = skProducts.compactMap({ product in
@@ -94,10 +137,6 @@ public final class PaywallVC: BaseScreenGraphViewController {
                     return lhsIndex < rhsIndex
                 })
             
-            
-            
-            print( "local ids \(productIds)  prodcucts - \(products) ")
-
             didLoadProducts(products)
             return
         }
@@ -113,9 +152,7 @@ public final class PaywallVC: BaseScreenGraphViewController {
                         return nil
                     }
                 })
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
-//                                                      logAnalytics: true)
+
                 let products = skProducts
                     .compactMap( { StoreKitProduct(skProduct: $0) })
                     .sorted(by: { lhs, rhs in
@@ -131,28 +168,10 @@ public final class PaywallVC: BaseScreenGraphViewController {
 
                 didLoadProducts(products)
             } catch {
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did fail to load products: \(error.localizedDescription)",
-//                                                      logAnalytics: true)
                 didFailToLoadProductsWith(error: error)
             }
         }
     }
-    
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-//        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
-//        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
-    }
-    
 }
 
 
@@ -195,32 +214,22 @@ extension PaywallVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueCellOfType(PaywallLoadingCell.self, at: indexPath)
             
             return cell
-        case .listSubscription:
+        case .listSubscription, .oneTimePurchase:
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            
+            cell.currencyFormatKind =  screenData.currencyFormat
             let currentProduct = self.products[index]
 
             if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
                 cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
             }
             return cell
-        case .oneTimePurchase:
-            let index = indexPath.row
-            let isSelected = selectedIndex == index
-            let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            let currentProduct = self.products[index]
-
-            if let item = itemFor(product: currentProduct) {
-                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
-            }
-            
-            return cell
         case .tileSubscription:
             let index = indexPath.row
             let isSelected = selectedIndex == index
             let cell = collectionView.dequeueCellOfType(PaywallTileSubscriptionCell.self, at: indexPath)
+            cell.currencyFormatKind =  screenData.currencyFormat
 
             let currentProduct = self.products[index]
 
@@ -251,7 +260,10 @@ extension PaywallVC: UICollectionViewDelegate {
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
                 let currentProduct = self.products[selectedIndex]
-                bottomView.setupPaymentDetailsLabel(content: currentProduct)
+                
+                self.value = currentProduct.id
+
+                bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
 
                 OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
                 OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
@@ -289,12 +301,14 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             let sectionsSpacing = CGFloat(sections.count - 1) * Constants.sectionsSpacing
             height = collectionView.bounds.height - calculateHeaderSize(in: sections) - sectionsSpacing
         case .tileSubscription:
-            return Constants.subscriptionTileItemSize
-        case .listSubscription:
+            
+            return calculateItemCellSize()
+//            return Constants.subscriptionTileItemSize
+        case .listSubscription, .oneTimePurchase:
             let currentProduct = self.products[indexPath.row]
             
             if let item = itemFor(product: currentProduct) {
-                height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width)
+                height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
             } else {
                 height = max(40, height)
                 print("row height \(height)")
@@ -303,8 +317,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
         case .separator:
             height = PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
 
-        default:
-            height = row.height
         }
         height = max(0, height)
         return .init(width: collectionView.bounds.width, height: height)
@@ -316,10 +328,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             switch section {
             case .header, .separator:
                 contentSize += Constants.sectionsSpacing
-//            case .separator:
-//                if screenData.divider != nil {
-//                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-//                }
             case .items:
                 switch style {
                 case .subscriptionsList:
@@ -330,7 +338,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         let items = rowsFor(section: section)
                         numberOfItems = items.count
                     }
-    
                     
                     var itemsHeight: CGFloat = 0.0
                     
@@ -340,7 +347,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     
                     for product in  self.products {
                         if let item = itemFor(product: product) {
-                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width)
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
                         }
                     }
                     
@@ -353,7 +360,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     }
 
-                    contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
+                    contentSize += calculateItemCellSize().height + itemsHeight
                 }
             }
         }
@@ -383,12 +390,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             case .subscriptionsList:
                 return .zero
             case .subscriptionsTiles:
-                let containerWidth = collectionView.bounds.width
-                let items = rowsFor(section: section)
-                let tilesWidth = CGFloat(items.count) * Constants.subscriptionTileItemSize.width
-                let tilesSpacing: CGFloat = 20
-                let sideSpace = containerWidth - tilesWidth - tilesSpacing
-                return .init(top: 0, left: sideSpace / 2, bottom: 0, right: sideSpace / 2)
+                return .init(top: 0, left: constants.leadingConstraint, bottom: 0, right: constants.trailingConstraint)
             }
         }
     }
@@ -414,8 +416,6 @@ private extension PaywallVC {
         URL(string: "https://google.com")! // TODO: - Set TAC URL
     }
     
-
-    
     func didLoadProducts(_ products: [StoreKitProduct]) {
         self.products = products
         if let item = screenData.subscriptions.items.first(where: {$0.isSelected}) {
@@ -429,11 +429,7 @@ private extension PaywallVC {
         
         self.isLoadingProducts = false
         
-//        DispatchQueue.main.async {
-//            self.setViewForLoadedProducts()
-//        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.async {
             self.setViewForLoadedProducts()
         }
     }
@@ -444,14 +440,14 @@ private extension PaywallVC {
         
         if products.count - 1 >= selectedIndex {
             let currentProduct = products[selectedIndex]
-            bottomView.setupPaymentDetailsLabel(content: currentProduct)
+            bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
         }
 
-        
-        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
-        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
-
-
+        if screenData.animationEnabled {
+            OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
+            OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
+        }
+       
 //        collectionView.reloadData()
     }
     
@@ -491,7 +487,8 @@ private extension PaywallVC {
 
         let selectedProduct = products[selectedIndex]
         OnboardingService.shared.eventRegistered(event: .purchaseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: selectedProduct.id])
-
+        self.value = selectedProduct.id
+        
         setViewBusy(true)
         Task {
             do {
@@ -499,15 +496,15 @@ private extension PaywallVC {
                 
                 sendReceiptInfo(product: selectedProduct)
                 self.value = selectedProduct.id
-                
-//                finishWith(action: screenData.footer.purchase?.action)
             } catch OnboardingPaywallError.cancelled {
+                setViewBusy(false)
                 OnboardingService.shared.eventRegistered(event: .purchaseCanceled, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id])
 
                 if shouldCloseOnPurchaseCancel {
                     close()
                 }
             } catch {
+                setViewBusy(false)
                 handleError(error, message: "Failed to purchase", retryAction: { [weak self] in
                     self?.purchaseSelectedProduct()
                 })
@@ -515,7 +512,6 @@ private extension PaywallVC {
                 OnboardingService.shared.eventRegistered(event: .purchaseFailed, params: [.screenID: screen.id, .screenName: screen.name, .productId: selectedProduct.id, .error: error.localizedDescription])
 
             }
-            setViewBusy(false)
         }
     }
     
@@ -526,7 +522,8 @@ private extension PaywallVC {
 
                 if product.type == .oneTimePurchase {
                     if let receipt = try await paymentService.lastPurchaseReceipts() {
-                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
+
+//                        print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                         let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
                         
                         OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: screen.id, .screenName: screen.name, .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
@@ -537,16 +534,21 @@ private extension PaywallVC {
                         
                         OnboardingService.shared.sendPurchase(projectId: projectId, transactionId: receipt.originalTransactionId, purchaseInfo: purchase)
 
-                        finishWith(action: screenData.footer.purchase?.action)
+                        closeScreenAfterPurchase(receipt: receipt)
+//                        setViewBusy(false)
+//                        finishWith(action: screenData.footer.purchase?.action)
 
                     } else {
-                        finishWith(action: screenData.footer.purchase?.action)
+                        closeScreenAfterPurchase(receipt: nil)
+//                        setViewBusy(false)
+//                        finishWith(action: screenData.footer.purchase?.action)
                     }
                 } else {
                     if let receipt = try await paymentService.activeSubscriptionReceipt() {
                         
+
                         DispatchQueue.main.async {[weak self] in
-                            print("[trnsaction_id]-> \(receipt.originalTransactionId)")
+//                            print("[trnsaction_id]-> \(receipt.originalTransactionId)")
                             let purchase = PurchaseInfo.init(integrationType: .Amplitude, userId: "", transactionId: receipt.originalTransactionId, amount: 20.0, currency: "usd")
                             OnboardingService.shared.eventRegistered(event: .productPurchased, params: [.screenID: self?.screen.id ?? "none", .screenName: self?.screen.name ?? "none", .productId: product.id, .transactionId : receipt.originalTransactionId, .paymentsInfo: receipt])
                             
@@ -554,22 +556,31 @@ private extension PaywallVC {
                             
                             OnboardingService.shared.sendIntegrationsDetails(projectId: projectId) {error in
                             }
-                            self?.finishWith(action: self?.screenData.footer.purchase?.action)
-
+                            
+                            self?.closeScreenAfterPurchase(receipt: receipt)
+//                            setViewBusy(false)
+//                            self?.finishWith(action: self?.screenData.footer.purchase?.action)
                         }
-                       
-
-                      
                     } else {
-                        finishWith(action: screenData.footer.purchase?.action)
+                        closeScreenAfterPurchase(receipt: nil)
+//                        setViewBusy(false)
+//                        finishWith(action: screenData.footer.purchase?.action)
                     }
                 }
-                
             } catch {
                 // An error occurred while retrieving the receipt
-                print("Error retrieving the receipt: \(error)")
+//                print("Error retrieving the receipt: \(error)")
             }
         }
+    }
+    
+    func closeScreenAfterPurchase(receipt: OnboardingPaymentReceipt?) {
+        if let purchase = purchaseHandler {
+            _ = purchase(self, receipt)
+        }
+        
+        setViewBusy(false)
+        finishWith(action: screenData.footer.purchase?.action)
     }
     
     func finishWith(action: Action?) {
@@ -582,13 +593,25 @@ private extension PaywallVC {
     
     @objc func closeButtonPressed() {
 //        guard !isBusy else { return }
-                
+
+        if let closeHandler = closePaywallHandler {
+            _ = closeHandler(self)
+        }
+        
         OnboardingService.shared.eventRegistered(event: .paywallCloseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name])
 
         finishWith(action: screenData.navigationBar.close?.action)
     }
     
+    @objc func restoreButtonPressed() {
+        restoreProducts()
+    }
+    
     func close() {
+        if let closeHandler = closePaywallHandler {
+            _ = closeHandler(self)
+        }
+        
         finishWith(action: screenData.footer.purchase?.action)
     }
     
@@ -617,8 +640,8 @@ private extension PaywallVC {
     
     func setup() {
         setupBackground()
-        setup(navigationBar: screenData.navigationBar)
     }
+    var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
     
     func setupBackground() {
         backgroundView = backgroundContainerView
@@ -628,7 +651,7 @@ private extension PaywallVC {
             case .typeBackgroundStyleColor(let value):
                 backgroundContainerView.backgroundColor = value.color.hexStringToColor
             case .typeBackgroundStyleImage(let value):
-                updateBackground(image: value.image)
+                updateBackground(image: value.image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             case .typeBackgroundStyleVideo:
                 setupBackgroundFor(screenId: screen.id,
                                    using: videoPreparationService)
@@ -674,37 +697,81 @@ private extension PaywallVC {
     }
 
     func setup(navigationBar: PaywallNavigationBar) {
-        guard let close = navigationBar.close else {
+        if let alignment = navigationBar.styles.closeHorizontalAlignment, screenData.navigationBar.close != nil {
+            switch alignment {
+            case ._left:
+                addCloseButton(isRightSide: false)
+                addRestoreButton(isRightSide: false)
+            case ._right:
+                addCloseButton(isRightSide: true)
+                addRestoreButton(isRightSide: true)
+            }
+        } else {
+            addRestoreButton(isRightSide: false)
+            closeButton.isHidden = true
+        }
+    }
+    
+    func isRestoreInHeader() -> Bool {
+        return screenData.navigationBar.restore != nil
+    }
+    
+    func addCloseButton(isRightSide: Bool) {
+        guard screenData.navigationBar.close != nil else {
             closeButton.isHidden = true
             return
         }
-    
-        closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
-        closeButton.tintColor = close.styles.backgroundColor?.hexStringToColor ?? .black
         
-        var horizontalConstraint = closeButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)
-   
-        if let alignment = navigationBar.styles.closeHorizontalAlignment {
-            switch alignment {
-            case ._left:
-                horizontalConstraint = closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
-            case ._right:
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.tintColor = screenData.navigationBar.close?.textColor()
+        closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
+
+        NSLayoutConstraint.activate([
+            closeButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0),
+            closeButton.widthAnchor.constraint(equalToConstant: 40),
+            closeButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+        
+        if isRightSide {
+            NSLayoutConstraint.activate([closeButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)])
+        } else {
+            NSLayoutConstraint.activate([closeButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)])
+        }
+        if let appearance = screenData.navigationBar.styles.closeAppearance,
+           let time = screenData.navigationBar.styles.closeVisibleAfterTimerValue {
+            switch  appearance {
+            case .visibleaftertimer:
+                    closeButton.isHidden = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + time) {[weak self]  in
+                        self?.closeButton.isHidden = false
+                    }
+            default:
                 break
             }
         }
-        NSLayoutConstraint.activate([horizontalConstraint])
+    }
+    
+    
+    func addRestoreButton(isRightSide: Bool) {
+        if isRestoreInHeader() {
+            restoreButton = UIButton()
+            headerView.addSubview(restoreButton)
+            restoreButton.translatesAutoresizingMaskIntoConstraints = false
+            restoreButton.addTarget(self, action: #selector(restoreButtonPressed), for: .touchUpInside)
 
-        switch navigationBar.styles.closeAppearance {
-        case .visibleaftertimer:
-            if let time = navigationBar.styles.closeVisibleAfterTimerValue {
-                closeButton.isHidden = true
+            restoreButton.apply(textLabel: screenData.navigationBar.restore)
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + time) {[weak self]  in
-                    self?.closeButton.isHidden = false
-                }
+            NSLayoutConstraint.activate([
+                restoreButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0),
+                restoreButton.heightAnchor.constraint(equalToConstant: 40),
+                restoreButton.widthAnchor.constraint(equalToConstant: 120)
+            ])
+            
+            if isRightSide {
+                NSLayoutConstraint.activate([restoreButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 8)])
+            } else {
+                NSLayoutConstraint.activate([restoreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -8)])
             }
-        default:
-            break
         }
     }
     
@@ -747,19 +814,6 @@ extension PaywallVC {
         case listSubscription
         case tileSubscription
         case loading
-        
-        var height: CGFloat {
-            switch self {
-            case .header, .loading:
-                return 0
-            case .separator:
-                return 1
-            case .listSubscription, .oneTimePurchase:
-                return Constants.subscriptionListItemHeight
-            case .tileSubscription:
-                return Constants.subscriptionTileItemSize.height
-            }
-        }
     }
     
     func allSections() -> [SectionType] {
@@ -778,9 +832,9 @@ extension PaywallVC {
         case .separator:
             return [.separator]
         case .items:
-            if isLoadingProducts {
-                return [.loading]
-            }
+//            if isLoadingProducts {
+//                return [.loading]
+//            }
 
             switch style {
             case .subscriptionsList:
@@ -789,7 +843,7 @@ extension PaywallVC {
                     if itemFor(product: product) != nil {
                         switch product.type {
                         case .oneTimePurchase:
-                            return .oneTimePurchase
+                            return .listSubscription
                         case .subscription(_):
                             return .listSubscription
                         }
@@ -802,7 +856,7 @@ extension PaywallVC {
                 return products.compactMap { product in
                     switch product.type {
                     case .oneTimePurchase:
-                        return .oneTimePurchase
+                        return .tileSubscription
                     case .subscription(_):
                         return .tileSubscription
                     }
@@ -810,9 +864,33 @@ extension PaywallVC {
             }
         }
     }
+    
+    
+}
+
+struct PaywallCollectionConstants {
+
+//    list.box.styles.paddingLeft ?? 0
+//    screenData.subscriptions
+    var leadingConstraint: CGFloat = 16
+    var trailingConstraint: CGFloat = 16
+    
+    let centerGapConstraint: CGFloat = 16
+        
+    let magicGapForCellWidthCalculation: CGFloat = 3
+
+
 }
 
 extension PaywallVC {
+    
+    func calculateItemCellSize() -> CGSize {
+        let width = collectionView.bounds.width
+        let spaces = constants.trailingConstraint + constants.trailingConstraint +  (constants.centerGapConstraint)
+        let cellWidth = ((width - spaces)  / 2) - constants.magicGapForCellWidthCalculation
+
+        return .init(width: cellWidth, height: cellWidth)
+    }
     
     struct Constants {
         static let defaultHeaderHeight: CGFloat = { UIScreen.isIphoneSE1 ? 180 : 280 }()

@@ -48,6 +48,7 @@ protocol PickerScreenProtocol {
     var picker: Picker { get }
     var title: Text { get }
     var subtitle: Text { get }
+    var useLocalAssetsIfAvailable: Bool { get }
 }
 
 protocol NavigationBarProtocol {
@@ -64,6 +65,8 @@ protocol BaseScreenStyleProtocol {
 
 protocol PaywallBaseScreenStyleProtocol {
     var styles: ScreenBasicPaywallBlock { get }
+    var media: Media? { get }
+    var useLocalAssetsIfAvailable: Bool { get }
 }
 
 protocol PermissionProtocol {

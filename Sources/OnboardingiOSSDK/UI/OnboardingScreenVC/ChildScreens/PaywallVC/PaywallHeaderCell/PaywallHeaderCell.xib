@@ -11,44 +11,57 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="PaywallHeaderCell" customModule="OnboardingiOSSDK">
-            <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+            <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+                <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
-                        <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-eF-EJ0">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
-                                <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JnK-Xm-Qvp">
+                                <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Plq-34-e38">
+                                        <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </imageView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
+                                        <rect key="frame" x="0.0" y="240" width="800" height="60"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jze-sG-Veo" customClass="GradientView" customModule="OnboardingiOSSDK">
-                                <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="ZEI-hM-2S3"/>
+                                    <constraint firstAttribute="trailing" secondItem="Jze-sG-Veo" secondAttribute="trailing" id="bDW-pH-6Ns"/>
+                                    <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" id="eA4-DH-FrW"/>
+                                    <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="jY0-Qc-FIe"/>
+                                    <constraint firstItem="Jze-sG-Veo" firstAttribute="height" secondItem="JnK-Xm-Qvp" secondAttribute="height" multiplier="0.2" priority="100" id="k8G-7h-KeP"/>
+                                    <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="JnK-Xm-Qvp" secondAttribute="leading" id="kwY-yk-dHd"/>
+                                    <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="JnK-Xm-Qvp" secondAttribute="top" id="pTU-Jf-Rwg"/>
+                                    <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="JnK-Xm-Qvp" secondAttribute="leading" id="uwP-rZ-CLE"/>
+                                    <constraint firstAttribute="height" priority="250" constant="300" id="y5W-tb-Z30"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Plq-34-e38" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="9Y9-FC-FrS"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" priority="10" id="KRE-f8-T5Y"/>
-                            <constraint firstAttribute="bottom" secondItem="Plq-34-e38" secondAttribute="bottom" priority="900" id="SpB-KJ-J8U"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="leading" secondItem="Plq-34-e38" secondAttribute="leading" id="VfJ-UZ-7fv"/>
-                            <constraint firstItem="Jze-sG-Veo" firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="jas-b1-aj5"/>
-                            <constraint firstAttribute="trailing" secondItem="Plq-34-e38" secondAttribute="trailing" id="lQu-pz-ELc"/>
-                            <constraint firstAttribute="bottom" secondItem="Jze-sG-Veo" secondAttribute="bottom" id="qQs-r5-Mxz"/>
-                            <constraint firstItem="Plq-34-e38" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="woF-nx-oRb"/>
+                            <constraint firstAttribute="trailing" secondItem="JnK-Xm-Qvp" secondAttribute="trailing" id="H6W-jP-DSq"/>
+                            <constraint firstItem="JnK-Xm-Qvp" firstAttribute="leading" secondItem="qbw-eF-EJ0" secondAttribute="leading" id="K6g-oQ-Rpo"/>
+                            <constraint firstAttribute="bottom" secondItem="JnK-Xm-Qvp" secondAttribute="bottom" id="Maj-hn-J1Y"/>
+                            <constraint firstItem="JnK-Xm-Qvp" firstAttribute="top" secondItem="qbw-eF-EJ0" secondAttribute="top" id="Wys-nW-e7i"/>
                         </constraints>
                     </view>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Cii-tw-ukF">
-                        <rect key="frame" x="0.0" y="0.0" width="346" height="397"/>
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Lag-yb-nxE">
-                                <rect key="frame" x="0.0" y="113" width="346" height="284"/>
+                            <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="300" verticalCompressionResistancePriority="850" translatesAutoresizingMaskIntoConstraints="NO" id="Lag-yb-nxE">
+                                <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
-                                        <rect key="frame" x="0.0" y="0.0" width="346" height="284"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" horizontalCompressionResistancePriority="800" verticalCompressionResistancePriority="850" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="jjj-3w-9m3">
+                                        <rect key="frame" x="0.0" y="0.0" width="800" height="1200"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </stackView>
                                 </subviews>
@@ -76,16 +89,16 @@
                 <constraint firstAttribute="bottom" secondItem="qbw-eF-EJ0" secondAttribute="bottom" priority="10" id="fgO-eO-XDn"/>
                 <constraint firstAttribute="trailing" secondItem="qbw-eF-EJ0" secondAttribute="trailing" id="qjD-Ti-6sI"/>
             </constraints>
-            <size key="customSize" width="346" height="397"/>
+            <size key="customSize" width="677" height="175"/>
             <connections>
                 <outlet property="contentStackView" destination="jjj-3w-9m3" id="Ao3-kW-5Iz"/>
                 <outlet property="gradientView" destination="Jze-sG-Veo" id="e6w-Lj-w5z"/>
                 <outlet property="imageView" destination="Plq-34-e38" id="WgV-OQ-YAL"/>
                 <outlet property="imageViewContainer" destination="qbw-eF-EJ0" id="YYG-u0-TvD"/>
-                <outlet property="imageViewContainerBottomConstraint" destination="SpB-KJ-J8U" id="1NR-zh-ZpV"/>
-                <outlet property="imageViewContainerLeadingConstraint" destination="woF-nx-oRb" id="x2a-R3-wmf"/>
-                <outlet property="imageViewContainerTopConstraint" destination="9Y9-FC-FrS" id="qAA-s6-Y3I"/>
-                <outlet property="imageViewContainerTrailingConstraint" destination="lQu-pz-ELc" id="oX1-HJ-kBB"/>
+                <outlet property="imageViewContainerBottomConstraint" destination="Maj-hn-J1Y" id="GNn-i0-GLh"/>
+                <outlet property="imageViewContainerLeadingConstraint" destination="K6g-oQ-Rpo" id="1dj-V8-yRn"/>
+                <outlet property="imageViewContainerTopConstraint" destination="Wys-nW-e7i" id="r8l-JM-uDW"/>
+                <outlet property="imageViewContainerTrailingConstraint" destination="H6W-jP-DSq" id="za3-wZ-725"/>
                 <outlet property="imageViewTopConstraint" destination="Zfx-Jb-9IW" id="ws2-6b-Lx7"/>
                 <outlet property="listBackground" destination="Lag-yb-nxE" id="CU5-M7-MBP"/>
                 <outlet property="listBottomConstraint" destination="Uno-hq-I1S" id="F79-zL-5Tx"/>
@@ -95,8 +108,9 @@
                 <outlet property="listItemTrailingConstraint" destination="ZFp-bW-aEt" id="9Ja-Bp-FFB"/>
                 <outlet property="listLeadingConstraint" destination="Ne4-yO-zkh" id="rf8-WQ-aZ4"/>
                 <outlet property="listTrailingConstraint" destination="Qiv-99-8HV" id="eNh-2O-l3T"/>
+                <outlet property="mediaContainer" destination="JnK-Xm-Qvp" id="8bh-lh-p04"/>
             </connections>
-            <point key="canvasLocation" x="271.75572519083971" y="10.91549295774648"/>
+            <point key="canvasLocation" x="477" y="88"/>
         </collectionViewCell>
     </objects>
 </document>

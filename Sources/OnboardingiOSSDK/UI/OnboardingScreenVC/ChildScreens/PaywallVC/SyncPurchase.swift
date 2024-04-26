@@ -290,14 +290,19 @@ class APIManager {
     
     
     static func buildURL() -> String {
-        let host = "dev.api.onboarding.online"
+//        let host = "dev.api.onboarding.online"
+//        let host = "staging.api.onboarding.online"
+        let host = "api.onboarding.online"
+
         let baseURL = "https://\(host)/paywall-service/v1/app-store-transaction"
                 
         return baseURL
     }
     
     static func buildURlForAttributionSync() -> String {
-        let host = "dev.api.onboarding.online"
+//        let host = "dev.api.onboarding.online"
+        let host = "api.onboarding.online"
+
         let baseURL = "https://\(host)/analytics-service/v1/user"
                 
         return baseURL

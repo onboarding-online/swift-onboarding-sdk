@@ -22,10 +22,10 @@ final class ImageTititleSubtitleCheckboxCell: UITableViewCell, UIImageLoader {
 
     @IBOutlet weak var backgroundContentView: UIView!
 
-    func setWith(item: ItemTypeSelection, styles: ListBlock, isSelected: Bool) {
+    func setWith(item: ItemTypeSelection, styles: ListBlock, isSelected: Bool, useLocalAssetsIfAvailable: Bool) {
         titleLabel.apply(text: item.title)
         subtitleLabel.apply(text: item.subtitle)
-        setupImage(item: item)
+        setupImage(item: item, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         
         checkbox.apply(checkbox: item.checkBox, isSelected: isSelected)
 
@@ -43,8 +43,8 @@ final class ImageTititleSubtitleCheckboxCell: UITableViewCell, UIImageLoader {
         stackView.layoutIfNeeded()
     }
     
-    private func setupImage(item: ItemTypeSelection) {
-        load(image: item.image, in: cellImage)
+    private func setupImage(item: ItemTypeSelection, useLocalAssetsIfAvailable: Bool) {
+        load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
     }
     
     func setupUIBy(type: SingleSelectionListItemType) {
