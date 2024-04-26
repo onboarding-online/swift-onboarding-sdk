@@ -104,8 +104,10 @@ extension PaywallVC {
         switch screenData.subscriptions.subscriptionViewKind {
         case .vertical:
             style = .subscriptionsList
-        default:
+        case .horizontal:
             style = .subscriptionsTiles
+        default:
+            style = .subscriptionsList
         }
     }
     
