@@ -9,36 +9,6 @@ import UIKit
 import ScreensGraph
 import StoreKit
 
-
-extension CurrencyFormatKind {
-    
-    func formatStyle() -> NumberFormatter.Style {
-        switch self {
-        case ._none:
-            return NumberFormatter.Style.none
-        case .decimal:
-            return NumberFormatter.Style.decimal
-        case .currency:
-            return NumberFormatter.Style.currency
-        case .percent:
-            return NumberFormatter.Style.percent
-        case .scientific:
-            return NumberFormatter.Style.scientific
-        case .spellOut:
-            return NumberFormatter.Style.spellOut
-        case .ordinal:
-            return NumberFormatter.Style.ordinal
-        case .currencyISOCode:
-            return NumberFormatter.Style.currencyISOCode
-        case .currencyPlural:
-            return NumberFormatter.Style.currencyPlural
-        case .currencyAccounting:
-            return NumberFormatter.Style.currencyAccounting
-        }
-    }
-    
-}
-
 // TODO: - Check for canMakePayments before showing paywall 
 public final class PaywallVC: BaseScreenGraphViewController {
     
@@ -62,14 +32,12 @@ public final class PaywallVC: BaseScreenGraphViewController {
     public var closePaywallHandler: ((PaywallVC) -> ())? = nil
     public var purchaseHandler: ((PaywallVC, OnboardingPaymentReceipt?) -> ())? = nil
 
-    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomView: PaywallBottomView!
     
     @IBOutlet weak var closeButton: UIButton!
 
-//    var closeButton: UIButton!
     var restoreButton: UIButton!
 
     @IBOutlet weak var headerView: UIView!
@@ -93,6 +61,30 @@ public final class PaywallVC: BaseScreenGraphViewController {
         setupSubscriptionType()
         setupProducts()
         
+        baseAppearanceSetup()
+        loadProducts()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        setup(navigationBar: screenData.navigationBar)
+        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
+
+        navigationController?.isNavigationBarHidden = true
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
+    }
+    
+}
+
+extension PaywallVC {
+    
+    func baseAppearanceSetup() {
         constants = PaywallCollectionConstants.init()
     
         constants.leadingConstraint = 16 +  (screenData.subscriptions.box.styles.paddingLeft ?? 0)
@@ -101,8 +93,6 @@ public final class PaywallVC: BaseScreenGraphViewController {
         bottomView.currencyFormatKind = screenData.currencyFormat
        
         activityIndicator.color = screenData.loader?.styles.color?.hexStringToColor ?? .gray
-        loadProducts()
-        OnboardingService.shared.eventRegistered(event: .paywallAppeared, params: [.screenID: screen.id, .screenName: screen.name])
     }
     
     func setupProducts() {
@@ -124,9 +114,6 @@ public final class PaywallVC: BaseScreenGraphViewController {
     }
     
     func loadProducts() {
-//        delegate?.onboardingChildScreenUpdate(value: nil,
-//                                              description: "Will load products",
-//                                              logAnalytics: true)
         print( "Will load products")
         if var skProducts = paymentService.cashedProductsWith(ids:  Set(productIds)),  productIds.count == skProducts.count {
             skProducts = skProducts.compactMap({ product in
@@ -148,10 +135,6 @@ public final class PaywallVC: BaseScreenGraphViewController {
                     return lhsIndex < rhsIndex
                 })
             
-            
-            
-            print( "local ids \(productIds)  prodcucts - \(products) ")
-
             didLoadProducts(products)
             return
         }
@@ -167,9 +150,7 @@ public final class PaywallVC: BaseScreenGraphViewController {
                         return nil
                     }
                 })
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did load products: \(products.map { $0.productIdentifier })",
-//                                                      logAnalytics: true)
+
                 let products = skProducts
                     .compactMap( { StoreKitProduct(skProduct: $0) })
                     .sorted(by: { lhs, rhs in
@@ -185,30 +166,10 @@ public final class PaywallVC: BaseScreenGraphViewController {
 
                 didLoadProducts(products)
             } catch {
-//                delegate?.onboardingChildScreenUpdate(value: nil,
-//                                                      description: "Did fail to load products: \(error.localizedDescription)",
-//                                                      logAnalytics: true)
                 didFailToLoadProductsWith(error: error)
             }
         }
     }
-    
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        setup(navigationBar: screenData.navigationBar)
-
-//        OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .move), in: collectionView)
-//        OnboardingAnimation.runAnimationOfType(.fade, in: [bottomView.additionalInfoLabelContainer, bottomView.buyButton], delay: 0.3)
-        navigationController?.isNavigationBarHidden = true
-    }
-    
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        OnboardingService.shared.eventRegistered(event: .paywallDisappeared, params: [.screenID: screen.id, .screenName: screen.name])
-    }
-    
 }
 
 
@@ -365,10 +326,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             switch section {
             case .header, .separator:
                 contentSize += Constants.sectionsSpacing
-//            case .separator:
-//                if screenData.divider != nil {
-//                    contentSize +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
-//                }
             case .items:
                 switch style {
                 case .subscriptionsList:
@@ -402,7 +359,6 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                     }
 
                     contentSize += calculateItemCellSize().height + itemsHeight
-//                    contentSize += Constants.subscriptionTileItemSize.height + itemsHeight
                 }
             }
         }
@@ -432,17 +388,7 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             case .subscriptionsList:
                 return .zero
             case .subscriptionsTiles:
-//                let containerWidth = collectionView.bounds.width
-//                let items = rowsFor(section: section)
-                
-//                let tilesWidth = CGFloat(items.count) * calculateItemCellSize().width
-                
-//                let tilesWidth = CGFloat(items.count) * Constants.subscriptionTileItemSize.width
-//                let tilesSpacing: CGFloat = 20
-//                let sideSpace = containerWidth - tilesWidth - tilesSpacing
                 return .init(top: 0, left: constants.leadingConstraint, bottom: 0, right: constants.trailingConstraint)
-
-//                return .init(top: 0, left: sideSpace / 2, bottom: 0, right: sideSpace / 2)
             }
         }
     }

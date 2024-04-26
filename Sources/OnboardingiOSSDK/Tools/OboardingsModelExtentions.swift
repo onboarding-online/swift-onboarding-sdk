@@ -137,6 +137,37 @@ extension OnboardingLocalAssetProvider {
 }
 protocol OnboardingLocalVideoAssetProvider: OnboardingLocalAssetProvider { }
 
+
+
+extension CurrencyFormatKind {
+    
+    func formatStyle() -> NumberFormatter.Style {
+        switch self {
+        case ._none:
+            return NumberFormatter.Style.none
+        case .decimal:
+            return NumberFormatter.Style.decimal
+        case .currency:
+            return NumberFormatter.Style.currency
+        case .percent:
+            return NumberFormatter.Style.percent
+        case .scientific:
+            return NumberFormatter.Style.scientific
+        case .spellOut:
+            return NumberFormatter.Style.spellOut
+        case .ordinal:
+            return NumberFormatter.Style.ordinal
+        case .currencyISOCode:
+            return NumberFormatter.Style.currencyISOCode
+        case .currencyPlural:
+            return NumberFormatter.Style.currencyPlural
+        case .currencyAccounting:
+            return NumberFormatter.Style.currencyAccounting
+        }
+    }
+
+}
+
 extension OnboardingLocalVideoAssetProvider {
     
     func urlToVideoAsset(useLocalAssetsIfAvailable: Bool) async -> URL? {
