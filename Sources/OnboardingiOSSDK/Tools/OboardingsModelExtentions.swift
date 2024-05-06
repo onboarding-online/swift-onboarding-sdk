@@ -1094,7 +1094,9 @@ extension UITextField {
         }
         
         let placeholderText = text.textByLocale()
-        let placeholderColor = text.styles.color?.hexStringToColor ?? .lightGray
+        let placeholderColor = text.styles.color?.hexStringToColor ?? OnboardingService.shared.placeHolderColor
+
+        
         
         self.attributedPlaceholder = NSAttributedString(
             string: placeholderText,

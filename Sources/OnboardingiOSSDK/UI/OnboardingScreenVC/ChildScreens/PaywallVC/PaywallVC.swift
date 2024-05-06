@@ -758,7 +758,6 @@ private extension PaywallVC {
             headerView.addSubview(restoreButton)
             restoreButton.translatesAutoresizingMaskIntoConstraints = false
             restoreButton.addTarget(self, action: #selector(restoreButtonPressed), for: .touchUpInside)
-
             restoreButton.apply(textLabel: screenData.navigationBar.restore)
 
             NSLayoutConstraint.activate([
@@ -768,9 +767,13 @@ private extension PaywallVC {
             ])
             
             if isRightSide {
-                NSLayoutConstraint.activate([restoreButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 8)])
+                restoreButton.contentHorizontalAlignment = .left
+
+                NSLayoutConstraint.activate([restoreButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)])
             } else {
-                NSLayoutConstraint.activate([restoreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -8)])
+                restoreButton.contentHorizontalAlignment = .right
+
+                NSLayoutConstraint.activate([restoreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16)])
             }
         }
     }

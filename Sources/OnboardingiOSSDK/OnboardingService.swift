@@ -25,6 +25,8 @@ public final class OnboardingService {
     public var assetsPrefetchMode: AssetsPrefetchMode = .waitForScreenToLoad(timeout: 0.5)
 
     public var screenGraph: ScreensGraph?
+    public var placeHolderColor = UIColor.gray
+
     public var paymentService: OnboardingPaymentServiceProtocol?
     public var appearance: AppearanceStyle?
 
