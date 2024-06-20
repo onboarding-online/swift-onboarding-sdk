@@ -773,6 +773,61 @@ extension UIPickerView {
 
 }
 
+
+extension String {
+    func attributedStringFromTags(defaultAttributes: [NSAttributedString.Key: Any],
+                                   tagAttributes: [String: [NSAttributedString.Key: Any]]) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: self, attributes: defaultAttributes)
+        
+        // Regular expression to match tags
+        let regex = try! NSRegularExpression(pattern: "<(\\w+)>(.*?)</\\1>", options: [])
+        let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
+        
+        // Iterate through matches in reverse order to avoid range issues
+        for match in matches.reversed() {
+            if let tagRange = Range(match.range(at: 1), in: self),
+               let contentRange = Range(match.range(at: 2), in: self) {
+                let tag = String(self[tagRange])
+                let content = String(self[contentRange])
+                
+                // Define the range for the content
+                let nsRange = NSRange(contentRange, in: self)
+                
+                // Apply attributes
+                attributedString.addAttributes(tagAttributes[tag] ?? [:], range: nsRange)
+                
+                // Remove the tags from the string
+                attributedString.replaceCharacters(in: match.range, with: content)
+            }
+        }
+        
+        return attributedString
+    }
+}
+
+// Usage Example
+let inputString = "By continuing, I agree to Nebula's <tag1>Privacy_policy.</tag1> and <tag2>Terms of Use.</tag2>."
+
+let defaultAttributes: [NSAttributedString.Key: Any] = [
+    .font: UIFont.systemFont(ofSize: 16),
+    .foregroundColor: UIColor.black
+]
+
+let tagAttributes: [String: [NSAttributedString.Key: Any]] = [
+    "tag1": [.foregroundColor: UIColor.red],
+    "tag2": [.foregroundColor: UIColor.red]
+]
+
+let attributedText = inputString.attributedStringFromTags(defaultAttributes: defaultAttributes, tagAttributes: tagAttributes)
+
+//// Display in a UILabel
+//let label = UILabel()
+//label.attributedText = attributedText
+//label.numberOfLines = 0
+//label.frame = CGRect(x: 0, y: 0, width: 300, height: 100)
+//label.sizeToFit()
+
+
 extension UILabel  {
 
     func apply(text: Text?) {
