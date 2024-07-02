@@ -20,6 +20,8 @@ class ScreenImageTitleSubtitleVC: BaseChildScreenGraphViewController {
     @IBOutlet weak var subtitleLabel: UILabel!
 
     @IBOutlet weak var pageImage: UIImageView!
+    @IBOutlet weak var labelsStackView: UIStackView!
+
         
     var screenData: ScreenImageTitleSubtitles!
 
