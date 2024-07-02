@@ -155,7 +155,6 @@ private extension PaywallHeaderCell {
             contentStackView.distribution = .fillProportionally
         } else {
             contentStackView.distribution = .fill
-            
         }
         
         let titleLabel = buildLabel()

@@ -930,6 +930,35 @@ extension UILabel  {
         self.attributedText = attributedString
     }
     
+    
+    func wrapLabelInUIView(padding: BoxBlock? = nil) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .clear
+        containerView.addSubview(self)
+        
+        if let padding = padding {
+            let bottom = -1 * (padding.paddingBottom ?? 0)
+            let trailing = -1 * (padding.paddingRight ?? 0)
+
+            NSLayoutConstraint.activate([
+                self.topAnchor.constraint(equalTo: containerView.topAnchor, constant: padding.paddingTop ?? 0),
+                self.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+                self.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: padding.paddingLeft ?? 0),
+                self.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                self.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+                self.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+                self.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+                self.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0)
+            ])
+        }
+        
+        return containerView
+    }
+    
 }
 
 extension UIFont {
