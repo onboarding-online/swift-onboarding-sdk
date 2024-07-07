@@ -692,6 +692,20 @@ extension LabelPosition {
         }
     }
     
+    func paragraphAlignment() -> NSTextAlignment {
+        switch self {
+        case ._right:
+            return NSTextAlignment.right
+        case ._left:
+            return NSTextAlignment.left
+        case .center:
+            return NSTextAlignment.center
+        }
+    }
+    
+    
+
+    
 }
 
 extension UIImageView  {
@@ -843,9 +857,87 @@ extension UILabel  {
         if titleLabelKey.isEmpty {
             self.isHidden = true
         }
-        
-        self.apply(text: text.styles)
+
+        let labels = text.parameters.labels
+        let links = text.parameters.links
+//        let links = ["tag1" : "screen6"]
+//
+//                let attributes1 = [
+//                    "tag1": [NSAttributedString.Key.foregroundColor: UIColor.blue, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 21)],
+//                    "tag2": [NSAttributedString.Key.foregroundColor: UIColor.green, NSAttributedString.Key.font: UIFont.italicSystemFont(ofSize: 18)],
+//                    "tag3": [NSAttributedString.Key.foregroundColor: UIColor.purple, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]
+//                ]
+//        if labels.isEmpty && links.isEmpty {
+            self.apply(text: text.styles)
+//        } else {
+//            var tagAttributes = [String: [NSAttributedString.Key: Any]]()
+//            var linksValue = [String: String]()
+//
+//            for key in labels.keys {
+//                if let array = labels[key] {
+//                    let attributes = textParametersFrom(text: array)
+//                    tagAttributes[key] = attributes
+//                }
+//            }
+//            for key in links.keys {
+//                if let screenId = links[key] {
+//                    if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
+//                        linksValue[key] = value
+//                    }
+//                }
+//            }
+//            
+//            
+//            let attributesText = attributedString(from: titleLabelKey, replacingTagsWith: linksValue, tagAttributes: tagAttributes)
+//            self.attributedText = attributesText
+//        }
     }
+    
+    
+    func attributedString(from string: String,
+                          replacingTagsWith replacements: [String: String]? = nil,
+                          tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil) -> NSAttributedString {
+        let pattern = "<(.+?)>(.+?)</\\1>"
+        let regex = try! NSRegularExpression(pattern: pattern, options: [])
+        let nsString = string as NSString
+        let matches = regex.matches(in: string, options: [], range: NSRange(location: 0, length: nsString.length))
+
+        let attributedString = NSMutableAttributedString(string: string)
+
+        // Обработка совпадений в обратном порядке, чтобы не нарушить диапазоны
+        for match in matches.reversed() {
+            let tagRange = match.range(at: 0)
+            let tagName = nsString.substring(with: match.range(at: 1))
+            let textInRange = nsString.substring(with: match.range(at: 2))
+
+            // Определение текста для замены
+            let replacementText = replacements?[tagName] ?? textInRange
+
+            // Определение атрибутов для текущего тега
+            let currentTagAttributes = tagAttributes?[tagName] ?? [:]  // Если нет атрибутов, используем пустой словарь
+
+            // Замена текста и применение атрибутов
+            attributedString.replaceCharacters(in: tagRange, with: NSAttributedString(string: replacementText, attributes: currentTagAttributes))
+        }
+
+        // Удаление оставшихся тегов, если они существуют после логики замены
+        return removeRemainingTags(from: attributedString)
+    }
+
+    private func removeRemainingTags(from attributedString: NSMutableAttributedString) -> NSAttributedString {
+        let pattern = "<[^>]+>"
+        let regex = try! NSRegularExpression(pattern: pattern, options: [])
+        let nsString = attributedString.string as NSString
+        let matches = regex.matches(in: nsString as String, options: [], range: NSRange(location: 0, length: nsString.length))
+
+        // Удаление совпадений в обратном порядке, чтобы не нарушить диапазоны
+        for match in matches.reversed() {
+            attributedString.deleteCharacters(in: match.range)
+        }
+
+        return attributedString
+    }
+    
     
     func apply(badge: Badge?) {
         guard let badge = badge else {
@@ -906,6 +998,28 @@ extension UILabel  {
         
         self.font = text.getFontSettings()
         self.textColor = text.color?.hexStringToColor
+    }
+    
+    func textParametersFrom(text: LabelBlock) -> [NSAttributedString.Key : Any] {
+        
+        var currentTagAttributes =  [NSAttributedString.Key : Any]()
+      
+        if let color = text.color?.hexStringToColor {
+            currentTagAttributes[.foregroundColor] = text.color?.hexStringToColor
+        }
+        
+        if let font = text.getFontSettings() {
+            currentTagAttributes[.font] = text.color?.hexStringToColor
+        }
+        
+        if let alignment = text.textAlign  {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = alignment.alignment()
+            
+            currentTagAttributes[.paragraphStyle] = paragraphStyle
+        }
+        
+        return currentTagAttributes
     }
     
     func setLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0) {

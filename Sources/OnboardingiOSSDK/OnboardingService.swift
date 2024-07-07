@@ -38,7 +38,7 @@ public final class OnboardingService {
     private var videoPreparationService: VideoPreparationService?
     private var currentLoadingViewController: UIViewController?
 
-    private var onboardingUserData: OnboardingData = [:]
+    public var onboardingUserData: OnboardingData = [:]
     private var onboardingFinishedCallback: OnboardingFinishResult?
     private let windowManager: OnboardingWindowManagerProtocol
 
