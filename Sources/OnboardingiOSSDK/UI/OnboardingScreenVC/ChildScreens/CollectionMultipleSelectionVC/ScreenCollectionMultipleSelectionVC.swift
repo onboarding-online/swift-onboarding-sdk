@@ -65,8 +65,8 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        mediaContainerViewHeightConstraint.constant = view.bounds.height * 0.3
+        mediaContainerViewHeightConstraint.constant = 0
+//        mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
     }
 }
 // MARK: - UICollectionViewDataSource
