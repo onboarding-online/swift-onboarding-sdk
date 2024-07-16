@@ -47,6 +47,8 @@ public extension OnboardingService {
         
         switch preparationState {
         case .notStarted, .failed:
+            showLoadingAssetsScreen(appearance: .default,
+                                    launchWithAnimation: launchWithAnimation)
             startNew()
         case .preparing:
             showLoadingAssetsScreen(appearance: .default,
