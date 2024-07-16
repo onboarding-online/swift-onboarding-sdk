@@ -17,7 +17,6 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
         vc.screen = screen
         vc.videoPreparationService = videoPreparationService
         vc.delegate = delegate
-        vc.loadViewIfNeeded()
         return vc
     }
     
