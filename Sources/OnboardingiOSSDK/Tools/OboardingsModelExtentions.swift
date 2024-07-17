@@ -584,6 +584,37 @@ extension LabelBlock {
         }
     }
     
+    func getFontSettings1() -> UIFont? {
+        let text = self
+        
+        if let fontSize = text.fontSize?.cgFloatValue {
+            var labelFont: UIFont
+
+            if let fontWeightRaw = text.fontWeight {
+                let fontWeight = self.fontWeight(weight: fontWeightRaw)
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: fontWeight)
+            } else {
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: .regular)
+            }
+            
+            if let fontFamile = text.fontFamily {
+                switch fontFamile {
+                case .sfPro:
+                    break
+                case .sfProrounded:
+                    labelFont = labelFont.rounded()
+                case .sfMono:
+                    labelFont = labelFont.monospaced()
+                case .newYork:
+                    labelFont = labelFont.newYorked()
+                }
+            }
+            return labelFont
+        }
+        
+        return nil
+    }
+    
     func getFontSettings() -> UIFont? {
         
         let text = self
@@ -908,23 +939,23 @@ extension UILabel  {
     func attributedString(from string: String,
                           replacingConstantsWith replacements: [String: String]? = nil,
                           tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil) -> NSAttributedString {
-        let constantPattern = "@([A-Za-z0-9_]+)" // Регулярное выражение для констант, начинающихся с "@"
+        // Регулярные выражения для поиска констант и тегов
+        let constantPattern = "@([A-Za-z0-9_]+)"
+        let tagPattern = "<(.+?)>(.+?)</\\1>"
 
-        // Создание итоговой атрибутированной строки
+        // Подготовка к замене констант
         var resultString = string
-
-        // Замена констант
+        var offset = 0  // Сдвиг для корректной замены в измененной строке
         if let replacements = replacements {
             let regex = try! NSRegularExpression(pattern: constantPattern, options: [])
             var nsString = resultString as NSString
-            var offset = 0 // Сдвиг из-за изменений в длине строки
-
             let matches = regex.matches(in: resultString, options: [], range: NSRange(location: 0, length: nsString.length))
+
             for match in matches {
                 let range = match.range(at: 1)
                 let adjustedRange = NSRange(location: range.location + offset, length: range.length)
                 let constantKey = nsString.substring(with: adjustedRange)
-                
+
                 if let replacementText = replacements[constantKey] {
                     let fullTagRange = NSRange(location: match.range.location + offset, length: match.range.length)
                     nsString = nsString.replacingCharacters(in: fullTagRange, with: replacementText) as NSString
@@ -934,10 +965,30 @@ extension UILabel  {
             resultString = nsString as String
         }
 
+        // Создание атрибутированной строки и применение тегов
         let attributedString = NSMutableAttributedString(string: resultString)
-        
-        // Если нужно добавить атрибуты для тегов, добавьте здесь соответствующую логику
+        if let tagAttributes = tagAttributes {
+            let tagRegex = try! NSRegularExpression(pattern: tagPattern, options: [])
+            let finalString = attributedString.string as NSString
+            let tagMatches = tagRegex.matches(in: attributedString.string, options: [], range: NSRange(location: 0, length: finalString.length))
 
+            for match in tagMatches.reversed() {
+                let tagName = finalString.substring(with: match.range(at: 1))
+                let textInRange = finalString.substring(with: match.range(at: 2))
+                let textRange = match.range(at: 2)
+
+                if let currentTagAttributes = tagAttributes[tagName] {
+                    attributedString.replaceCharacters(in: textRange, with: NSAttributedString(string: textInRange, attributes: currentTagAttributes))
+                }
+                
+                // Удаление открывающего и закрывающего тегов
+                let closingTagRange = NSRange(location: match.range.upperBound - ("</\(tagName)>").count, length: ("</\(tagName)>").count)
+                let openingTagRange = NSRange(location: match.range.location, length: ("<\(tagName)>").count)
+                attributedString.deleteCharacters(in: closingTagRange)
+                attributedString.deleteCharacters(in: openingTagRange)
+            }
+        }
+        
         return attributedString
     }
 
@@ -1022,24 +1073,90 @@ extension UILabel  {
         self.textColor = text.color?.hexStringToColor
     }
     
+    func textParametersFrom1(text: LabelBlock) -> [NSAttributedString.Key: Any] {
+        var currentTagAttributes = [NSAttributedString.Key: Any]()
+
+        // Проверка и применение цвета текста
+        if let colorString = text.color {
+            currentTagAttributes[.foregroundColor] = colorString.hexStringToColor
+        }
+
+        // Проверка и применение шрифта
+        if let font = text.getFontSettings() {
+            currentTagAttributes[.font] = font
+        }
+
+        // Проверка и применение атрибутов параграфа
+        let paragraphStyle = NSMutableParagraphStyle()
+        var paragraphStyleIsSet = false
+
+        // Проверка и установка выравнивания текста
+        if let textAlign = text.textAlign {
+            paragraphStyle.alignment = textAlign.alignment()
+            paragraphStyleIsSet = true
+        }
+
+        // Проверка и установка высоты строки
+        if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
+            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+            paragraphStyleIsSet = true
+        }
+
+        // Применение стиля параграфа, если были установлены какие-либо свойства
+        if paragraphStyleIsSet {
+            currentTagAttributes[.paragraphStyle] = paragraphStyle
+        }
+
+        return currentTagAttributes
+    }
+
+
+    
     func textParametersFrom(text: LabelBlock) -> [NSAttributedString.Key : Any] {
         
         var currentTagAttributes =  [NSAttributedString.Key : Any]()
       
         if let color = text.color?.hexStringToColor {
-            currentTagAttributes[.foregroundColor] = text.color?.hexStringToColor
+            currentTagAttributes[.foregroundColor] = color
+        }
+        
+        if let color = text.backgroundColor?.hexStringToColor {
+            currentTagAttributes[.backgroundColor] = color
         }
         
         if let font = text.getFontSettings() {
-            currentTagAttributes[.font] = text.color?.hexStringToColor
+            currentTagAttributes[.font] = font
+        }
+        // Проверка и применение атрибутов параграфа
+        let paragraphStyle = NSMutableParagraphStyle()
+        var paragraphStyleIsSet = false
+        
+        // Проверка и установка выравнивания текста
+        if let textAlign = text.textAlign {
+            paragraphStyle.alignment = textAlign.alignment()
+            paragraphStyleIsSet = true
         }
         
-        if let alignment = text.textAlign  {
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.alignment = alignment.alignment()
-            
+        // Проверка и установка высоты строки
+        if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
+            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+            paragraphStyleIsSet = true
+        }
+        
+        // Применение стиля параграфа, если были установлены какие-либо свойства
+        if paragraphStyleIsSet {
             currentTagAttributes[.paragraphStyle] = paragraphStyle
         }
+//        if let alignment = text.textAlign  {
+//            let paragraphStyle = NSMutableParagraphStyle()
+//            paragraphStyle.alignment = alignment.alignment()
+//            
+//            currentTagAttributes[.paragraphStyle] = paragraphStyle
+//        }
         
         return currentTagAttributes
     }
