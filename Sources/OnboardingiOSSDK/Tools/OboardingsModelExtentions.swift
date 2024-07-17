@@ -246,7 +246,9 @@ extension OnboardingLocalImageAssetProvider {
         if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetName) {
             return cachedImage
         } else if let image = UIImage.init(named: assetName) {
-            AssetsLoadingService.shared.cacheImage(image, withName: assetName)
+            Task {
+                await AssetsLoadingService.shared.cacheImage(image, withName: assetName)
+            }
             return image
         }
         return nil
@@ -255,7 +257,8 @@ extension OnboardingLocalImageAssetProvider {
     private func getLocalImageWith(assetURL: String) async -> UIImage? {
         if let imageName = assetURL.resourceName(),
            let image = await UIImage.createWith(name: imageName) {
-            AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
+
+            await AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
             return image
         }
         return nil
