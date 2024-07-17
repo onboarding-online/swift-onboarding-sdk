@@ -114,7 +114,7 @@ private extension OnboardingScreenVC {
     func setupMainUIBlocks() {
         footerBottomConstraint = footerContainerBottomConstraint
         backgroundView = backgroundContainerView
-        
+
         setupScreenConfigAndScreenBodyContainer()
         setupBackground()
 
@@ -278,6 +278,7 @@ fileprivate extension OnboardingScreenVC {
             case .typeBackgroundStyleColor(let value):
                 backgroundContainerView.backgroundColor = value.color.hexStringToColor
             case .typeBackgroundStyleImage(let value):
+                backgroundContainerView.backgroundColor = .clear
                 updateBackground(image: value.image,
                                  useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             case .typeBackgroundStyleVideo:
