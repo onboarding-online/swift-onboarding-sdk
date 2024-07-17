@@ -36,6 +36,7 @@ final class AssetsLoadingService {
     private let cacheStorage: ImagesCacheStorageProtocol
     
     private var currentAsyncProcess = [String : Task<Data?, Never>]()
+    private var currentAsyncImageProcess = [String : Task<UIImage?, Never>]()
 
     init(loader: AssetDataLoader = DefaultAssetDataLoader(),
          storage: AssetsStorageProtocol = AssetsStorage(),
@@ -55,13 +56,26 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
             return cachedImage
         }
         
-        if let imageData = await loadData(from: url, assetType: .image),
-           let image = await createImage(from: imageData) {
-            self.cacheImage(image, withName: url)
-            return image
+        // Check if process already in progress
+        if let imageTask = serialQueue.sync(execute: { currentAsyncImageProcess[key] }) {
+            OnboardingLogger.logInfo(topic: .assetsPrefetch, "Will return active image loading task for key: \(key)")
+            return await imageTask.value
         }
         
-        return nil
+        let task: Task<UIImage?, Never> = Task.detached(priority: .high) {
+            if let imageData = await self.loadData(from: url, assetType: .image),
+               let image = await self.createImage(from: imageData) {
+                self.cacheImage(image, withName: url)
+                return image
+            }
+            return nil
+        }
+        
+        serialQueue.sync { currentAsyncImageProcess[key] = task }
+        let image = await task.value
+        serialQueue.sync { currentAsyncImageProcess[key] = nil }
+        
+        return image
     }
     
     func loadData(from url: String,
