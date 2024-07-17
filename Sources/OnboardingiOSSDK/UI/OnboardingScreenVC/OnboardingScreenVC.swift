@@ -114,13 +114,13 @@ private extension OnboardingScreenVC {
     func setupMainUIBlocks() {
         footerBottomConstraint = footerContainerBottomConstraint
         backgroundView = backgroundContainerView
-        
+        setupBackground()
+
         setupScreenConfigAndScreenBodyContainer()
 
         setupNavBar()
         setupFooter()
         
-        setupBackground()
     }
     
     func onboardingViewControllerFor(screen: Screen) -> BaseChildScreenGraphViewController? {

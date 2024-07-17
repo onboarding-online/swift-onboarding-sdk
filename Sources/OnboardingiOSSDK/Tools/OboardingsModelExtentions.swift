@@ -242,6 +242,16 @@ extension OnboardingLocalImageAssetProvider {
         return nil
     }
     
+    func loadCashedImage(useLocalAssetsIfAvailable: Bool)  -> UIImage? {
+        let urlByLocale = assetUrlByLocale()
+        
+        if let url = urlByLocale?.assetUrl?.origin, let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: url) {
+            return cachedImage
+        } else  {
+            return nil
+        }
+    }
+    
     private func getLocalImageWith(assetName: String) -> UIImage? {
         if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetName) {
             return cachedImage
