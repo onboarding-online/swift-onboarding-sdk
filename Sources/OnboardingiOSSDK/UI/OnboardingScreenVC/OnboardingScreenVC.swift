@@ -116,11 +116,11 @@ private extension OnboardingScreenVC {
         backgroundView = backgroundContainerView
         
         setupScreenConfigAndScreenBodyContainer()
+        setupBackground()
 
         setupNavBar()
         setupFooter()
         
-        setupBackground()
     }
     
     func onboardingViewControllerFor(screen: Screen) -> BaseChildScreenGraphViewController? {
