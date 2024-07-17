@@ -860,69 +860,91 @@ extension UILabel  {
 
         let labels = text.parameters.labels
         let links = text.parameters.links
-//        let links = ["tag1" : "screen6"]
-//
-//                let attributes1 = [
-//                    "tag1": [NSAttributedString.Key.foregroundColor: UIColor.blue, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 21)],
-//                    "tag2": [NSAttributedString.Key.foregroundColor: UIColor.green, NSAttributedString.Key.font: UIFont.italicSystemFont(ofSize: 18)],
-//                    "tag3": [NSAttributedString.Key.foregroundColor: UIColor.purple, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]
-//                ]
-//        if labels.isEmpty && links.isEmpty {
+
+        if labels.isEmpty && links.isEmpty {
             self.apply(text: text.styles)
-//        } else {
-//            var tagAttributes = [String: [NSAttributedString.Key: Any]]()
-//            var linksValue = [String: String]()
-//
-//            for key in labels.keys {
-//                if let array = labels[key] {
-//                    let attributes = textParametersFrom(text: array)
-//                    tagAttributes[key] = attributes
-//                }
-//            }
-//            for key in links.keys {
-//                if let screenId = links[key] {
-//                    if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
-//                        linksValue[key] = value
-//                    }
-//                }
-//            }
-//            
-//            
-//            let attributesText = attributedString(from: titleLabelKey, replacingTagsWith: linksValue, tagAttributes: tagAttributes)
-//            self.attributedText = attributesText
-//        }
+        } else {
+            var tagAttributes = [String: [NSAttributedString.Key: Any]]()
+            var linksValue = [String: String]()
+
+            for key in labels.keys {
+                if let array = labels[key] {
+                    let attributes = textParametersFrom(text: array)
+                    tagAttributes[key] = attributes
+                }
+            }
+            for key in links.keys {
+                let screenId = substringBeforeDot(in: links[key])
+                if  !screenId.isEmpty {
+                    if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
+                        linksValue["\(key)"] = value
+                    }
+                }
+            }
+            
+                        
+            let attributesText = attributedString(from: titleLabelKey, replacingConstantsWith: linksValue, tagAttributes: tagAttributes)
+            self.attributedText = attributesText
+        }
     }
     
-    
-    func attributedString(from string: String,
-                          replacingTagsWith replacements: [String: String]? = nil,
-                          tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil) -> NSAttributedString {
-        let pattern = "<(.+?)>(.+?)</\\1>"
-        let regex = try! NSRegularExpression(pattern: pattern, options: [])
-        let nsString = string as NSString
-        let matches = regex.matches(in: string, options: [], range: NSRange(location: 0, length: nsString.length))
-
-        let attributedString = NSMutableAttributedString(string: string)
-
-        // Обработка совпадений в обратном порядке, чтобы не нарушить диапазоны
-        for match in matches.reversed() {
-            let tagRange = match.range(at: 0)
-            let tagName = nsString.substring(with: match.range(at: 1))
-            let textInRange = nsString.substring(with: match.range(at: 2))
-
-            // Определение текста для замены
-            let replacementText = replacements?[tagName] ?? textInRange
-
-            // Определение атрибутов для текущего тега
-            let currentTagAttributes = tagAttributes?[tagName] ?? [:]  // Если нет атрибутов, используем пустой словарь
-
-            // Замена текста и применение атрибутов
-            attributedString.replaceCharacters(in: tagRange, with: NSAttributedString(string: replacementText, attributes: currentTagAttributes))
+    func substringBeforeDot(in string: String?) -> String {
+        // Проверяем, что строка не nil
+        guard let string = string else {
+            // Если строка nil, возвращаем пустую строку
+            return ""
         }
 
-        // Удаление оставшихся тегов, если они существуют после логики замены
-        return removeRemainingTags(from: attributedString)
+        // Поиск индекса первой точки в строке
+        if let dotIndex = string.firstIndex(of: ".") {
+            // Возвращаем подстроку от начала строки до найденной точки
+            return String(string[..<dotIndex])
+        }
+        
+        // Если точка не найдена, возвращаем исходную строку целиком
+        return string
     }
+
+    func attributedString(from string: String,
+                          replacingConstantsWith replacements: [String: String]? = nil,
+                          tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil) -> NSAttributedString {
+        let constantPattern = "@([A-Za-z0-9_]+)" // Регулярное выражение для констант, начинающихся с "@"
+
+        // Создание итоговой атрибутированной строки
+        var resultString = string
+
+        // Замена констант
+        if let replacements = replacements {
+            let regex = try! NSRegularExpression(pattern: constantPattern, options: [])
+            var nsString = resultString as NSString
+            var offset = 0 // Сдвиг из-за изменений в длине строки
+
+            let matches = regex.matches(in: resultString, options: [], range: NSRange(location: 0, length: nsString.length))
+            for match in matches {
+                let range = match.range(at: 1)
+                let adjustedRange = NSRange(location: range.location + offset, length: range.length)
+                let constantKey = nsString.substring(with: adjustedRange)
+                
+                if let replacementText = replacements[constantKey] {
+                    let fullTagRange = NSRange(location: match.range.location + offset, length: match.range.length)
+                    nsString = nsString.replacingCharacters(in: fullTagRange, with: replacementText) as NSString
+                    offset += replacementText.count - match.range.length
+                }
+            }
+            resultString = nsString as String
+        }
+
+        let attributedString = NSMutableAttributedString(string: resultString)
+        
+        // Если нужно добавить атрибуты для тегов, добавьте здесь соответствующую логику
+
+        return attributedString
+    }
+
+
+
+
+   
 
     private func removeRemainingTags(from attributedString: NSMutableAttributedString) -> NSAttributedString {
         let pattern = "<[^>]+>"
