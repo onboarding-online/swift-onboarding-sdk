@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.1...v1.1.2) (2024-07-17)
+
+
+### Current Version Changes
+
+* cache images async ([c8d9db9](https://github.com/onboarding-online/swift-onboarding-sdk/commit/c8d9db97ac5f6ae6c37e61bf190bd578335c1039))
+
 ### [1.1.1](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.0...v1.1.1) (2024-04-26)
 
 
