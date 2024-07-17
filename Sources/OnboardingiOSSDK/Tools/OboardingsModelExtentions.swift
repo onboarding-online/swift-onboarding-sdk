@@ -227,11 +227,13 @@ extension OnboardingLocalImageAssetProvider {
         }
         
         if let assetName = urlByLocale?.assetName,
-           let image = await getLocalImageWith(assetName: assetName) {
+           let image = getLocalImageWith(assetName: assetName) {
             return image
         } else if let url = urlByLocale?.assetUrl?.origin {
             // Check local resources first
-            if let image = await getLocalImageWith(assetURL: url) {
+            if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: url) {
+                return cachedImage
+            } else if let image = await getLocalImageWith(assetURL: url) {
                 return image
             }
             
@@ -240,22 +242,22 @@ extension OnboardingLocalImageAssetProvider {
         return nil
     }
     
-    private func getLocalImageWith(assetName: String) async -> UIImage? {
+    private func getLocalImageWith(assetName: String) -> UIImage? {
         if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetName) {
             return cachedImage
         } else if let image = UIImage.init(named: assetName) {
-            AssetsLoadingService.shared.cacheImage(image, withName: assetName)
+            Task {
+                await AssetsLoadingService.shared.cacheImage(image, withName: assetName)
+            }
             return image
         }
         return nil
     }
     
     private func getLocalImageWith(assetURL: String) async -> UIImage? {
-        if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetURL) {
-            return cachedImage
-        } else if let imageName = assetURL.resourceName(),
-                  let image = await UIImage.createWith(name: imageName) {
-            AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
+        if let imageName = assetURL.resourceName(),
+           let image = await UIImage.createWith(name: imageName) {
+            await AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
             return image
         }
         return nil
