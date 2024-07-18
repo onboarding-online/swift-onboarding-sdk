@@ -65,7 +65,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         let task: Task<UIImage?, Never> = Task.detached(priority: .high) {
             if let imageData = await self.loadData(from: url, assetType: .image),
                let image = await self.createImage(from: imageData) {
-                await self.cacheImage(image, withName: url)
+                self.cacheImage(image, withName: url)
                 return image
             }
             return nil

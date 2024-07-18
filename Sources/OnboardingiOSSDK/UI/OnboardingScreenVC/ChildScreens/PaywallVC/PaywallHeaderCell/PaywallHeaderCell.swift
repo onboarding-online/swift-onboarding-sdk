@@ -104,28 +104,28 @@ extension PaywallHeaderCell {
         }
     }
     
-
-    
     func setupBackgroundFor(screenId: String,
                             using preparationService: VideoPreparationService) {
-        preparationService.observeScreenId(screenId) { [weak self] status in
-            DispatchQueue.main.async {
-                switch status {
-                case .undefined, .preparing:
-                    return
-                case .failed:
-                    break
-                case .ready(let preparedData):
-                    self?.playVideoBackgroundWith(preparedData: preparedData)
+        if let status = preparationService.getStatusFor(screenId: screenId),
+           case .ready(let preparedData) = status {
+            playVideoBackgroundWith(preparedData: preparedData)
+        } else {
+            preparationService.observeScreenId(screenId) { [weak self] status in
+                DispatchQueue.main.async {
+                    switch status {
+                    case .undefined, .preparing:
+                        return
+                    case .failed:
+                        break
+                    case .ready(let preparedData):
+                        self?.playVideoBackgroundWith(preparedData: preparedData)
+                    }
                 }
             }
         }
     }
     
     func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
-
-
-        
         if self.videoBackground == nil {
             self.videoBackground = VideoBackground()
             if let mode = screenData.media?.styles.scaleMode?.videoContentMode() {
@@ -155,7 +155,6 @@ private extension PaywallHeaderCell {
             contentStackView.distribution = .fillProportionally
         } else {
             contentStackView.distribution = .fill
-            
         }
         
         let titleLabel = buildLabel()

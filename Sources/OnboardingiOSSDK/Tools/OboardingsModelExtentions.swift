@@ -190,16 +190,8 @@ extension OnboardingLocalVideoAssetProvider {
             }
         }
         
-        if let name = stringURL.resourceNameWithoutExtension() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                return videoURL
-            }
-        }
-        
-        if let name = stringURL.resourceName() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
-                return videoURL
-            }
+        if let cachedURL = getCachedURLToVideoAsset() {
+            return cachedURL
         }
         
         let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
@@ -209,6 +201,28 @@ extension OnboardingLocalVideoAssetProvider {
             return url
         }
         return nil
+    }
+    
+    func getCachedURLToVideoAsset() -> URL? {
+        guard let urlByLocale = assetUrlByLocale(),
+              let stringURL = urlByLocale.assetUrl?.origin else { return nil }
+       
+        if let name = urlByLocale.assetName,
+           let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+            return videoURL
+        }
+        
+        if let name = stringURL.resourceNameWithoutExtension(),
+           let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+            return videoURL
+        }
+        
+        if let name = stringURL.resourceName(),
+           let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
+            return videoURL
+        }
+        
+        return AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video)
     }
 }
 
@@ -241,7 +255,18 @@ extension OnboardingLocalImageAssetProvider {
         }
         return nil
     }
-    
+
+    func loadCashedImage(useLocalAssetsIfAvailable: Bool)  -> UIImage? {
+        let urlByLocale = assetUrlByLocale()
+        
+        if let url = urlByLocale?.assetUrl?.origin, 
+            let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: url) {
+            return cachedImage
+        } else  {
+            return nil
+        }
+    }
+
     private func getLocalImageWith(assetName: String) -> UIImage? {
         if let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: assetName) {
             return cachedImage
@@ -253,11 +278,11 @@ extension OnboardingLocalImageAssetProvider {
         }
         return nil
     }
-    
+
     private func getLocalImageWith(assetURL: String) async -> UIImage? {
         if let imageName = assetURL.resourceName(),
            let image = await UIImage.createWith(name: imageName) {
-            await AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
+            AssetsLoadingService.shared.cacheImage(image, withName: assetURL)
             return image
         }
         return nil
@@ -584,6 +609,37 @@ extension LabelBlock {
         }
     }
     
+    func getFontSettings1() -> UIFont? {
+        let text = self
+        
+        if let fontSize = text.fontSize?.cgFloatValue {
+            var labelFont: UIFont
+
+            if let fontWeightRaw = text.fontWeight {
+                let fontWeight = self.fontWeight(weight: fontWeightRaw)
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: fontWeight)
+            } else {
+                labelFont = UIFont.systemFont(ofSize: fontSize, weight: .regular)
+            }
+            
+            if let fontFamile = text.fontFamily {
+                switch fontFamile {
+                case .sfPro:
+                    break
+                case .sfProrounded:
+                    labelFont = labelFont.rounded()
+                case .sfMono:
+                    labelFont = labelFont.monospaced()
+                case .newYork:
+                    labelFont = labelFont.newYorked()
+                }
+            }
+            return labelFont
+        }
+        
+        return nil
+    }
+    
     func getFontSettings() -> UIFont? {
         
         let text = self
@@ -692,6 +748,20 @@ extension LabelPosition {
         }
     }
     
+    func paragraphAlignment() -> NSTextAlignment {
+        switch self {
+        case ._right:
+            return NSTextAlignment.right
+        case ._left:
+            return NSTextAlignment.left
+        case .center:
+            return NSTextAlignment.center
+        }
+    }
+    
+    
+
+    
 }
 
 extension UIImageView  {
@@ -773,6 +843,61 @@ extension UIPickerView {
 
 }
 
+
+extension String {
+    func attributedStringFromTags(defaultAttributes: [NSAttributedString.Key: Any],
+                                   tagAttributes: [String: [NSAttributedString.Key: Any]]) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: self, attributes: defaultAttributes)
+        
+        // Regular expression to match tags
+        let regex = try! NSRegularExpression(pattern: "<(\\w+)>(.*?)</\\1>", options: [])
+        let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
+        
+        // Iterate through matches in reverse order to avoid range issues
+        for match in matches.reversed() {
+            if let tagRange = Range(match.range(at: 1), in: self),
+               let contentRange = Range(match.range(at: 2), in: self) {
+                let tag = String(self[tagRange])
+                let content = String(self[contentRange])
+                
+                // Define the range for the content
+                let nsRange = NSRange(contentRange, in: self)
+                
+                // Apply attributes
+                attributedString.addAttributes(tagAttributes[tag] ?? [:], range: nsRange)
+                
+                // Remove the tags from the string
+                attributedString.replaceCharacters(in: match.range, with: content)
+            }
+        }
+        
+        return attributedString
+    }
+}
+
+// Usage Example
+let inputString = "By continuing, I agree to Nebula's <tag1>Privacy_policy.</tag1> and <tag2>Terms of Use.</tag2>."
+
+let defaultAttributes: [NSAttributedString.Key: Any] = [
+    .font: UIFont.systemFont(ofSize: 16),
+    .foregroundColor: UIColor.black
+]
+
+let tagAttributes: [String: [NSAttributedString.Key: Any]] = [
+    "tag1": [.foregroundColor: UIColor.red],
+    "tag2": [.foregroundColor: UIColor.red]
+]
+
+let attributedText = inputString.attributedStringFromTags(defaultAttributes: defaultAttributes, tagAttributes: tagAttributes)
+
+//// Display in a UILabel
+//let label = UILabel()
+//label.attributedText = attributedText
+//label.numberOfLines = 0
+//label.frame = CGRect(x: 0, y: 0, width: 300, height: 100)
+//label.sizeToFit()
+
+
 extension UILabel  {
 
     func apply(text: Text?) {
@@ -788,9 +913,129 @@ extension UILabel  {
         if titleLabelKey.isEmpty {
             self.isHidden = true
         }
-        
-        self.apply(text: text.styles)
+
+        let labels = text.parameters.labels
+        let links = text.parameters.links
+
+        if labels.isEmpty && links.isEmpty {
+            self.apply(text: text.styles)
+        } else {
+            var tagAttributes = [String: [NSAttributedString.Key: Any]]()
+            var linksValue = [String: String]()
+
+            for key in labels.keys {
+                if let array = labels[key] {
+                    let attributes = textParametersFrom(text: array)
+                    tagAttributes[key] = attributes
+                }
+            }
+            for key in links.keys {
+                let screenId = substringBeforeDot(in: links[key])
+                if  !screenId.isEmpty {
+                    if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
+                        linksValue["\(key)"] = value
+                    }
+                }
+            }
+            
+                        
+            let attributesText = attributedString(from: titleLabelKey, replacingConstantsWith: linksValue, tagAttributes: tagAttributes)
+            self.attributedText = attributesText
+        }
     }
+    
+    func substringBeforeDot(in string: String?) -> String {
+        // Проверяем, что строка не nil
+        guard let string = string else {
+            // Если строка nil, возвращаем пустую строку
+            return ""
+        }
+
+        // Поиск индекса первой точки в строке
+        if let dotIndex = string.firstIndex(of: ".") {
+            // Возвращаем подстроку от начала строки до найденной точки
+            return String(string[..<dotIndex])
+        }
+        
+        // Если точка не найдена, возвращаем исходную строку целиком
+        return string
+    }
+
+    func attributedString(from string: String,
+                          replacingConstantsWith replacements: [String: String]? = nil,
+                          tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil) -> NSAttributedString {
+        // Регулярные выражения для поиска констант и тегов
+        let constantPattern = "@([A-Za-z0-9_]+)"
+        let tagPattern = "<(.+?)>(.+?)</\\1>"
+
+        // Подготовка к замене констант
+        var resultString = string
+        var offset = 0  // Сдвиг для корректной замены в измененной строке
+        if let replacements = replacements {
+            let regex = try! NSRegularExpression(pattern: constantPattern, options: [])
+            var nsString = resultString as NSString
+            let matches = regex.matches(in: resultString, options: [], range: NSRange(location: 0, length: nsString.length))
+
+            for match in matches {
+                let range = match.range(at: 1)
+                let adjustedRange = NSRange(location: range.location + offset, length: range.length)
+                let constantKey = nsString.substring(with: adjustedRange)
+
+                if let replacementText = replacements[constantKey] {
+                    let fullTagRange = NSRange(location: match.range.location + offset, length: match.range.length)
+                    nsString = nsString.replacingCharacters(in: fullTagRange, with: replacementText) as NSString
+                    offset += replacementText.count - match.range.length
+                }
+            }
+            resultString = nsString as String
+        }
+
+        // Создание атрибутированной строки и применение тегов
+        let attributedString = NSMutableAttributedString(string: resultString)
+        if let tagAttributes = tagAttributes {
+            let tagRegex = try! NSRegularExpression(pattern: tagPattern, options: [])
+            let finalString = attributedString.string as NSString
+            let tagMatches = tagRegex.matches(in: attributedString.string, options: [], range: NSRange(location: 0, length: finalString.length))
+
+            for match in tagMatches.reversed() {
+                let tagName = finalString.substring(with: match.range(at: 1))
+                let textInRange = finalString.substring(with: match.range(at: 2))
+                let textRange = match.range(at: 2)
+
+                if let currentTagAttributes = tagAttributes[tagName] {
+                    attributedString.replaceCharacters(in: textRange, with: NSAttributedString(string: textInRange, attributes: currentTagAttributes))
+                }
+                
+                // Удаление открывающего и закрывающего тегов
+                let closingTagRange = NSRange(location: match.range.upperBound - ("</\(tagName)>").count, length: ("</\(tagName)>").count)
+                let openingTagRange = NSRange(location: match.range.location, length: ("<\(tagName)>").count)
+                attributedString.deleteCharacters(in: closingTagRange)
+                attributedString.deleteCharacters(in: openingTagRange)
+            }
+        }
+        
+        return attributedString
+    }
+
+
+
+
+   
+
+    private func removeRemainingTags(from attributedString: NSMutableAttributedString) -> NSAttributedString {
+        let pattern = "<[^>]+>"
+        let regex = try! NSRegularExpression(pattern: pattern, options: [])
+        let nsString = attributedString.string as NSString
+        let matches = regex.matches(in: nsString as String, options: [], range: NSRange(location: 0, length: nsString.length))
+
+        // Удаление совпадений в обратном порядке, чтобы не нарушить диапазоны
+        for match in matches.reversed() {
+            attributedString.deleteCharacters(in: match.range)
+        }
+
+        return attributedString
+    }
+    
     
     func apply(badge: Badge?) {
         guard let badge = badge else {
@@ -853,6 +1098,94 @@ extension UILabel  {
         self.textColor = text.color?.hexStringToColor
     }
     
+    func textParametersFrom1(text: LabelBlock) -> [NSAttributedString.Key: Any] {
+        var currentTagAttributes = [NSAttributedString.Key: Any]()
+
+        // Проверка и применение цвета текста
+        if let colorString = text.color {
+            currentTagAttributes[.foregroundColor] = colorString.hexStringToColor
+        }
+
+        // Проверка и применение шрифта
+        if let font = text.getFontSettings() {
+            currentTagAttributes[.font] = font
+        }
+
+        // Проверка и применение атрибутов параграфа
+        let paragraphStyle = NSMutableParagraphStyle()
+        var paragraphStyleIsSet = false
+
+        // Проверка и установка выравнивания текста
+        if let textAlign = text.textAlign {
+            paragraphStyle.alignment = textAlign.alignment()
+            paragraphStyleIsSet = true
+        }
+
+        // Проверка и установка высоты строки
+        if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
+            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+            paragraphStyleIsSet = true
+        }
+
+        // Применение стиля параграфа, если были установлены какие-либо свойства
+        if paragraphStyleIsSet {
+            currentTagAttributes[.paragraphStyle] = paragraphStyle
+        }
+
+        return currentTagAttributes
+    }
+
+
+    
+    func textParametersFrom(text: LabelBlock) -> [NSAttributedString.Key : Any] {
+        
+        var currentTagAttributes =  [NSAttributedString.Key : Any]()
+      
+        if let color = text.color?.hexStringToColor {
+            currentTagAttributes[.foregroundColor] = color
+        }
+        
+        if let color = text.backgroundColor?.hexStringToColor {
+            currentTagAttributes[.backgroundColor] = color
+        }
+        
+        if let font = text.getFontSettings() {
+            currentTagAttributes[.font] = font
+        }
+        // Проверка и применение атрибутов параграфа
+        let paragraphStyle = NSMutableParagraphStyle()
+        var paragraphStyleIsSet = false
+        
+        // Проверка и установка выравнивания текста
+        if let textAlign = text.textAlign {
+            paragraphStyle.alignment = textAlign.alignment()
+            paragraphStyleIsSet = true
+        }
+        
+        // Проверка и установка высоты строки
+        if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
+            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+            paragraphStyleIsSet = true
+        }
+        
+        // Применение стиля параграфа, если были установлены какие-либо свойства
+        if paragraphStyleIsSet {
+            currentTagAttributes[.paragraphStyle] = paragraphStyle
+        }
+//        if let alignment = text.textAlign  {
+//            let paragraphStyle = NSMutableParagraphStyle()
+//            paragraphStyle.alignment = alignment.alignment()
+//            
+//            currentTagAttributes[.paragraphStyle] = paragraphStyle
+//        }
+        
+        return currentTagAttributes
+    }
+    
     func setLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0) {
         guard let labelText = self.text else { return }
         
@@ -873,6 +1206,35 @@ extension UILabel  {
         attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attributedString.length))
         
         self.attributedText = attributedString
+    }
+    
+    
+    func wrapLabelInUIView(padding: BoxBlock? = nil) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .clear
+        containerView.addSubview(self)
+        
+        if let padding = padding {
+            let bottom = -1 * (padding.paddingBottom ?? 0)
+            let trailing = -1 * (padding.paddingRight ?? 0)
+
+            NSLayoutConstraint.activate([
+                self.topAnchor.constraint(equalTo: containerView.topAnchor, constant: padding.paddingTop ?? 0),
+                self.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+                self.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: padding.paddingLeft ?? 0),
+                self.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                self.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+                self.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+                self.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+                self.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0)
+            ])
+        }
+        
+        return containerView
     }
     
 }
@@ -1096,8 +1458,8 @@ extension UITextField {
         }
         
         let placeholderText = text.textByLocale()
-        let placeholderColor = text.styles.color?.hexStringToColor ?? .lightGray
-        
+        let placeholderColor = text.styles.color?.hexStringToColor ?? OnboardingService.shared.placeHolderColor
+
         self.attributedPlaceholder = NSAttributedString(
             string: placeholderText,
             attributes: [NSAttributedString.Key.foregroundColor: placeholderColor]
