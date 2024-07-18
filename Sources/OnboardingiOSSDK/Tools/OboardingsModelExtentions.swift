@@ -1547,6 +1547,15 @@ extension ConditionedAction {
         return true
     }
     
+    func stringValueForUserInput(screenId: String, screenGraph: ScreensGraph, screenValues:[String: Any]) -> String {
+        if let screen = screenGraph.screens[screenId] {
+            let screenValueType = screen.screenValueType()
+
+        }
+
+    }
+    
+    
     func valueFor(value:  Any, condition: Condition) -> (String, ValueTypes) {
         guard let customScreenValues = value as? [String : CustomScreenInputValue] else { return ("", ValueTypes.none) }
 
@@ -1854,6 +1863,121 @@ extension Screen {
             return ValueTypes.none
         case .typeScreenTitleSubtitlePicker(let value):
             return ValueTypes.init(rawValue: value.picker.dataType.rawValue) ?? ValueTypes.none
+        }
+    }
+    
+    func screenValueType(input: Any) -> String  {
+        switch self._struct {
+        case .typeScreenBasicPaywall(_):
+            return ""
+        case .typeScreenImageTitleSubtitles(_):
+            return ""
+        case .typeScreenProgressBarTitle(_):
+            return ""
+        case .typeScreenTableMultipleSelection(let value):
+            if let indexes = input as? [Int] {
+                var result = [ItemTypeSelection]()
+                   
+                for index in indexes {
+                    if index >= 0 && index < value.list.items.count {
+                        result.append(value.list.items[index])
+                    }
+                }
+                
+                let resultArray = result.map({$0.title.textByLocale()})
+                return resultArray.joined(separator: ",")
+
+            }
+            return ""
+        case .typeScreenTableSingleSelection(let value):
+            if let indexes = input as? [Int] {
+                var result = [ItemTypeSelection]()
+                   
+                for index in indexes {
+                    if index >= 0 && index < value.list.items.count {
+                        result.append(value.list.items[index])
+                    }
+                }
+                
+                let resultArray = result.map({$0.title.textByLocale()})
+                return resultArray.joined(separator: ",")
+
+            }
+            return ""
+        case .typeScreenTitleSubtitleField(let value):
+            return input as? String ?? ""
+        case .typeScreenImageTitleSubtitleList(let value):
+            if let indexes = input as? [Int] {
+                var result = [ItemTypeRegular]()
+                   
+                for index in indexes {
+                    if index >= 0 && index < value.list.items.count {
+                        result.append(value.list.items[index])
+                    }
+                }
+                
+                let resultArray = result.map({$0.title.textByLocale()})
+                return resultArray.joined(separator: ",")
+
+            }
+            return ""       
+        case .typeScreenTwoColumnMultipleSelection(let value):
+            if let indexes = input as? [Int] {
+                var result = [ItemTypeSelection]()
+                   
+                for index in indexes {
+                    if index >= 0 && index < value.list.items.count {
+                        result.append(value.list.items[index])
+                    }
+                }
+                
+                let resultArray = result.map({$0.title.textByLocale()})
+                return resultArray.joined(separator: ",")
+
+            }
+            return ""        
+        case .typeScreenTwoColumnSingleSelection(let value):
+            if let indexes = input as? [Int] {
+                var result = [ItemTypeSelection]()
+                   
+                for index in indexes {
+                    if index >= 0 && index < value.list.items.count {
+                        result.append(value.list.items[index])
+                    }
+                }
+                
+                let resultArray = result.map({$0.title.textByLocale()})
+                return resultArray.joined(separator: ",")
+
+            }
+            return ""
+        case .typeCustomScreen(_):
+            return ""
+        case .typeScreenTooltipPermissions(_):
+            return ""
+        case .typeScreenImageTitleSubtitleMultipleSelectionList(let value):
+            if let indexes = input as? [Int] {
+                var result = [ItemTypeSelection]()
+                   
+                for index in indexes {
+                    if index >= 0 && index < value.list.items.count {
+                        result.append(value.list.items[index])
+                    }
+                }
+                
+                let resultArray = result.map({$0.title.textByLocale()})
+                return resultArray.joined(separator: ",")
+
+            }
+            return ""
+        case .typeScreenImageTitleSubtitlePicker(let value):
+            return input as? String ?? ""
+        case .typeScreenTitleSubtitleCalendar( _):
+            return ""
+        case .typeScreenSlider(_):
+            return ""
+        case .typeScreenTitleSubtitlePicker(let value):
+            return input as? String ?? ""
         }
     }
     
