@@ -190,16 +190,8 @@ extension OnboardingLocalVideoAssetProvider {
             }
         }
         
-        if let name = stringURL.resourceNameWithoutExtension() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
-                return videoURL
-            }
-        }
-        
-        if let name = stringURL.resourceName() {
-            if let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
-                return videoURL
-            }
+        if let cachedURL = getCachedURLToVideoAsset() {
+            return cachedURL
         }
         
         let _ = await AssetsLoadingService.shared.loadData(from: stringURL, assetType: .video)
@@ -214,6 +206,21 @@ extension OnboardingLocalVideoAssetProvider {
     func getCachedURLToVideoAsset() -> URL? {
         guard let urlByLocale = assetUrlByLocale(),
               let stringURL = urlByLocale.assetUrl?.origin else { return nil }
+       
+        if let name = urlByLocale.assetName,
+           let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+            return videoURL
+        }
+        
+        if let name = stringURL.resourceNameWithoutExtension(),
+           let videoURL = Bundle.main.url(forResource: name, withExtension: "mp4") {
+            return videoURL
+        }
+        
+        if let name = stringURL.resourceName(),
+           let videoURL = Bundle.main.url(forResource: name, withExtension: nil) {
+            return videoURL
+        }
         
         return AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video)
     }
