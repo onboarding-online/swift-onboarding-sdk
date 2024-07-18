@@ -25,6 +25,8 @@ public final class OnboardingService {
     public var assetsPrefetchMode: AssetsPrefetchMode = .waitForScreenToLoad(timeout: 0.5)
 
     public var screenGraph: ScreensGraph?
+    public var placeHolderColor = UIColor.gray
+
     public var paymentService: OnboardingPaymentServiceProtocol?
     public var appearance: AppearanceStyle?
 
@@ -36,7 +38,7 @@ public final class OnboardingService {
     private var videoPreparationService: VideoPreparationService?
     private var currentLoadingViewController: UIViewController?
 
-    private var onboardingUserData: OnboardingData = [:]
+    public var onboardingUserData: OnboardingData = [:]
     private var onboardingFinishedCallback: OnboardingFinishResult?
     private let windowManager: OnboardingWindowManagerProtocol
 

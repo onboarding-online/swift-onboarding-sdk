@@ -20,6 +20,8 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
+    @IBOutlet weak var mediaContainerView: UIView!
+    @IBOutlet weak var mediaContainerViewHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
@@ -59,6 +61,12 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
             view?.layer.masksToBounds = false
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        mediaContainerViewHeightConstraint.constant = 0
+//        mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
     }
 }
 // MARK: - UICollectionViewDataSource

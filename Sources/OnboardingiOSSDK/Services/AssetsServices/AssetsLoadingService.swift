@@ -20,7 +20,7 @@ protocol AssetsLoadingServiceProtocol {
     func loadImage(from url: String) async -> UIImage?
     func loadData(from url: String, assetType: StoredAssetType) async -> Data?
     func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
-    func cacheImage(_ image: UIImage, withName name: String) async
+    func cacheImage(_ image: UIImage, withName name: String)
     func getCachedImageWith(name: String) -> UIImage?
     func clear()
 }
@@ -65,7 +65,7 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         let task: Task<UIImage?, Never> = Task.detached(priority: .high) {
             if let imageData = await self.loadData(from: url, assetType: .image),
                let image = await self.createImage(from: imageData) {
-                await self.cacheImage(image, withName: url)
+                self.cacheImage(image, withName: url)
                 return image
             }
             return nil
@@ -130,9 +130,11 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         storage.assetURLIfExist(for: url, assetType: assetType)
     }
     
-    func cacheImage(_ image: UIImage, withName name: String) async {
-        let image = await image.readyToDisplay()
-        cacheStorage.cache(image: image, forKey: name)
+    func cacheImage(_ image: UIImage, withName name: String) {
+        Task {
+            let image = await image.readyToDisplay()
+            cacheStorage.cache(image: image, forKey: name)
+        }
     }
     
     func getCachedImageWith(name: String) -> UIImage? {
