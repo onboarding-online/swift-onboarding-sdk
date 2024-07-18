@@ -918,8 +918,14 @@ extension UILabel  {
             for key in links.keys {
                 let screenId = substringBeforeDot(in: links[key])
                 if  !screenId.isEmpty {
-                    if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
-                        linksValue["\(key)"] = value
+                    
+                    if let screen = OnboardingService.shared.screenGraph?.screens[screenId], let value  = OnboardingService.shared.onboardingUserData[screenId] {
+                        let screenStringValue = screen.screenValueType(input: value)
+
+                        if !screenStringValue.isEmpty {
+                            linksValue["\(key)"] = screenStringValue
+
+                        }
                     }
                 }
             }
@@ -1547,14 +1553,6 @@ extension ConditionedAction {
         return true
     }
     
-    func stringValueForUserInput(screenId: String, screenGraph: ScreensGraph, screenValues:[String: Any]) -> String {
-        if let screen = screenGraph.screens[screenId] {
-            let screenValueType = screen.screenValueType()
-
-        }
-
-    }
-    
     
     func valueFor(value:  Any, condition: Condition) -> (String, ValueTypes) {
         guard let customScreenValues = value as? [String : CustomScreenInputValue] else { return ("", ValueTypes.none) }
@@ -1885,22 +1883,20 @@ extension Screen {
                 }
                 
                 let resultArray = result.map({$0.title.textByLocale()})
-                return resultArray.joined(separator: ",")
+                return resultArray.joined(separator: ", ")
 
             }
             return ""
         case .typeScreenTableSingleSelection(let value):
-            if let indexes = input as? [Int] {
+            if let index = input as? Int {
                 var result = [ItemTypeSelection]()
                    
-                for index in indexes {
-                    if index >= 0 && index < value.list.items.count {
-                        result.append(value.list.items[index])
-                    }
+                if index >= 0 && index < value.list.items.count {
+                    result.append(value.list.items[index])
                 }
                 
                 let resultArray = result.map({$0.title.textByLocale()})
-                return resultArray.joined(separator: ",")
+                return resultArray.joined(separator: ", ")
 
             }
             return ""
@@ -1932,22 +1928,20 @@ extension Screen {
                 }
                 
                 let resultArray = result.map({$0.title.textByLocale()})
-                return resultArray.joined(separator: ",")
+                return resultArray.joined(separator: ", ")
 
             }
             return ""        
         case .typeScreenTwoColumnSingleSelection(let value):
-            if let indexes = input as? [Int] {
+            if let index = input as? Int {
                 var result = [ItemTypeSelection]()
                    
-                for index in indexes {
-                    if index >= 0 && index < value.list.items.count {
-                        result.append(value.list.items[index])
-                    }
+                if index >= 0 && index < value.list.items.count {
+                    result.append(value.list.items[index])
                 }
                 
                 let resultArray = result.map({$0.title.textByLocale()})
-                return resultArray.joined(separator: ",")
+                return resultArray.joined(separator: ", ")
 
             }
             return ""
@@ -1966,7 +1960,7 @@ extension Screen {
                 }
                 
                 let resultArray = result.map({$0.title.textByLocale()})
-                return resultArray.joined(separator: ",")
+                return resultArray.joined(separator: ", ")
 
             }
             return ""
