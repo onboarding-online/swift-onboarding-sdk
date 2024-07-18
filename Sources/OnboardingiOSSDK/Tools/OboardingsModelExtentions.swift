@@ -210,6 +210,13 @@ extension OnboardingLocalVideoAssetProvider {
         }
         return nil
     }
+    
+    func getCachedURLToVideoAsset() -> URL? {
+        guard let urlByLocale = assetUrlByLocale(),
+              let stringURL = urlByLocale.assetUrl?.origin else { return nil }
+        
+        return AssetsLoadingService.shared.urlToStoredData(from: stringURL, assetType: .video)
+    }
 }
 
 extension BaseVideo: OnboardingLocalVideoAssetProvider { }
@@ -245,7 +252,8 @@ extension OnboardingLocalImageAssetProvider {
     func loadCashedImage(useLocalAssetsIfAvailable: Bool)  -> UIImage? {
         let urlByLocale = assetUrlByLocale()
         
-        if let url = urlByLocale?.assetUrl?.origin, let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: url) {
+        if let url = urlByLocale?.assetUrl?.origin, 
+            let cachedImage = AssetsLoadingService.shared.getCachedImageWith(name: url) {
             return cachedImage
         } else  {
             return nil
