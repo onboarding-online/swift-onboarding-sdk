@@ -50,6 +50,10 @@ extension VideoPreparationService {
         }
     }
     
+    func getStatusFor(screenId: String) -> PlayerPreparationStatus? {
+        screenIdToPlayerDict[screenId]?.status
+    }
+    
     func prepareForNextScreen(_ screenId: String?) {
 //        guard let screenId else { return }
     
