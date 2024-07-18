@@ -167,11 +167,15 @@ private extension VideoPreparationService {
     func preparePlayerFor(screenId: String, with preparationDetails: PlayerPreparationDetails) {
         updateStatusOf(screenId: screenId, to: .preparing)
         let video = preparationDetails.video
-        Task { @MainActor in
-            if let videoURL = await video.urlToVideoAsset(useLocalAssetsIfAvailable: preparationDetails.useLocalAssetsIfAvailable) {
-                self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
-            } else {
-                updateStatusOf(screenId: screenId, to: .failed)
+        if let videoURL = video.getCachedURLToVideoAsset() {
+            self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
+        } else {
+            Task { @MainActor in
+                if let videoURL = await video.urlToVideoAsset(useLocalAssetsIfAvailable: preparationDetails.useLocalAssetsIfAvailable) {
+                    self.setPlayVideoBackgroundFor(screenId: screenId, with: videoURL)
+                } else {
+                    updateStatusOf(screenId: screenId, to: .failed)
+                }
             }
         }
     }
