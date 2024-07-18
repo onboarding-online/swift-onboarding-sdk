@@ -54,7 +54,10 @@ extension AssetsPrefetchService {
         Task {
             try? await prefetchFirstScreen()
             log(message: "Did prefetch first screen. Will start prefetching of the rest")
-            try? await prefetchAllAssets()
+            Task.detached {
+                await Task.sleep(seconds: 0.2)
+                try? await self.prefetchAllAssets()
+            }
         }
     }
     
