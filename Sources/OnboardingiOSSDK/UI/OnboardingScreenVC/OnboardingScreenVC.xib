@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,6 +16,7 @@
                 <outlet property="footerContainerView" destination="DC4-xj-Moq" id="MGT-2z-I1b"/>
                 <outlet property="footerHeightConstraint" destination="4I5-5d-ldn" id="JhN-jz-Yng"/>
                 <outlet property="headerContainerView" destination="vgA-xK-yNf" id="g2v-FK-jsQ"/>
+                <outlet property="mainChildContainerView" destination="Xof-TV-YrP" id="fEB-g4-k3n"/>
                 <outlet property="progressBarTopConstraint" destination="f3a-OJ-imz" id="ttU-1y-SRz"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -50,11 +51,11 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="vgA-xK-yNf" secondAttribute="trailing" id="0rt-4Z-1uy"/>
-                        <constraint firstItem="VHv-AV-b4k" firstAttribute="top" secondItem="vgA-xK-yNf" secondAttribute="bottom" id="23b-bx-OBY"/>
-                        <constraint firstAttribute="trailing" secondItem="VHv-AV-b4k" secondAttribute="trailing" id="4uV-7c-HfE"/>
-                        <constraint firstItem="VHv-AV-b4k" firstAttribute="leading" secondItem="Xof-TV-YrP" secondAttribute="leading" id="85d-GD-hPa"/>
+                        <constraint firstItem="VHv-AV-b4k" firstAttribute="top" secondItem="vgA-xK-yNf" secondAttribute="bottom" priority="800" id="23b-bx-OBY"/>
                         <constraint firstItem="vgA-xK-yNf" firstAttribute="top" secondItem="Xof-TV-YrP" secondAttribute="top" id="EhV-bO-Nxb"/>
-                        <constraint firstItem="DC4-xj-Moq" firstAttribute="top" secondItem="VHv-AV-b4k" secondAttribute="bottom" id="KMZ-2s-GUn"/>
+                        <constraint firstItem="DC4-xj-Moq" firstAttribute="top" secondItem="VHv-AV-b4k" secondAttribute="bottom" priority="800" id="KMZ-2s-GUn"/>
+                        <constraint firstAttribute="trailing" secondItem="VHv-AV-b4k" secondAttribute="trailing" id="T5a-wS-dZg"/>
+                        <constraint firstItem="VHv-AV-b4k" firstAttribute="leading" secondItem="Xof-TV-YrP" secondAttribute="leading" id="WrZ-iA-duO"/>
                         <constraint firstItem="vgA-xK-yNf" firstAttribute="leading" secondItem="Xof-TV-YrP" secondAttribute="leading" id="Yse-Do-0YS"/>
                         <constraint firstAttribute="bottom" secondItem="DC4-xj-Moq" secondAttribute="bottom" id="ddx-ce-yNr"/>
                         <constraint firstAttribute="trailing" secondItem="DC4-xj-Moq" secondAttribute="trailing" id="igg-ql-klf"/>

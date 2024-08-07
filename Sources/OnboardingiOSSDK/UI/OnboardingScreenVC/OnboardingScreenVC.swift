@@ -20,6 +20,10 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
         return vc
     }
     
+    @IBOutlet private weak var backgroundContainerView: UIView!
+
+    @IBOutlet private weak var mainChildContainerView: UIView!
+
     @IBOutlet private weak var childContainerView: UIView!
     @IBOutlet private weak var headerContainerView: UIView!
     @IBOutlet private weak var footerContainerView: UIView!
@@ -28,7 +32,7 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
     @IBOutlet private var footerHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var progressBarTopConstraint: NSLayoutConstraint!
 
-    @IBOutlet private weak var backgroundContainerView: UIView!
+
     
     weak var delegate: OnboardingScreenDelegate?
     var screen: Screen!
@@ -53,6 +57,7 @@ class OnboardingScreenVC: BaseOnboardingScreen, OnboardingScreenProtocol {
         super.viewDidLoad()
         
         setupMainUIBlocks()
+        setupChildScreensConstraints()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,6 +105,19 @@ extension OnboardingScreenVC: OnboardingChildScreenDelegate {
 
 // MARK: - Private methods
 private extension OnboardingScreenVC {
+    
+    func setupChildScreensConstraints() {
+        if screen.containerToTop() {
+            mainChildContainerView.sendSubviewToBack(childContainerView)
+            headerContainerView.bringSubviewToFront(mainChildContainerView)
+            NSLayoutConstraint.activate([
+                childContainerView.topAnchor.constraint(equalTo: backgroundContainerView.topAnchor, constant: 0),
+                childContainerView.bottomAnchor.constraint(equalTo: footerContainerView.topAnchor, constant: 0),
+                childContainerView.leadingAnchor.constraint(equalTo: backgroundContainerView.leadingAnchor, constant: 0),
+                childContainerView.trailingAnchor.constraint(equalTo: backgroundContainerView.trailingAnchor, constant: 0)
+            ])
+        }
+    }
     
     func setFooterStateBasedOnUserInputValue() {
         if let any = self.value as? [Int] {

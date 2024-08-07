@@ -1871,6 +1871,15 @@ extension Screen {
         }
     }
     
+    func containerToTop() -> Bool  {
+        switch self._struct {
+        case .typeScreenImageTitleSubtitles(let value):
+            return value.image.styles.imageKind == .imageKind2
+        default:
+            return false
+        }
+    }
+    
 }
 
 extension ScreensGraph {
