@@ -43,6 +43,14 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
         setup()
         setupCollectionView()
         setupLabelsValue()
+        
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)
+        
+        if let media = screenData.media, let strongScreen = screen {
+            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -65,9 +73,9 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let media = screenData.media, let strongScreen = screen {
-            let screenID = strongScreen.id + screenData.listVideoKeyConstant
-
-            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+//            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+//
+//            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
             
             if let percent = media.styles.heightPercentage {
                 mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)

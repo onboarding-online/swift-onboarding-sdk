@@ -45,6 +45,14 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
         setupCollectionView()
         setupLabelsValue()
         
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)
+
+        
+        if let media = screenData.media, let strongScreen = screen {
+            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,9 +77,9 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let media = screenData.media, let strongScreen = screen {
-            let screenID = strongScreen.id + screenData.listVideoKeyConstant
-
-            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+//            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+//
+//            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
             
             if let percent = media.styles.heightPercentage {
                 mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
@@ -83,40 +91,6 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
             mediaContainerViewHeightConstraint.constant = 0
         }
     }
-    
-//    func setupBackgroundFor(screenId: String,
-//                            using preparationService: VideoPreparationService) {
-//        if let status = preparationService.getStatusFor(screenId: screenId),
-//           case .ready(let preparedData) = status {
-//            playVideoBackgroundWith(preparedData: preparedData)
-//        } else {
-//            preparationService.observeScreenId(screenId) { [weak self] status in
-//                DispatchQueue.main.async {
-//                    switch status {
-//                    case .undefined, .preparing:
-//                        return
-//                    case .failed:
-//                        break
-//                    case .ready(let preparedData):
-//                        self?.playVideoBackgroundWith(preparedData: preparedData)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    
-//    func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
-//        if self.videoBackground == nil {
-//            self.videoBackground = VideoBackground()
-//            if let mode = screenData.media?.styles.scaleMode?.videoContentMode() {
-//                videoBackground?.videoGravity = mode
-//            }
-//            self.videoBackground!.play(in: self.mediaContainerView,
-//                                        using: preparedData)
-//        }
-//    }
-    
-    
     
 }
 // MARK: - UICollectionViewDataSource

@@ -150,6 +150,10 @@
                     </view>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="collectionBottomPadding" destination="L5K-UF-hvw" id="zeu-3d-bcd"/>
+                        <outlet property="collectionLeftPadding" destination="FIN-Xo-0ll" id="mDm-ND-kaJ"/>
+                        <outlet property="collectionRightPadding" destination="SKo-qZ-hON" id="Mft-fG-vx3"/>
+                        <outlet property="collectionTopPadding" destination="qli-tG-vjx" id="hvu-PK-AfW"/>
                         <outlet property="collectionView" destination="Gx2-6c-mN1" id="pdt-bW-uLd"/>
                         <outlet property="mediaContainerView" destination="Zhr-Bp-uXF" id="NwB-7y-aTY"/>
                         <outlet property="mediaContainerViewHeightConstraint" destination="N9U-LN-bcf" id="Bpd-JD-JNM"/>

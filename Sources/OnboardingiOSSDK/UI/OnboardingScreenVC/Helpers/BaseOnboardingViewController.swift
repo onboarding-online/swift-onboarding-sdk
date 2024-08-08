@@ -117,15 +117,15 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
         guard let box = box else { return }
         
         if let paddingLeft =  box.paddingLeft?.cgFloatValue {
-            self.collectionLeftPadding.constant = paddingLeft
+            self.collectionLeftPadding.constant = paddingLeft + 16
         } else {
-            self.collectionLeftPadding.constant = 0.0
+            self.collectionLeftPadding.constant = 16
         }
         
         if let paddingRight =  box.paddingRight?.cgFloatValue {
-            self.collectionRightPadding.constant = paddingRight
+            self.collectionRightPadding.constant = paddingRight + 16
         } else {
-            self.collectionRightPadding.constant = 0.0
+            self.collectionRightPadding.constant = 16
         }
     }
     

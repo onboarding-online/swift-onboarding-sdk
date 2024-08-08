@@ -16,6 +16,8 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
         
         tableSingleSelectionVC.videoPreparationService = videoPreparationService
         tableSingleSelectionVC.screen = screen
+        tableSingleSelectionVC.media = screenData.media
+
 
         return tableSingleSelectionVC
     }
@@ -60,6 +62,24 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
             view?.layer.masksToBounds = false
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let media = screenData.media, let strongScreen = screen {
+            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+
+            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+            
+            if let percent = media.styles.heightPercentage {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
+            } else {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
+
+            }
+        } else {
+            mediaContainerViewHeightConstraint.constant = 0
+        }
     }
     
 }
