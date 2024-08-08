@@ -16,7 +16,7 @@ struct BaseScreenStruct {
 
 class ChildControllerFabrika {
     
-    static func viewControllerFor(screen: Screen) -> BaseScreenStruct? {
+    static func viewControllerFor(screen: Screen, videoPreparationService: VideoPreparationService? = nil) -> BaseScreenStruct? {
         var baseScreen: BaseScreenProtocol?
         var permissionAction: Action?
         var childController: BaseChildScreenGraphViewController
@@ -36,11 +36,11 @@ class ChildControllerFabrika {
         case .typeScreenTableMultipleSelection(let value):
             
             baseScreen = saveMainScreenDataFor(value: value)
-            childController = ScreenOneItemPerRowMultipleSelectionCollectionVC.instantiate(screenData: value)
+            childController = ScreenOneItemPerRowMultipleSelectionCollectionVC.instantiate(screenData: value, videoPreparationService: videoPreparationService, screen: screen)
         case .typeScreenTableSingleSelection(let value):
           
             baseScreen = saveMainScreenDataFor(value: value)
-            childController = ScreenOneItemPerRowSingleSelectionCollectionVC.instantiate(screenData: value)
+            childController = ScreenOneItemPerRowSingleSelectionCollectionVC.instantiate(screenData: value, videoPreparationService: videoPreparationService, screen: screen)
         case .typeScreenTitleSubtitleField(let value):
          
             baseScreen = saveMainScreenDataFor(value: value)
@@ -52,11 +52,11 @@ class ChildControllerFabrika {
         case .typeScreenTwoColumnMultipleSelection(let value):
            
             baseScreen = saveMainScreenDataFor(value: value)
-            childController = ScreenCollectionMultipleSelectionVC.instantiate(screenData: value)
+            childController = ScreenCollectionMultipleSelectionVC.instantiate(screenData: value, videoPreparationService: videoPreparationService, screen: screen)
         case .typeScreenTwoColumnSingleSelection(let value):
            
             baseScreen = saveMainScreenDataFor(value: value)
-            childController = ScreenCollectionSingleSelectionVC.instantiate(screenData: value)
+            childController = ScreenCollectionSingleSelectionVC.instantiate(screenData: value, videoPreparationService: videoPreparationService, screen: screen)
         case .typeCustomScreen(_):
           
             childController = ScreenCollectionSingleSelectionVC.storyBoardInstance()
@@ -145,8 +145,23 @@ class ChildControllerFabrika {
                 default:
                     break
                 }
+            }
+        case .typeScreenTwoColumnMultipleSelection(let value):
+            let screenId = screen.id + ChildControllerFabrika.videosKeyFor(screen: screen)
+            if let mediaContent = value.media?.content  {
+                switch mediaContent {
+                case .typeMediaVideo(let video):
+                    let videoStruct = VideoWithUniqueKey.init(video:  video.video, screenIdWithElementType: screenId)
+                    return videoStruct
+                default:
+                    break
+                }
                 
             }
+        case .typeScreenTwoColumnSingleSelection(let value):
+            let screenVideo1 = videoStructFor(screen: screen, content: value.media?.content)
+            return screenVideo1
+            
         default:
             break
         }
@@ -154,10 +169,31 @@ class ChildControllerFabrika {
         return nil
     }
     
+    static func videoStructFor(screen: Screen, content: MediaContent?) -> VideoWithUniqueKey? {
+        let screenId = screen.id + ChildControllerFabrika.videosKeyFor(screen: screen)
+        if let mediaContent = content {
+            switch mediaContent {
+            case .typeMediaVideo(let video):
+                let videoStruct = VideoWithUniqueKey.init(video:  video.video, screenIdWithElementType: screenId)
+                return videoStruct
+            default:
+                break
+            }
+        }
+        return nil
+    }
+    
+    
+    
     static func videosKeyFor(screen: Screen) -> String {
+        let listVideoKeyConstant = "listVideo"
+        
         switch screen._struct {
         case .typeScreenBasicPaywall(let value):
             return value.paywallHeaderVideoKeyConstant
+        case .typeScreenTwoColumnMultipleSelection(_), .typeScreenTwoColumnSingleSelection(_), .typeScreenTableSingleSelection(_), .typeScreenTableMultipleSelection(_):
+            return listVideoKeyConstant
+
         default:
             return ""
         }
@@ -169,9 +205,26 @@ class ChildControllerFabrika {
     
 }
 
+
 extension ScreenBasicPaywall {
     var paywallHeaderVideoKeyConstant : String { get { return  "paywallHeaderVideo" } }
     
+}
+
+extension ScreenTwoColumnMultipleSelection {
+    var listVideoKeyConstant : String { get { return  "listVideo" } }
+}
+
+extension ScreenTwoColumnSingleSelection {
+    var listVideoKeyConstant : String { get { return  "listVideo" } }
+}
+
+extension ScreenTableMultipleSelection {
+    var listVideoKeyConstant : String { get { return  "listVideo" } }
+}
+
+extension ScreenTableSingleSelection {
+    var listVideoKeyConstant : String { get { return  "listVideo" } }
 }
 
 //extension Video {

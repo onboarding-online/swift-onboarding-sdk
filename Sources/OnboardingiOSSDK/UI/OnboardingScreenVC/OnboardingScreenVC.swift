@@ -116,6 +116,13 @@ private extension OnboardingScreenVC {
                 childContainerView.leadingAnchor.constraint(equalTo: backgroundContainerView.leadingAnchor, constant: 0),
                 childContainerView.trailingAnchor.constraint(equalTo: backgroundContainerView.trailingAnchor, constant: 0)
             ])
+        } else if screen.containerTillLeftRightParentView() {
+            NSLayoutConstraint.activate([
+                childContainerView.topAnchor.constraint(equalTo: headerContainerView.bottomAnchor, constant: 0),
+                childContainerView.bottomAnchor.constraint(equalTo: footerContainerView.topAnchor, constant: 0),
+                childContainerView.leadingAnchor.constraint(equalTo: backgroundContainerView.leadingAnchor, constant: 0),
+                childContainerView.trailingAnchor.constraint(equalTo: backgroundContainerView.trailingAnchor, constant: 0)
+            ])
         }
     }
     
@@ -142,7 +149,7 @@ private extension OnboardingScreenVC {
     }
     
     func onboardingViewControllerFor(screen: Screen) -> BaseChildScreenGraphViewController? {
-        if let baseScreenStruct =  ChildControllerFabrika.viewControllerFor(screen: screen) {
+        if let baseScreenStruct =  ChildControllerFabrika.viewControllerFor(screen: screen, videoPreparationService: videoPreparationService) {
             self.permissionAction = baseScreenStruct.permissionAction
             self.screenData = baseScreenStruct.baseScreen
             

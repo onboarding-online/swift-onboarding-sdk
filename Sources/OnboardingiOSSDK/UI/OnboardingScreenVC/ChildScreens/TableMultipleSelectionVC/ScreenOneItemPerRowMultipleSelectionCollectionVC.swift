@@ -11,9 +11,13 @@ import ScreensGraph
 
 class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTableMultipleSelection) -> ScreenOneItemPerRowMultipleSelectionCollectionVC {
+    static func instantiate(screenData: ScreenTableMultipleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenOneItemPerRowMultipleSelectionCollectionVC {
         let tableMultipleSelectionVC = ScreenOneItemPerRowMultipleSelectionCollectionVC.storyBoardInstance()
         tableMultipleSelectionVC.screenData = screenData
+        
+        tableMultipleSelectionVC.videoPreparationService = videoPreparationService
+        tableMultipleSelectionVC.screen = screen
+        
         return tableMultipleSelectionVC
     }
     

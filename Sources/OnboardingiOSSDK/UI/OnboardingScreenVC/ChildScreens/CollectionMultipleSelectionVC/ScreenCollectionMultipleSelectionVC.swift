@@ -8,20 +8,23 @@
 import UIKit
 import ScreensGraph
 
-class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
+class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTwoColumnMultipleSelection) -> ScreenCollectionMultipleSelectionVC {
+    static func instantiate(screenData: ScreenTwoColumnMultipleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenCollectionMultipleSelectionVC {
         let twoColumnMultipleSelectionVC = ScreenCollectionMultipleSelectionVC.storyBoardInstance()
         twoColumnMultipleSelectionVC.screenData = screenData
-
+        
+        twoColumnMultipleSelectionVC.videoPreparationService = videoPreparationService
+        twoColumnMultipleSelectionVC.screen = screen
+        twoColumnMultipleSelectionVC.media = screenData.media
+        
         return twoColumnMultipleSelectionVC
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
-    @IBOutlet weak var mediaContainerView: UIView!
-    @IBOutlet weak var mediaContainerViewHeightConstraint: NSLayoutConstraint!
+    
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
@@ -33,7 +36,7 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
     var selectedItem = [Int]()
     
     let cellConfigurator = TextCollectionCellWithBorderConfigurator.init()
-
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,9 +68,56 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        mediaContainerViewHeightConstraint.constant = 0
-//        mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
+        if let media = screenData.media, let strongScreen = screen {
+            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+
+            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+            
+            if let percent = media.styles.heightPercentage {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
+            } else {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
+
+            }
+        } else {
+            mediaContainerViewHeightConstraint.constant = 0
+        }
     }
+    
+//    func setupBackgroundFor(screenId: String,
+//                            using preparationService: VideoPreparationService) {
+//        if let status = preparationService.getStatusFor(screenId: screenId),
+//           case .ready(let preparedData) = status {
+//            playVideoBackgroundWith(preparedData: preparedData)
+//        } else {
+//            preparationService.observeScreenId(screenId) { [weak self] status in
+//                DispatchQueue.main.async {
+//                    switch status {
+//                    case .undefined, .preparing:
+//                        return
+//                    case .failed:
+//                        break
+//                    case .ready(let preparedData):
+//                        self?.playVideoBackgroundWith(preparedData: preparedData)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    
+//    func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
+//        if self.videoBackground == nil {
+//            self.videoBackground = VideoBackground()
+//            if let mode = screenData.media?.styles.scaleMode?.videoContentMode() {
+//                videoBackground?.videoGravity = mode
+//            }
+//            self.videoBackground!.play(in: self.mediaContainerView,
+//                                        using: preparedData)
+//        }
+//    }
+    
+    
+    
 }
 // MARK: - UICollectionViewDataSource
 extension ScreenCollectionMultipleSelectionVC: UICollectionViewDataSource {

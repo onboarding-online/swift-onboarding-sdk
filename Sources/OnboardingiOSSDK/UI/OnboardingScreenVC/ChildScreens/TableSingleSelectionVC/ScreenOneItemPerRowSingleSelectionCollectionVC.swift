@@ -10,9 +10,12 @@ import ScreensGraph
 
 class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTableSingleSelection) -> ScreenOneItemPerRowSingleSelectionCollectionVC {
+    static func instantiate(screenData: ScreenTableSingleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenOneItemPerRowSingleSelectionCollectionVC {
         let tableSingleSelectionVC = ScreenOneItemPerRowSingleSelectionCollectionVC.storyBoardInstance()
         tableSingleSelectionVC.screenData = screenData
+        
+        tableSingleSelectionVC.videoPreparationService = videoPreparationService
+        tableSingleSelectionVC.screen = screen
 
         return tableSingleSelectionVC
     }

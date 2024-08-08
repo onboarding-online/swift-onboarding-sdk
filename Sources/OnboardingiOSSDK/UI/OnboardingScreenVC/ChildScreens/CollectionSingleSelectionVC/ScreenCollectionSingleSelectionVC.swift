@@ -8,12 +8,16 @@
 import UIKit
 import ScreensGraph
 
-final class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewController {
+final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTwoColumnSingleSelection) -> ScreenCollectionSingleSelectionVC {
+    static func instantiate(screenData: ScreenTwoColumnSingleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenCollectionSingleSelectionVC {
         let twoColumnSingleSelectionVC = ScreenCollectionSingleSelectionVC.storyBoardInstance()
         twoColumnSingleSelectionVC.screenData = screenData
-
+        
+        twoColumnSingleSelectionVC.videoPreparationService = videoPreparationService
+        twoColumnSingleSelectionVC.screen = screen
+        twoColumnSingleSelectionVC.media = screenData.media
+        
         return twoColumnSingleSelectionVC
     }
     
@@ -57,6 +61,25 @@ final class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewControlle
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let media = screenData.media, let strongScreen = screen {
+            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+
+            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+            
+            if let percent = media.styles.heightPercentage {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
+            } else {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
+
+            }
+        } else {
+            mediaContainerViewHeightConstraint.constant = 0
+        }
+    }
+    
 }
 // MARK: - UICollectionViewDataSource
 extension ScreenCollectionSingleSelectionVC: UICollectionViewDataSource {

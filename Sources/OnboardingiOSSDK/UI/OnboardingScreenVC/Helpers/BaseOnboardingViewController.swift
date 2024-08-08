@@ -15,13 +15,102 @@ public class BaseChildScreenGraphViewController: BaseOnboardingViewController, O
     var isEmbedded: Bool { true }
 }
 
-public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphViewController {
+public class BaseChildScreenGraphListViewController: BaseChildScreenGraphViewController {
+    
+    @IBOutlet weak var mediaContainerView: UIView!
+    @IBOutlet weak var mediaContainerViewHeightConstraint: NSLayoutConstraint!
+    
+    var videoPreparationService: VideoPreparationService? = nil
+    var screen: Screen? = nil
+    var media: Media?
 
+    
+    var videoBackground: VideoBackground? = nil
+
+    
+    func setupBackgroundFor(screenId: String,
+                            using preparationService: VideoPreparationService) {
+        if let status = preparationService.getStatusFor(screenId: screenId),
+           case .ready(let preparedData) = status {
+            playVideoBackgroundWith(preparedData: preparedData)
+        } else {
+            preparationService.observeScreenId(screenId) { [weak self] status in
+                DispatchQueue.main.async {
+                    switch status {
+                    case .undefined, .preparing:
+                        return
+                    case .failed:
+                        break
+                    case .ready(let preparedData):
+                        self?.playVideoBackgroundWith(preparedData: preparedData)
+                    }
+                }
+            }
+        }
+    }
+    
+    func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
+        if self.videoBackground == nil {
+            self.videoBackground = VideoBackground()
+            if let mode = media?.styles.scaleMode?.videoContentMode() {
+                videoBackground?.videoGravity = mode
+            }
+            self.videoBackground!.play(in: self.mediaContainerView,
+                                        using: preparedData)
+        }
+    }
+}
+
+public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphViewController {
+    
     @IBOutlet weak var collectionLeftPadding: NSLayoutConstraint!
     @IBOutlet weak var collectionRightPadding: NSLayoutConstraint!
 
     @IBOutlet weak var collectionTopPadding: NSLayoutConstraint!
     @IBOutlet weak var collectionBottomPadding: NSLayoutConstraint!
+    
+    @IBOutlet weak var mediaContainerView: UIView!
+    @IBOutlet weak var mediaContainerViewHeightConstraint: NSLayoutConstraint!
+    
+    var videoPreparationService: VideoPreparationService? = nil
+    var screen: Screen? = nil
+    var media: Media?
+
+    
+    var videoBackground: VideoBackground? = nil
+
+    
+    func setupBackgroundFor(screenId: String,
+                            using preparationService: VideoPreparationService) {
+        if let status = preparationService.getStatusFor(screenId: screenId),
+           case .ready(let preparedData) = status {
+            playVideoBackgroundWith(preparedData: preparedData)
+        } else {
+            preparationService.observeScreenId(screenId) { [weak self] status in
+                DispatchQueue.main.async {
+                    switch status {
+                    case .undefined, .preparing:
+                        return
+                    case .failed:
+                        break
+                    case .ready(let preparedData):
+                        self?.playVideoBackgroundWith(preparedData: preparedData)
+                    }
+                }
+            }
+        }
+    }
+    
+    func playVideoBackgroundWith(preparedData: VideoBackgroundPreparedData) {
+        if self.videoBackground == nil {
+            self.videoBackground = VideoBackground()
+            if let mode = media?.styles.scaleMode?.videoContentMode() {
+                videoBackground?.videoGravity = mode
+            }
+            self.videoBackground!.play(in: self.mediaContainerView,
+                                        using: preparedData)
+        }
+    }
     
     
     func setupCollectionConstraintsWith(box: BoxProtocol?) {
@@ -38,18 +127,6 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
         } else {
             self.collectionRightPadding.constant = 0.0
         }
-
-//        if let paddingTop =  box.paddingTop?.cgFloatValue {
-//            self.collectionTopPadding.constant = paddingTop
-//        } else {
-//            self.collectionTopPadding.constant = 0.0
-//        }
-//
-//        if let paddingBottom =  box.paddingBottom?.cgFloatValue {
-//            self.collectionBottomPadding.constant = paddingBottom
-//        } else {
-//            self.collectionBottomPadding.constant = 0.0
-//        }
     }
     
 }
