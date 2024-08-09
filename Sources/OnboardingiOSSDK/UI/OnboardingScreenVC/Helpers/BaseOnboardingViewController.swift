@@ -63,6 +63,8 @@ public class BaseChildScreenGraphListViewController: BaseChildScreenGraphViewCon
 
 public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphViewController {
     
+    @IBOutlet weak var collectionView: UICollectionView!
+
     @IBOutlet weak var collectionLeftPadding: NSLayoutConstraint!
     @IBOutlet weak var collectionRightPadding: NSLayoutConstraint!
 
@@ -75,10 +77,83 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
     var videoPreparationService: VideoPreparationService? = nil
     var screen: Screen? = nil
     var media: Media?
-
     
+    let imageView = UIImageView()
+    let videoView = UIView()
+
     var videoBackground: VideoBackground? = nil
 
+    func setupMedia() {
+        if let media = media, let strongScreen = screen  {
+            if media.kind == .image {
+                wrapInUIView(padding: media.box.styles)
+                load(image: media.image(), in: imageView, useLocalAssetsIfAvailable: true)
+            } else {
+                wrapVideoInUIView(padding: media.box.styles)
+                let listVideoKeyConstant =  "listVideo"
+                let screenID = strongScreen.id + listVideoKeyConstant
+                setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+            }
+        }
+    }
+    
+    func wrapInUIView(padding: BoxBlock? = nil) {
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.backgroundColor = .clear
+        mediaContainerView.addSubview(imageView)
+        
+        let bottom = -1 * (padding?.paddingBottom ?? 0)
+        let trailing = -1 * (padding?.paddingRight ?? 0)
+        
+        let leading = (padding?.paddingLeft ?? 0)
+        let top = (padding?.paddingTop ?? 0)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: mediaContainerView.topAnchor, constant: top),
+            imageView.bottomAnchor.constraint(equalTo: mediaContainerView.bottomAnchor, constant: bottom),
+            imageView.leadingAnchor.constraint(equalTo: mediaContainerView.leadingAnchor, constant: leading),
+            imageView.trailingAnchor.constraint(equalTo: mediaContainerView.trailingAnchor, constant: trailing)
+        ])
+    }
+    
+    func wrapVideoInUIView(padding: BoxBlock? = nil) {
+        videoView.translatesAutoresizingMaskIntoConstraints = false
+        videoView.backgroundColor = .clear
+        mediaContainerView.addSubview(videoView)
+        
+        let bottom = -1 * (padding?.paddingBottom ?? 0)
+        let trailing = -1 * (padding?.paddingRight ?? 0)
+        
+        let leading = (padding?.paddingLeft ?? 0)
+        let top = (padding?.paddingTop ?? 0)
+        
+        NSLayoutConstraint.activate([
+            videoView.topAnchor.constraint(equalTo: mediaContainerView.topAnchor, constant: top),
+            videoView.bottomAnchor.constraint(equalTo: mediaContainerView.bottomAnchor, constant: bottom),
+            videoView.leadingAnchor.constraint(equalTo: mediaContainerView.leadingAnchor, constant: leading),
+            videoView.trailingAnchor.constraint(equalTo: mediaContainerView.trailingAnchor, constant: trailing)
+        ])
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupMedia()
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if let media = media {
+            if let percent = media.styles.heightPercentage {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
+            } else {
+                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
+            }
+        } else {
+            mediaContainerViewHeightConstraint.constant = 0
+        }
+    }
     
     func setupBackgroundFor(screenId: String,
                             using preparationService: VideoPreparationService) {
@@ -107,7 +182,7 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
             if let mode = media?.styles.scaleMode?.videoContentMode() {
                 videoBackground?.videoGravity = mode
             }
-            self.videoBackground!.play(in: self.mediaContainerView,
+            self.videoBackground!.play(in: self.videoView,
                                         using: preparedData)
         }
     }

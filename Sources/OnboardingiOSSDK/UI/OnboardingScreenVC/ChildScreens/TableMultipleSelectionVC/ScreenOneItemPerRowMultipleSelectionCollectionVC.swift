@@ -25,7 +25,7 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScree
     
     @IBOutlet weak var iconImage: UIImageView!
 
-    @IBOutlet weak var collectionView: UICollectionView!
+//    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
     
@@ -69,24 +69,7 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScree
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
     }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let media = screenData.media, let strongScreen = screen {
-            let screenID = strongScreen.id + screenData.listVideoKeyConstant
 
-            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
-            
-            if let percent = media.styles.heightPercentage {
-                mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
-            } else {
-                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
-
-            }
-        } else {
-            mediaContainerViewHeightConstraint.constant = 0
-        }
-    }
 }
 
 // MARK: - UICollectionViewDataSource

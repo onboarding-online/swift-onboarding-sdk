@@ -21,11 +21,9 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
         return twoColumnMultipleSelectionVC
     }
     
-    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
     
-
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
     private let numberOfCellsInRow: CGFloat = 2
@@ -65,24 +63,6 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
             view?.layer.masksToBounds = false
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let media = screenData.media, let strongScreen = screen {
-            let screenID = strongScreen.id + screenData.listVideoKeyConstant
-
-            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
-            
-            if let percent = media.styles.heightPercentage {
-                mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
-            } else {
-                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
-
-            }
-        } else {
-            mediaContainerViewHeightConstraint.constant = 0
-        }
     }
     
 }
