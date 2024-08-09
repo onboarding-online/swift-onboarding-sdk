@@ -63,6 +63,7 @@ public class BaseChildScreenGraphListViewController: BaseChildScreenGraphViewCon
 
 public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphViewController {
     
+    static let listVideoKeyConstant =  "listVideo"
     @IBOutlet weak var collectionView: UICollectionView!
 
     @IBOutlet weak var collectionLeftPadding: NSLayoutConstraint!
@@ -87,11 +88,11 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
         if let media = media, let strongScreen = screen  {
             if media.kind == .image {
                 wrapInUIView(padding: media.box.styles)
-                load(image: media.image(), in: imageView, useLocalAssetsIfAvailable: true)
+                load(image: media.image(), in: imageView, useLocalAssetsIfAvailable: strongScreen.useLocalAssetsIfAvailable)
             } else {
                 wrapVideoInUIView(padding: media.box.styles)
-                let listVideoKeyConstant =  "listVideo"
-                let screenID = strongScreen.id + listVideoKeyConstant
+                
+                let screenID = strongScreen.id + BaseCollectionChildScreenGraphViewController.listVideoKeyConstant
                 setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
             }
         }

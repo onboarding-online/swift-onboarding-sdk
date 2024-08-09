@@ -197,13 +197,12 @@ class ChildControllerFabrika {
     
     
     static func videosKeyFor(screen: Screen) -> String {
-        let listVideoKeyConstant = "listVideo"
         
         switch screen._struct {
         case .typeScreenBasicPaywall(let value):
             return value.paywallHeaderVideoKeyConstant
         case .typeScreenTwoColumnMultipleSelection(_), .typeScreenTwoColumnSingleSelection(_), .typeScreenTableSingleSelection(_), .typeScreenTableMultipleSelection(_):
-            return listVideoKeyConstant
+            return BaseCollectionChildScreenGraphViewController.listVideoKeyConstant
 
         default:
             return ""
@@ -219,33 +218,7 @@ class ChildControllerFabrika {
 
 extension ScreenBasicPaywall {
     var paywallHeaderVideoKeyConstant : String { get { return  "paywallHeaderVideo" } }
-    
 }
-
-extension ScreenTwoColumnMultipleSelection {
-    var listVideoKeyConstant : String { get { return  "listVideo" } }
-}
-
-extension ScreenTwoColumnSingleSelection {
-    var listVideoKeyConstant : String { get { return  "listVideo" } }
-}
-
-extension ScreenTableMultipleSelection {
-    var listVideoKeyConstant : String { get { return  "listVideo" } }
-}
-
-extension ScreenTableSingleSelection {
-    var listVideoKeyConstant : String { get { return  "listVideo" } }
-}
-
-//extension Video {
-//    
-//    func baseVideo () -> BaseVideo? {
-//        let baseVideo = BaseVideo.init(l10n: l10n, styles: styles)
-//        return baseVideo
-//    }
-//    
-//}
 
 struct VideoWithUniqueKey {
     var video: BaseVideo?
