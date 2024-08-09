@@ -190,17 +190,26 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
     
     func setupCollectionConstraintsWith(box: BoxProtocol?) {
         guard let box = box else { return }
+        var basePaddingLeft: CGFloat = 0.0
+        var basePaddingRight: CGFloat = 0.0
+
+        if let screen = screen {
+            if screen.containerToTop() || screen.containerTillLeftRightParentView() {
+                basePaddingLeft = 16.0
+                basePaddingRight = 16.0
+            }
+        }
         
         if let paddingLeft =  box.paddingLeft?.cgFloatValue {
-            self.collectionLeftPadding.constant = paddingLeft + 16
+            self.collectionLeftPadding.constant = paddingLeft + basePaddingLeft
         } else {
-            self.collectionLeftPadding.constant = 16
+            self.collectionLeftPadding.constant = basePaddingLeft
         }
         
         if let paddingRight =  box.paddingRight?.cgFloatValue {
-            self.collectionRightPadding.constant = paddingRight + 16
+            self.collectionRightPadding.constant = paddingRight + basePaddingRight
         } else {
-            self.collectionRightPadding.constant = 16
+            self.collectionRightPadding.constant = basePaddingRight
         }
     }
     

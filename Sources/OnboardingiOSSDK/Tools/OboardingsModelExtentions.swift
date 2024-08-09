@@ -1876,18 +1876,6 @@ extension Screen {
         case .typeScreenImageTitleSubtitles(let value):
             return value.image.styles.imageKind == .imageKind2
         case .typeScreenTwoColumnMultipleSelection(let value):
-//            if let media = value.media {
-//                if media.styles.topAlignment == nil {
-//                    return true
-//                } else {
-//                    if let alignment = media.styles.topAlignment, alignment == .top {
-//                        return true
-//                    } else {
-//                        return false
-//                    }
-//                }
-//            }
-//            return false
             let isToTop = isContainerReadyToTopAlignmentWith(mediaObject: value.media)
             return isToTop
         case .typeScreenTwoColumnSingleSelection(let value):
@@ -1925,10 +1913,6 @@ extension Screen {
         case .typeScreenTwoColumnMultipleSelection(let value):
             let isLeftRight = isContainerTillLeftRightParentView(mediaObject: value.media)
             return isLeftRight
-//            if let media = value.media, media.styles.topAlignment == .navigationbar {
-//                return true
-//            }
-//            return false
         case .typeScreenTwoColumnSingleSelection(let value):
             let isLeftRight = isContainerTillLeftRightParentView(mediaObject: value.media)
             return isLeftRight
