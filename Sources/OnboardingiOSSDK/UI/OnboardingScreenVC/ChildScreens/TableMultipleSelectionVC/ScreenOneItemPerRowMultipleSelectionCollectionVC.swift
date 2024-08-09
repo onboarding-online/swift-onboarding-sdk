@@ -140,13 +140,13 @@ extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewDele
 }
 
 extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewDelegateFlowLayout {
+  
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
         switch row {
         case .label(let text):
-            let labelHeight =  text.textHeightBy(textWidth: collectionView.bounds.width) + cellConfigurator.spacingBetweenTitleLabels
-            
+            let labelHeight = calculateHeightOf(text: text)
             return CGSize(width: collectionView.bounds.width, height: labelHeight)
         case .item(let item):
             let itemHeight = calculateHeight(item: item)
