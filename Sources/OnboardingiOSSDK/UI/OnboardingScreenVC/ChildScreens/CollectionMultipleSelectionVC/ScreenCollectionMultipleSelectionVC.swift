@@ -283,9 +283,9 @@ private extension ScreenCollectionMultipleSelectionVC {
         return ScreenCollectionConstants.verticalSpaceBetweenItemsConstraint
     }
     
-    func calculateHeightOf(text: Text) -> CGFloat {
-        return text.textHeightBy(textWidth: collectionView.bounds.width)
-    }
+//    func calculateHeightOf(text: Text) -> CGFloat {
+//        return text.textHeightBy(textWidth: collectionView.bounds.width)
+//    }
 }
 
 // MARK: - Setup methods

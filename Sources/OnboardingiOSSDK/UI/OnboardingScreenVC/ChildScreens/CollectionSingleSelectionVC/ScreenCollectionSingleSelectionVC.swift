@@ -264,9 +264,7 @@ private extension ScreenCollectionSingleSelectionVC {
         return ScreenCollectionConstants.verticalSpaceBetweenItemsConstraint
     }
     
-    func calculateHeightOf(text: Text) -> CGFloat {
-        return text.textHeightBy(textWidth: collectionView.bounds.width)
-    }
+
 }
 
 // MARK: - Setup methods
@@ -337,7 +335,7 @@ extension ScreenCollectionSingleSelectionVC {
 }
 
 struct ScreenCollectionConstants {
-    static let spacingBetweenTitleLabels: CGFloat = 16
+    static let spacingBetweenTitleLabels: CGFloat = 0
     
     static let distanceFromTitlesToItems: CGFloat = 32
     

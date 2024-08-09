@@ -214,6 +214,17 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
         }
     }
     
+    func calculateHeightOf(text: Text) -> CGFloat {
+        let textPaddings =  (text.box.styles.paddingLeft ?? 0.0) + (text.box.styles.paddingRight ?? 0.0)
+        let rowHeight = text.textHeightBy(textWidth: collectionView.bounds.width - textPaddings)
+        
+        let texVerticalPaddings =  (text.box.styles.paddingTop ?? 0.0) + (text.box.styles.paddingBottom ?? 0.0)
+        
+        let fullHeight = rowHeight + texVerticalPaddings
+        
+        return fullHeight
+    }
+    
 }
 
 

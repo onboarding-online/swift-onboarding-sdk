@@ -136,43 +136,20 @@ class ChildControllerFabrika {
     static func videos(screen: Screen) -> VideoWithUniqueKey? {
         switch screen._struct {
         case .typeScreenBasicPaywall(let value):
-//            let screenId = screen.id + ChildControllerFabrika.videosKeyFor(screen: screen)
-//            if let mediaContent = value.media?.content  {
-//                switch mediaContent {
-//                case .typeMediaVideo(let video):
-//                    let videoStruct = VideoWithUniqueKey.init(video:  video.video, screenIdWithElementType: screenId)
-//                    return videoStruct
-//                default:
-//                    break
-//                }
-//            }
             let screenVideo1 = videoStructFor(screen: screen, content: value.media?.content)
             return screenVideo1
         case .typeScreenTwoColumnMultipleSelection(let value):
-//            let screenId = screen.id + ChildControllerFabrika.videosKeyFor(screen: screen)
-//            if let mediaContent = value.media?.content  {
-//                switch mediaContent {
-//                case .typeMediaVideo(let video):
-//                    let videoStruct = VideoWithUniqueKey.init(video:  video.video, screenIdWithElementType: screenId)
-//                    return videoStruct
-//                default:
-//                    break
-//                }
-//                
-//            }
             let screenVideo1 = videoStructFor(screen: screen, content: value.media?.content)
             return screenVideo1
         case .typeScreenTwoColumnSingleSelection(let value):
             let screenVideo1 = videoStructFor(screen: screen, content: value.media?.content)
             return screenVideo1
-            
         case .typeScreenTableMultipleSelection(let value):
             let screenVideo1 = videoStructFor(screen: screen, content: value.media?.content)
             return screenVideo1
         case .typeScreenTableSingleSelection(let value):
             let screenVideo1 = videoStructFor(screen: screen, content: value.media?.content)
             return screenVideo1
-            
         default:
             break
         }
@@ -193,8 +170,6 @@ class ChildControllerFabrika {
         }
         return nil
     }
-    
-    
     
     static func videosKeyFor(screen: Screen) -> String {
         
