@@ -500,6 +500,19 @@ extension Text {
         return valueByLocale
     }
     
+    
+    
+    func isAttributed() -> Bool {
+        let labels = self.parameters.labels
+        let links = self.parameters.links
+
+        if labels.isEmpty && links.isEmpty {
+            return false
+        } else {
+            return true
+        }
+    }
+    
     func textFor(product: StoreKitProduct, currencyFormat: CurrencyFormatKind?) -> String {
         let text = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
     
@@ -523,15 +536,68 @@ extension Text {
         }
     }
     
+    func textParametersFrom(text: LabelBlock) -> [NSAttributedString.Key : Any] {
+        
+        var currentTagAttributes =  [NSAttributedString.Key : Any]()
+      
+        if let color = text.color?.hexStringToColor {
+            currentTagAttributes[.foregroundColor] = color
+        }
+        
+        if let color = text.backgroundColor?.hexStringToColor {
+            currentTagAttributes[.backgroundColor] = color
+        }
+        
+        if let font = text.getFontSettings() {
+            currentTagAttributes[.font] = font
+        }
+        // Проверка и применение атрибутов параграфа
+        let paragraphStyle = NSMutableParagraphStyle()
+        var paragraphStyleIsSet = false
+        
+        // Проверка и установка выравнивания текста
+        if let textAlign = text.textAlign {
+            paragraphStyle.alignment = textAlign.alignment()
+            paragraphStyleIsSet = true
+        }
+        
+//        // Проверка и установка высоты строки
+//        if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
+//            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+//            paragraphStyleIsSet = true
+//        }
+        
+        // Применение стиля параграфа, если были установлены какие-либо свойства
+        if paragraphStyleIsSet {
+            currentTagAttributes[.paragraphStyle] = paragraphStyle
+        }
+//        if let alignment = text.textAlign  {
+//            let paragraphStyle = NSMutableParagraphStyle()
+//            paragraphStyle.alignment = alignment.alignment()
+//
+//            currentTagAttributes[.paragraphStyle] = paragraphStyle
+//        }
+        
+        return currentTagAttributes
+    }
+    
     
     func textHeightBy(textWidth: CGFloat) -> CGFloat {
         let labelKey = self.textByLocale()
-        let font: UIFont = self.textFont()
+        if self.isAttributed() {
+            let height = self.heightForAttributedString(width: textWidth)
+            return height
+        } else {
+            let font: UIFont = self.textFont()
+            
+            let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+            let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+            
+            return ceil(boundingBox.height)
+        }
         
-        let constraintRect = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
-        let boundingBox = labelKey.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
-        
-        return ceil(boundingBox.height)
     }
     
     func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?,  currencyFormat: CurrencyFormatKind?) -> CGFloat {
@@ -897,52 +963,80 @@ let attributedText = inputString.attributedStringFromTags(defaultAttributes: def
 //label.frame = CGRect(x: 0, y: 0, width: 300, height: 100)
 //label.sizeToFit()
 
+extension Text {
+    
+    func heightForAttributedString(width: CGFloat) -> CGFloat {
+        let height = self.heightForAttributedString(self.attributedText(), width: width)
+        return height
+    }
+    
+    func heightForAttributedString(_ attributedString: NSAttributedString, width: CGFloat) -> CGFloat {
+        // Создаем контейнер для текста с указанной шириной и практически неограниченной высотой
+        let textContainer = NSTextContainer(size: CGSize(width: width, height: .greatestFiniteMagnitude))
+        textContainer.lineFragmentPadding = 0  // Убираем внутренние отступы контейнера
 
-extension UILabel  {
+        // Инициализируем хранилище текста с атрибутированной строкой
+        let textStorage = NSTextStorage(attributedString: attributedString)
 
-    func apply(text: Text?) {
-        guard let text = text else {
-            self.isHidden = true
-            return
-        }
+        // Создаем менеджер макета и связываем его с хранилищем текста и контейнером
+        let layoutManager = NSLayoutManager()
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
+        // Принудительно размещаем глифы в контейнере, чтобы определить фактическое использованное пространство
+        layoutManager.ensureLayout(for: textContainer)
+
+        // Получаем ректангл, описывающий область, занимаемую текстом
+        let rect = layoutManager.usedRect(for: textContainer)
+
+        // Возвращаем округленное вверх значение высоты ректангла
+        return ceil(rect.height)
+    }
+
+    
+    func attributedText() -> NSAttributedString {
         
-        let titleLabelKey = text.textByLocale()
+        let titleLabelKey = self.textByLocale()
+
+        let labels = self.parameters.labels
+        let links = self.parameters.links
         
-        self.text = titleLabelKey
-        
-        if titleLabelKey.isEmpty {
-            self.isHidden = true
-        }
+        var tagAttributes = [String: [NSAttributedString.Key: Any]]()
+        var linksValue = [String: String]()
 
-        let labels = text.parameters.labels
-        let links = text.parameters.links
-
-        if labels.isEmpty && links.isEmpty {
-            self.apply(text: text.styles)
-        } else {
-            var tagAttributes = [String: [NSAttributedString.Key: Any]]()
-            var linksValue = [String: String]()
-
-            for key in labels.keys {
-                if let array = labels[key] {
-                    let attributes = textParametersFrom(text: array)
-                    tagAttributes[key] = attributes
-                }
+        for key in labels.keys {
+            if let array = labels[key] {
+                let attributes = textParametersFrom(text: array)
+                tagAttributes[key] = attributes
             }
-            for key in links.keys {
-                let screenId = substringBeforeDot(in: links[key])
-                if  !screenId.isEmpty {
-                    if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
+        }
+        for key in links.keys {
+            let screenId = substringBeforeDot(in: links[key])
+            if  !screenId.isEmpty {
+                if let screen = OnboardingService.shared.screenGraph?.screens[screenId] {
+                    if let indexes  = OnboardingService.shared.onboardingUserData[screenId] as? [Int] {
+                        let value = screen.listValuesFor(indexes: indexes)
+                        linksValue["\(key)"] = value
+                    } else if let indexes  = OnboardingService.shared.onboardingUserData[screenId] as? Int {
+                        let value = screen.listValuesFor(indexes: [indexes])
+                        linksValue["\(key)"] = value
+                    } else if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
                         linksValue["\(key)"] = value
                     }
                 }
+                if let value  = OnboardingService.shared.onboardingUserData[screenId] as? String {
+                    linksValue["\(key)"] = value
+                }
             }
-            
-                        
-            let attributesText = attributedString(from: titleLabelKey, replacingConstantsWith: linksValue, tagAttributes: tagAttributes)
-            self.attributedText = attributesText
         }
+        
+        let defaultAttributes = self.textParametersFrom(text: self.styles)
+        
+        let attributesText = attributedString(from: titleLabelKey, replacingConstantsWith: linksValue, tagAttributes: tagAttributes, defaultAttributes: defaultAttributes)
+        
+        return attributesText
     }
+    
     
     func substringBeforeDot(in string: String?) -> String {
         // Проверяем, что строка не nil
@@ -960,10 +1054,13 @@ extension UILabel  {
         // Если точка не найдена, возвращаем исходную строку целиком
         return string
     }
+    
+    
 
     func attributedString(from string: String,
                           replacingConstantsWith replacements: [String: String]? = nil,
-                          tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil) -> NSAttributedString {
+                          tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil,
+                          defaultAttributes: [NSAttributedString.Key: Any]? = nil) -> NSAttributedString {
         // Регулярные выражения для поиска констант и тегов
         let constantPattern = "@([A-Za-z0-9_]+)"
         let tagPattern = "<(.+?)>(.+?)</\\1>"
@@ -991,7 +1088,9 @@ extension UILabel  {
         }
 
         // Создание атрибутированной строки и применение тегов
-        let attributedString = NSMutableAttributedString(string: resultString)
+//        let attributedString = NSMutableAttributedString(string: resultString)
+        let attributedString = NSMutableAttributedString(string: resultString, attributes: defaultAttributes)
+
         if let tagAttributes = tagAttributes {
             let tagRegex = try! NSRegularExpression(pattern: tagPattern, options: [])
             let finalString = attributedString.string as NSString
@@ -1017,9 +1116,31 @@ extension UILabel  {
         return attributedString
     }
 
+}
 
+extension UILabel  {
 
+    func apply(text: Text?) {
+        guard let text = text else {
+            self.isHidden = true
+            return
+        }
+        
+        let titleLabelKey = text.textByLocale()
+        
+        self.text = titleLabelKey
+        
+        if titleLabelKey.isEmpty {
+            self.isHidden = true
+        }
 
+        if !text.isAttributed() {
+            self.apply(text: text.styles)
+        } else {
+            self.attributedText = text.attributedText()
+        }
+    }
+    
    
 
     private func removeRemainingTags(from attributedString: NSMutableAttributedString) -> NSAttributedString {
