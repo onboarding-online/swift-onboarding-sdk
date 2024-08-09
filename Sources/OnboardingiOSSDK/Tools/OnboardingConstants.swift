@@ -69,6 +69,11 @@ protocol PaywallBaseScreenStyleProtocol {
     var useLocalAssetsIfAvailable: Bool { get }
 }
 
+protocol MediaProtocol {
+    var media: Media? { get }
+    var useLocalAssetsIfAvailable: Bool { get }
+}
+
 protocol PermissionProtocol {
     var permission: RequestPermission? { get }
 }
@@ -114,17 +119,17 @@ extension ScreenImageTitleSubtitles: Assetable { }
 
 extension ScreenProgressBarTitle: BaseScreenProtocol { }
 
-extension ScreenTableMultipleSelection: BaseScreenProtocol { }
+extension ScreenTableMultipleSelection: BaseScreenProtocol, MediaProtocol { }
 
-extension ScreenTableSingleSelection: BaseScreenProtocol { }
+extension ScreenTableSingleSelection: BaseScreenProtocol, MediaProtocol { }
 
 extension ScreenTitleSubtitleCalendar: BaseScreenProtocol { }
 
 extension ScreenTitleSubtitleField: BaseScreenProtocol { }
 
-extension ScreenTwoColumnMultipleSelection: BaseScreenProtocol { }
+extension ScreenTwoColumnMultipleSelection: BaseScreenProtocol, MediaProtocol { }
 
-extension ScreenTwoColumnSingleSelection: BaseScreenProtocol { }
+extension ScreenTwoColumnSingleSelection: BaseScreenProtocol, MediaProtocol { }
 
 extension ScreenBasicPaywall:  PaywallBaseScreenStyleProtocol { }
 

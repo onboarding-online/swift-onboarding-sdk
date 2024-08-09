@@ -269,6 +269,13 @@ private extension AssetsPrefetchService {
 
         }
         
+        if let screenDataType = type as? MediaProtocol {
+            let useLocalAssetsIfAvailableForPaywall = screenDataType.useLocalAssetsIfAvailable
+            let mediaAssets = assetsFor(media: screenDataType.media, useLocalAssetsIfAvailable: useLocalAssetsIfAvailableForPaywall)
+            
+            allAssets += mediaAssets
+        }
+        
         let listAsset = prefetchAssetsFor(list: imageList, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
         allAssets += listAsset
         

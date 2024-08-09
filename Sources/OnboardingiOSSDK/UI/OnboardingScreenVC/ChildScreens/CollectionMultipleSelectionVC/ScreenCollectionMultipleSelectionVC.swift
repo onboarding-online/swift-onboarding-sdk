@@ -45,14 +45,7 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
         setupCollectionView()
         setupLabelsValue()
         
-        setupCollectionConstraintsWith(box: screenData.list.box.styles)
-
-        
-        if let media = screenData.media, let strongScreen = screen {
-            let screenID = strongScreen.id + screenData.listVideoKeyConstant
-            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
-        }
-        
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,9 +70,9 @@ class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewCon
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if let media = screenData.media, let strongScreen = screen {
-//            let screenID = strongScreen.id + screenData.listVideoKeyConstant
-//
-//            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
+            let screenID = strongScreen.id + screenData.listVideoKeyConstant
+
+            setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
             
             if let percent = media.styles.heightPercentage {
                 mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
