@@ -64,6 +64,10 @@ extension ScreenStruct {
             let values = screen.list.items.compactMap({$0.title.textByLocale()})
             let value = values[safeIdxs: indexes].joined(separator: ", ")
             return value
+        case .typeScreenImageTitleSubtitleMultipleSelectionList(let screen):
+            let values = screen.list.items.compactMap({$0.title.textByLocale()})
+            let value = values[safeIdxs: indexes].joined(separator: ", ")
+            return value
         default:
             return ""
         }
