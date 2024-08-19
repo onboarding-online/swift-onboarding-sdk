@@ -503,10 +503,10 @@ extension Text {
     
     
     func isAttributed() -> Bool {
-        let labels = self.parameters.labels
-        let links = self.parameters.links
+//        let labels = self.parameters.labels
+//        let links = self.parameters.links
 
-        if labels.isEmpty && links.isEmpty {
+        if self.kind == ._default {
             return false
         } else {
             return true
@@ -553,32 +553,25 @@ extension Text {
         }
         // Проверка и применение атрибутов параграфа
         let paragraphStyle = NSMutableParagraphStyle()
-        var paragraphStyleIsSet = false
         
         // Проверка и установка выравнивания текста
         if let textAlign = text.textAlign {
             paragraphStyle.alignment = textAlign.alignment()
-            paragraphStyleIsSet = true
+        } else {
+            paragraphStyle.alignment = .center
         }
         
-//        // Проверка и установка высоты строки
-//        if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
-//            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
-//            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
-//            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
-//            paragraphStyleIsSet = true
-//        }
+        paragraphStyle.lineBreakMode = .byWordWrapping
+
         
-        // Применение стиля параграфа, если были установлены какие-либо свойства
-        if paragraphStyleIsSet {
-            currentTagAttributes[.paragraphStyle] = paragraphStyle
+        // Проверка и установка высоты строки
+        if let lineHeight = text.lineHeight {
+            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
         }
-//        if let alignment = text.textAlign  {
-//            let paragraphStyle = NSMutableParagraphStyle()
-//            paragraphStyle.alignment = alignment.alignment()
-//
-//            currentTagAttributes[.paragraphStyle] = paragraphStyle
-//        }
+        
+
+        currentTagAttributes[.paragraphStyle] = paragraphStyle
         
         return currentTagAttributes
     }
@@ -825,15 +818,11 @@ extension LabelPosition {
         }
     }
     
-    
-
-    
 }
 
 extension UIImageView  {
     
     func applyStaticCheckbox(isSelected: Bool) {
-        
         let imageName = isSelected ? "Circle_on" : "Circle_off"
         
         if let image = UIImage.init(named: "\(imageName).png", in: .module, with: nil) {
@@ -885,7 +874,6 @@ extension UIImageView  {
             let tintColor = isSelected ? checkbox.selectedBlock.styles.color : checkbox.styles.color
             
             self.tintColor = tintColor?.hexStringToColor
-    
         }
     }
     
@@ -1055,19 +1043,17 @@ extension Text {
         return string
     }
     
-    
-
     func attributedString(from string: String,
                           replacingConstantsWith replacements: [String: String]? = nil,
                           tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil,
                           defaultAttributes: [NSAttributedString.Key: Any]? = nil) -> NSAttributedString {
-        // Регулярные выражения для поиска констант и тегов
         let constantPattern = "@([A-Za-z0-9_]+)"
-        let tagPattern = "<(.+?)>(.+?)</\\1>"
+        let tagPattern = "<(.+?)>([\\s\\S]+?)</\\1>"
 
-        // Подготовка к замене констант
         var resultString = string
-        var offset = 0  // Сдвиг для корректной замены в измененной строке
+        var offset = 0
+
+        // Замена констант
         if let replacements = replacements {
             let regex = try! NSRegularExpression(pattern: constantPattern, options: [])
             var nsString = resultString as NSString
@@ -1087,10 +1073,9 @@ extension Text {
             resultString = nsString as String
         }
 
-        // Создание атрибутированной строки и применение тегов
-//        let attributedString = NSMutableAttributedString(string: resultString)
         let attributedString = NSMutableAttributedString(string: resultString, attributes: defaultAttributes)
 
+        // Обработка тегов
         if let tagAttributes = tagAttributes {
             let tagRegex = try! NSRegularExpression(pattern: tagPattern, options: [])
             let finalString = attributedString.string as NSString
@@ -1104,15 +1089,15 @@ extension Text {
                 if let currentTagAttributes = tagAttributes[tagName] {
                     attributedString.replaceCharacters(in: textRange, with: NSAttributedString(string: textInRange, attributes: currentTagAttributes))
                 }
-                
-                // Удаление открывающего и закрывающего тегов
+
+                // Удаление тегов
                 let closingTagRange = NSRange(location: match.range.upperBound - ("</\(tagName)>").count, length: ("</\(tagName)>").count)
                 let openingTagRange = NSRange(location: match.range.location, length: ("<\(tagName)>").count)
                 attributedString.deleteCharacters(in: closingTagRange)
                 attributedString.deleteCharacters(in: openingTagRange)
             }
         }
-        
+
         return attributedString
     }
 
