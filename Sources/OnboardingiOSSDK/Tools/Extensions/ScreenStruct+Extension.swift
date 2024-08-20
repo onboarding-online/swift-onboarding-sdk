@@ -72,6 +72,21 @@ extension ScreenStruct {
             return ""
         }
     }
+    
+    func listItemsFor(indexes: [Int]) -> [ItemTypeSelection]? {
+        switch self {
+        case .typeScreenTwoColumnMultipleSelection(let screen):
+            let values = screen.list.items
+            let value = values[safeIdxs: indexes]
+            return value
+        case .typeScreenTableMultipleSelection(let screen):
+            let values = screen.list.items
+            let value = values[safeIdxs: indexes]
+            return value
+        default:
+            return nil
+        }
+    }
 }
 
 

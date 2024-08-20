@@ -14,5 +14,9 @@ extension Screen {
     func listValuesFor(indexes: [Int]) -> String {
        return _struct.listValuesFor(indexes: indexes)
     }
+    
+    func listItemsForMultipleSelectionScreenFor(indexes: [Int]) -> [ItemTypeSelection]? {
+       return _struct.listItemsFor(indexes: indexes)
+    }
 
 }

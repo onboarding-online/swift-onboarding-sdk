@@ -14,6 +14,14 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
         let tableSingleSelectionVC = ScreenOneItemPerRowSingleSelectionCollectionVC.storyBoardInstance()
         tableSingleSelectionVC.screenData = screenData
         
+        if let screenId = screenData.list.items.first?.title.textByLocale(), let screen1 = OnboardingService.shared.screenGraph?.screens[screenId], screenData.list.items.count == 1 {
+            if let indexes  = OnboardingService.shared.onboardingUserData[screenId] as? [Int] {
+                if let value = screen1.listItemsForMultipleSelectionScreenFor(indexes: indexes) {
+                    tableSingleSelectionVC.screenData.list.items = value
+                }
+            }
+        }
+        
         tableSingleSelectionVC.videoPreparationService = videoPreparationService
         tableSingleSelectionVC.screen = screen
         tableSingleSelectionVC.media = screenData.media
