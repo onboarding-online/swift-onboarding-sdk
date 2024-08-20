@@ -33,7 +33,6 @@ class ScreenImageTitleSubtitleVC: BaseChildScreenGraphViewController {
     }
     
     func setupScreen() {
-        
         if let imageKind =  screenData.image.styles.imageKind {
             imageScreenType = imageKind
         }
@@ -45,6 +44,7 @@ class ScreenImageTitleSubtitleVC: BaseChildScreenGraphViewController {
         let subtitleLabelView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle1.box.styles)
         
         pageImage = build(image: screenData.image)
+        pageImage.clipsToBounds = true
         let imageContainer = wrapInUIView(imageView: pageImage, padding: screenData.image.box.styles)
         
         if imageScreenType == .imageKind3 {

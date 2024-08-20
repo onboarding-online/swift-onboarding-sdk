@@ -563,14 +563,12 @@ extension Text {
         
         paragraphStyle.lineBreakMode = .byWordWrapping
 
-        
         // Проверка и установка высоты строки
         if let lineHeight = text.lineHeight {
             paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
             paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
         }
         
-
         currentTagAttributes[.paragraphStyle] = paragraphStyle
         
         return currentTagAttributes
@@ -899,6 +897,7 @@ extension UIPickerView {
 
 
 extension String {
+    
     func attributedStringFromTags(defaultAttributes: [NSAttributedString.Key: Any],
                                    tagAttributes: [String: [NSAttributedString.Key: Any]]) -> NSAttributedString {
         let attributedString = NSMutableAttributedString(string: self, attributes: defaultAttributes)
@@ -928,28 +927,6 @@ extension String {
         return attributedString
     }
 }
-
-// Usage Example
-let inputString = "By continuing, I agree to Nebula's <tag1>Privacy_policy.</tag1> and <tag2>Terms of Use.</tag2>."
-
-let defaultAttributes: [NSAttributedString.Key: Any] = [
-    .font: UIFont.systemFont(ofSize: 16),
-    .foregroundColor: UIColor.black
-]
-
-let tagAttributes: [String: [NSAttributedString.Key: Any]] = [
-    "tag1": [.foregroundColor: UIColor.red],
-    "tag2": [.foregroundColor: UIColor.red]
-]
-
-let attributedText = inputString.attributedStringFromTags(defaultAttributes: defaultAttributes, tagAttributes: tagAttributes)
-
-//// Display in a UILabel
-//let label = UILabel()
-//label.attributedText = attributedText
-//label.numberOfLines = 0
-//label.frame = CGRect(x: 0, y: 0, width: 300, height: 100)
-//label.sizeToFit()
 
 extension Text {
     
