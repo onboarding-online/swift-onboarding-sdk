@@ -503,10 +503,12 @@ extension Text {
     
     
     func isAttributed() -> Bool {
-//        let labels = self.parameters.labels
-//        let links = self.parameters.links
+        let labels = self.parameters.labels
+        let links = self.parameters.links
 
-        if self.kind == ._default {
+//        if self.kind == ._default {
+        if labels.isEmpty && links.isEmpty {
+
             return false
         } else {
             return true
@@ -559,6 +561,44 @@ extension Text {
             paragraphStyle.alignment = textAlign.alignment()
         } else {
             paragraphStyle.alignment = .center
+        }
+        
+        paragraphStyle.lineBreakMode = .byWordWrapping
+
+        // Проверка и установка высоты строки
+        if let lineHeight = text.lineHeight {
+            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+        }
+        
+        currentTagAttributes[.paragraphStyle] = paragraphStyle
+        
+        return currentTagAttributes
+    }
+    
+    func textParametersFrom(text: LabelBlock, defaultParameters: [NSAttributedString.Key : Any]) -> [NSAttributedString.Key : Any] {
+        
+        var currentTagAttributes =  defaultParameters
+      
+        if let color = text.color?.hexStringToColor {
+            currentTagAttributes[.foregroundColor] = color
+        }
+        
+        if let color = text.backgroundColor?.hexStringToColor {
+            currentTagAttributes[.backgroundColor] = color
+        }
+        
+        if let font = text.getFontSettings() {
+            currentTagAttributes[.font] = font
+        }
+        // Проверка и применение атрибутов параграфа
+        let paragraphStyle = NSMutableParagraphStyle()
+        
+        // Проверка и установка выравнивания текста
+        if let textAlign = text.textAlign {
+            paragraphStyle.alignment = textAlign.alignment()
+        } else {
+            paragraphStyle.alignment = .left
         }
         
         paragraphStyle.lineBreakMode = .byWordWrapping
@@ -969,9 +1009,11 @@ extension Text {
         var tagAttributes = [String: [NSAttributedString.Key: Any]]()
         var linksValue = [String: String]()
 
+        let defaultAttributes = self.textParametersFrom(text: self.styles)
+
         for key in labels.keys {
             if let array = labels[key] {
-                let attributes = textParametersFrom(text: array)
+                let attributes = textParametersFrom(text: array, defaultParameters: defaultAttributes)
                 tagAttributes[key] = attributes
             }
         }
@@ -995,7 +1037,6 @@ extension Text {
             }
         }
         
-        let defaultAttributes = self.textParametersFrom(text: self.styles)
         
         let attributesText = attributedString(from: titleLabelKey, replacingConstantsWith: linksValue, tagAttributes: tagAttributes, defaultAttributes: defaultAttributes)
         
