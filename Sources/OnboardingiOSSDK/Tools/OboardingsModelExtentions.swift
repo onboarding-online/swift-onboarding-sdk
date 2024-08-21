@@ -560,7 +560,7 @@ extension Text {
         if let textAlign = text.textAlign {
             paragraphStyle.alignment = textAlign.alignment()
         } else {
-            paragraphStyle.alignment = .center
+            paragraphStyle.alignment = .left
         }
         
         paragraphStyle.lineBreakMode = .byWordWrapping
@@ -592,13 +592,11 @@ extension Text {
             currentTagAttributes[.font] = font
         }
         // Проверка и применение атрибутов параграфа
-        let paragraphStyle = NSMutableParagraphStyle()
-        
-        // Проверка и установка выравнивания текста
-        if let textAlign = text.textAlign {
-            paragraphStyle.alignment = textAlign.alignment()
+        var paragraphStyle: NSMutableParagraphStyle
+        if let paragraph = defaultParameters[.paragraphStyle] as? NSMutableParagraphStyle {
+            paragraphStyle = paragraph
         } else {
-            paragraphStyle.alignment = .left
+            paragraphStyle = NSMutableParagraphStyle.init()
         }
         
         paragraphStyle.lineBreakMode = .byWordWrapping
