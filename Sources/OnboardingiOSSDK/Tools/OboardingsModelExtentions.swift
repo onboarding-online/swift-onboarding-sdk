@@ -749,8 +749,16 @@ extension LabelBlock {
                 labelFont = UIFont.systemFont(ofSize: fontSize, weight: .regular)
             }
             
-            if let fontFamile = text.fontFamily {
-                switch fontFamile {
+            if let customFont = OnboardingService.shared.customFontNames, let fontFamily = text.fontFamily, let fontName = customFont[fontFamily]  {
+                if let customFont = UIFont(name: fontName, size: fontSize) {
+                    labelFont = customFont
+                } else {
+                    labelFont = UIFont.systemFont(ofSize: fontSize, weight: .regular)
+                }
+            }
+           
+            if let fontFamily = text.fontFamily {
+                switch fontFamily {
                 case .sfPro:
                     break
                 case .sfProrounded:
