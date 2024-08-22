@@ -603,8 +603,8 @@ extension Text {
 
         // Проверка и установка высоты строки
         if let lineHeight = text.lineHeight {
-            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
-            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
         }
         
         currentTagAttributes[.paragraphStyle] = paragraphStyle
@@ -1071,30 +1071,33 @@ extension Text {
                           replacingConstantsWith replacements: [String: String]? = nil,
                           tagAttributes: [String: [NSAttributedString.Key: Any]]? = nil,
                           defaultAttributes: [NSAttributedString.Key: Any]? = nil) -> NSAttributedString {
+        
+        var resultString = string
         let constantPattern = "@([A-Za-z0-9_]+)"
         let tagPattern = "<(.+?)>([\\s\\S]+?)</\\1>"
-
-        var resultString = string
-        var offset = 0
 
         // Замена констант
         if let replacements = replacements {
             let regex = try! NSRegularExpression(pattern: constantPattern, options: [])
-            var nsString = resultString as NSString
-            let matches = regex.matches(in: resultString, options: [], range: NSRange(location: 0, length: nsString.length))
+            
+            // Используем NSMutableAttributedString для последовательной замены
+            let mutableAttributedString = NSMutableAttributedString(string: resultString)
+            let matches = regex.matches(in: resultString, options: [], range: NSRange(location: 0, length: resultString.utf16.count))
 
-            for match in matches {
-                let range = match.range(at: 1)
-                let adjustedRange = NSRange(location: range.location + offset, length: range.length)
-                let constantKey = nsString.substring(with: adjustedRange)
-
-                if let replacementText = replacements[constantKey] {
-                    let fullTagRange = NSRange(location: match.range.location + offset, length: match.range.length)
-                    nsString = nsString.replacingCharacters(in: fullTagRange, with: replacementText) as NSString
-                    offset += replacementText.count - match.range.length
+            // Проходим по матчам в обратном порядке, чтобы избежать проблем с индексацией
+            for match in matches.reversed() {
+                if let range = Range(match.range(at: 1), in: resultString) {
+                    let constantKey = String(resultString[range])
+                    
+                    if let replacementText = replacements[constantKey] {
+                        let fullRange = Range(match.range, in: resultString)!
+                        mutableAttributedString.replaceCharacters(in: NSRange(fullRange, in: resultString), with: replacementText)
+                        resultString.replaceSubrange(fullRange, with: replacementText)
+                    }
                 }
             }
-            resultString = nsString as String
+            
+            resultString = mutableAttributedString.string
         }
 
         let attributedString = NSMutableAttributedString(string: resultString, attributes: defaultAttributes)
@@ -1102,28 +1105,34 @@ extension Text {
         // Обработка тегов
         if let tagAttributes = tagAttributes {
             let tagRegex = try! NSRegularExpression(pattern: tagPattern, options: [])
-            let finalString = attributedString.string as NSString
-            let tagMatches = tagRegex.matches(in: attributedString.string, options: [], range: NSRange(location: 0, length: finalString.length))
+            let tagMatches = tagRegex.matches(in: attributedString.string, options: [], range: NSRange(location: 0, length: attributedString.length))
 
+            // Проходим по матчам в обратном порядке, чтобы избежать проблем с индексацией
             for match in tagMatches.reversed() {
-                let tagName = finalString.substring(with: match.range(at: 1))
-                let textInRange = finalString.substring(with: match.range(at: 2))
+                let tagNameRange = match.range(at: 1)
                 let textRange = match.range(at: 2)
-
-                if let currentTagAttributes = tagAttributes[tagName] {
-                    attributedString.replaceCharacters(in: textRange, with: NSAttributedString(string: textInRange, attributes: currentTagAttributes))
+                
+                if let tagName = Range(tagNameRange, in: attributedString.string),
+                   let currentTagAttributes = tagAttributes[String(attributedString.string[tagName])] {
+                    
+                    let nsTextRange = textRange
+                    let textInRange = attributedString.attributedSubstring(from: nsTextRange).string
+                    
+                    attributedString.replaceCharacters(in: nsTextRange, with: NSAttributedString(string: textInRange, attributes: currentTagAttributes))
+                    
+                    // Удаление тегов
+                    let closingTagRange = NSRange(location: match.range.upperBound - ("</\(String(attributedString.string[tagName]))>").count, length: ("</\(String(attributedString.string[tagName]))>").count)
+                    let openingTagRange = NSRange(location: match.range.location, length: ("<\(String(attributedString.string[tagName]))>").count)
+                    attributedString.deleteCharacters(in: closingTagRange)
+                    attributedString.deleteCharacters(in: openingTagRange)
                 }
-
-                // Удаление тегов
-                let closingTagRange = NSRange(location: match.range.upperBound - ("</\(tagName)>").count, length: ("</\(tagName)>").count)
-                let openingTagRange = NSRange(location: match.range.location, length: ("<\(tagName)>").count)
-                attributedString.deleteCharacters(in: closingTagRange)
-                attributedString.deleteCharacters(in: openingTagRange)
             }
         }
 
         return attributedString
     }
+
+
 
 }
 
@@ -1253,10 +1262,10 @@ extension UILabel  {
 
         // Проверка и установка высоты строки
         if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
-            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
-            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
-            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
-            paragraphStyleIsSet = true
+//            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+//            paragraphStyleIsSet = true
         }
 
         // Применение стиля параграфа, если были установлены какие-либо свойства
@@ -1296,10 +1305,10 @@ extension UILabel  {
         
         // Проверка и установка высоты строки
         if let lineHeight = text.lineHeight, let font = currentTagAttributes[.font] as? UIFont {
-            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
-            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
-            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
-            paragraphStyleIsSet = true
+//            paragraphStyle.minimumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.maximumLineHeight = CGFloat(lineHeight)
+//            paragraphStyle.lineSpacing = CGFloat(lineHeight) - font.lineHeight
+//            paragraphStyleIsSet = true
         }
         
         // Применение стиля параграфа, если были установлены какие-либо свойства
