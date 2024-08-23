@@ -151,7 +151,8 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
             if let percent = media.styles.heightPercentage {
                 mediaContainerViewHeightConstraint.constant = view.bounds.height * (percent / 100)
             } else {
-                mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
+                let height = view.bounds.height - collectionView.contentSize.height
+                mediaContainerViewHeightConstraint.constant = height < 100 ? 100 : height
             }
         } else {
             mediaContainerViewHeightConstraint.constant = 0
