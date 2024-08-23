@@ -86,11 +86,12 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
 
     func setupMedia() {
         if let media = media, let strongScreen = screen  {
-            mediaContainerView.layer.cornerRadius = media.styles.mainCornerRadius?.cgFloatValue ?? 0
             mediaContainerView.clipsToBounds = true
             
             if media.kind == .image {
                 wrapInUIView(padding: media.box.styles)
+                imageView.layer.cornerRadius = media.styles.mainCornerRadius?.cgFloatValue ?? 0
+
                 if let imageContentMode = media.styles.scaleMode?.imageContentMode() {
                     imageView.contentMode = imageContentMode
                 } else {
@@ -99,7 +100,8 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
                 load(image: media.image(), in: imageView, useLocalAssetsIfAvailable: strongScreen.useLocalAssetsIfAvailable)
             } else {
                 wrapVideoInUIView(padding: media.box.styles)
-                
+                videoView.layer.cornerRadius = media.styles.mainCornerRadius?.cgFloatValue ?? 0
+
                 let screenID = strongScreen.id + BaseCollectionChildScreenGraphViewController.listVideoKeyConstant
                 setupBackgroundFor(screenId: screenID, using: videoPreparationService!)
             }
@@ -109,6 +111,7 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
     func wrapInUIView(padding: BoxBlock? = nil) {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = .clear
+        imageView.clipsToBounds = true
         mediaContainerView.addSubview(imageView)
         
         let bottom = -1 * (padding?.paddingBottom ?? 0)
@@ -128,6 +131,8 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
     func wrapVideoInUIView(padding: BoxBlock? = nil) {
         videoView.translatesAutoresizingMaskIntoConstraints = false
         videoView.backgroundColor = .clear
+        videoView.clipsToBounds = true
+
         mediaContainerView.addSubview(videoView)
         
         let bottom = -1 * (padding?.paddingBottom ?? 0)
