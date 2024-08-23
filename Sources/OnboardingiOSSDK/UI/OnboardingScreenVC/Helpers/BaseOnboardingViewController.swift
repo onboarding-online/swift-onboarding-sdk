@@ -87,9 +87,15 @@ public class BaseCollectionChildScreenGraphViewController: BaseChildScreenGraphV
     func setupMedia() {
         if let media = media, let strongScreen = screen  {
             mediaContainerView.layer.cornerRadius = media.styles.mainCornerRadius?.cgFloatValue ?? 0
-
+            mediaContainerView.clipsToBounds = true
+            
             if media.kind == .image {
                 wrapInUIView(padding: media.box.styles)
+                if let imageContentMode = media.styles.scaleMode?.imageContentMode() {
+                    imageView.contentMode = imageContentMode
+                } else {
+                    imageView.contentMode = .scaleAspectFit
+                }
                 load(image: media.image(), in: imageView, useLocalAssetsIfAvailable: strongScreen.useLocalAssetsIfAvailable)
             } else {
                 wrapVideoInUIView(padding: media.box.styles)
