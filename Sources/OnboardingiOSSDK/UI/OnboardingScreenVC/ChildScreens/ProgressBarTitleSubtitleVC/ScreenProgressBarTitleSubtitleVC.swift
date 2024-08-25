@@ -19,9 +19,12 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         return progressBarVC
     }
     
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var subtitleLabel: UILabel!
-    @IBOutlet weak var progressContentView: UIView!
+//    @IBOutlet weak var titleLabel: UILabel!
+//    @IBOutlet weak var subtitleLabel: UILabel!
+    
+    @IBOutlet weak var mainView: UIView!
+
+    var progressContentView: UIView! = UIView()
     
     var screenData: ScreenProgressBarTitle!
     var screen: Screen? = nil
@@ -30,7 +33,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        setupMainStack()
         setupLabelsValue()
     }
     
@@ -39,6 +42,65 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
 
         setupProgressView()
     }
+    
+//    func setupMainStack() {
+//        let bulletStackView = UIStackView()
+//        mainView.addSubview(bulletStackView)
+//        
+//        bulletStackView.translatesAutoresizingMaskIntoConstraints = false
+//        bulletStackView.axis = .vertical
+//        bulletStackView.distribution = .fill
+//        bulletStackView.alignment = .fill
+//        bulletStackView.backgroundColor = .blue
+//        mainView.addSubview(progressContentView)
+//        bulletStackView.backgroundColor = .orange
+//
+//        
+//        NSLayoutConstraint.activate([
+//            bulletStackView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 0),
+//            bulletStackView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 0),
+//            bulletStackView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: 0),
+//            bulletStackView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 0.5),
+//            
+//            
+//            //
+//            progressContentView.topAnchor.constraint(equalTo: bulletStackView.bottomAnchor, constant: 0),
+//            progressContentView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 0),
+//            progressContentView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: 0),
+//            bulletStackView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 0.5),
+//        ])
+//    }
+    
+    
+    func setupMainStack() {
+        let bulletStackView = UIStackView()
+        mainView.addSubview(bulletStackView)
+        
+        bulletStackView.translatesAutoresizingMaskIntoConstraints = false
+        bulletStackView.axis = .vertical
+        bulletStackView.distribution = .fill
+        bulletStackView.alignment = .fill
+        bulletStackView.backgroundColor = .orange
+        
+        mainView.addSubview(progressContentView)
+        progressContentView.translatesAutoresizingMaskIntoConstraints = false
+        progressContentView.backgroundColor = .blue
+
+        NSLayoutConstraint.activate([
+            // Констрейнты для bulletStackView (верхняя половина экрана)
+            bulletStackView.topAnchor.constraint(equalTo: mainView.topAnchor),
+            bulletStackView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
+            bulletStackView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
+            bulletStackView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 0.8),
+            
+            // Констрейнты для progressContentView (нижняя половина экрана)
+            progressContentView.topAnchor.constraint(equalTo: bulletStackView.bottomAnchor),
+            progressContentView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
+            progressContentView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
+            progressContentView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor)
+        ])
+    }
+
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -51,8 +113,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     }
     
     func setupLabelsValue() {
-        subtitleLabel.apply(text: screenData?.title)
-        titleLabel.text = ""
+//        subtitleLabel.apply(text: screenData?.title)
+//        titleLabel.text = ""
     }
     
     func setupProgressView() {
@@ -62,7 +124,9 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         }
         
         self.view.layoutSubviews()
-        progressView = CircularProgressView(frame: progressContentView.bounds, lineWidth: 15, rounded: false, timeTofill: screenData.progressBar.timer.duration.doubleValue)
+        
+        let rect = CGRect(x: 0, y: 0, width: progressContentView.bounds.height, height: progressContentView.bounds.height)
+        progressView = CircularProgressView(frame: rect, lineWidth: 15, rounded: false, timeTofill: screenData.progressBar.timer.duration.doubleValue)
         
         guard let progressViewStrong = progressView else { return }
 
@@ -76,6 +140,13 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         progressContentView.addSubview(progressViewStrong)
         progressViewStrong.center = CGPoint(x: progressContentView.bounds.width / 2 , y: progressContentView.bounds.height / 2)
 
+        NSLayoutConstraint.activate([
+            // Констрейнты для bulletStackView (верхняя половина экрана)
+            progressViewStrong.topAnchor.constraint(equalTo: mainView.topAnchor),
+            progressViewStrong.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
+            progressViewStrong.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
+            progressViewStrong.bottomAnchor.constraint(equalTo: mainView.bottomAnchor)
+        ])
         
         progressViewStrong.progressCallback = { [weak self](percentCount) in
             let progress = percentCount > 100 ? 100 : percentCount
@@ -90,8 +161,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
             })
 
             if let itemTitle = item?.content.title {
-                self?.titleLabel.isHidden = false
-                self?.titleLabel.apply(text: itemTitle)
+//                self?.titleLabel.isHidden = false
+//                self?.titleLabel.apply(text: itemTitle)
             }
         }
         
