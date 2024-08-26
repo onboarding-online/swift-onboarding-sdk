@@ -24,7 +24,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zhr-Bp-uXF">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="125"/>
-                                <color key="backgroundColor" name="selfEsteem1-9"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="125" id="N9U-LN-bcf"/>
                                 </constraints>
@@ -150,6 +150,10 @@
                     </view>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="collectionBottomPadding" destination="L5K-UF-hvw" id="zeu-3d-bcd"/>
+                        <outlet property="collectionLeftPadding" destination="FIN-Xo-0ll" id="mDm-ND-kaJ"/>
+                        <outlet property="collectionRightPadding" destination="SKo-qZ-hON" id="Mft-fG-vx3"/>
+                        <outlet property="collectionTopPadding" destination="qli-tG-vjx" id="hvu-PK-AfW"/>
                         <outlet property="collectionView" destination="Gx2-6c-mN1" id="pdt-bW-uLd"/>
                         <outlet property="mediaContainerView" destination="Zhr-Bp-uXF" id="NwB-7y-aTY"/>
                         <outlet property="mediaContainerViewHeightConstraint" destination="N9U-LN-bcf" id="Bpd-JD-JNM"/>
@@ -167,9 +171,6 @@
     <resources>
         <namedColor name="label">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </namedColor>
-        <namedColor name="selfEsteem1-9">
-            <color red="1" green="0.48600000143051147" blue="0.3919999897480011" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

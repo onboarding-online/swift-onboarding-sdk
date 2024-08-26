@@ -8,16 +8,20 @@
 import UIKit
 import ScreensGraph
 
-final class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewController {
+final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTwoColumnSingleSelection) -> ScreenCollectionSingleSelectionVC {
+    static func instantiate(screenData: ScreenTwoColumnSingleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenCollectionSingleSelectionVC {
         let twoColumnSingleSelectionVC = ScreenCollectionSingleSelectionVC.storyBoardInstance()
         twoColumnSingleSelectionVC.screenData = screenData
-
+        
+        twoColumnSingleSelectionVC.videoPreparationService = videoPreparationService
+        twoColumnSingleSelectionVC.screen = screen
+        twoColumnSingleSelectionVC.media = screenData.media
+        
         return twoColumnSingleSelectionVC
     }
     
-    @IBOutlet weak var collectionView: UICollectionView!
+//    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
 
@@ -39,6 +43,8 @@ final class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewControlle
         setup()
         setupCollectionView()
         setupLabelsValue()
+        
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -57,6 +63,7 @@ final class ScreenCollectionSingleSelectionVC: BaseChildScreenGraphViewControlle
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
     }
+    
 }
 // MARK: - UICollectionViewDataSource
 extension ScreenCollectionSingleSelectionVC: UICollectionViewDataSource {
@@ -257,9 +264,7 @@ private extension ScreenCollectionSingleSelectionVC {
         return ScreenCollectionConstants.verticalSpaceBetweenItemsConstraint
     }
     
-    func calculateHeightOf(text: Text) -> CGFloat {
-        return text.textHeightBy(textWidth: collectionView.bounds.width)
-    }
+
 }
 
 // MARK: - Setup methods
@@ -330,7 +335,7 @@ extension ScreenCollectionSingleSelectionVC {
 }
 
 struct ScreenCollectionConstants {
-    static let spacingBetweenTitleLabels: CGFloat = 16
+    static let spacingBetweenTitleLabels: CGFloat = 0
     
     static let distanceFromTitlesToItems: CGFloat = 32
     

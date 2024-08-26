@@ -10,4 +10,9 @@ import ScreensGraph
 
 extension Screen {
     var useLocalAssetsIfAvailable: Bool { _struct.useLocalAssetsIfAvailable }
+    
+    func listValuesFor(indexes: [Int]) -> String {
+       return _struct.listValuesFor(indexes: indexes)
+    }
+
 }

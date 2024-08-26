@@ -11,15 +11,21 @@ import ScreensGraph
 
 class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTableMultipleSelection) -> ScreenOneItemPerRowMultipleSelectionCollectionVC {
+    static func instantiate(screenData: ScreenTableMultipleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenOneItemPerRowMultipleSelectionCollectionVC {
         let tableMultipleSelectionVC = ScreenOneItemPerRowMultipleSelectionCollectionVC.storyBoardInstance()
         tableMultipleSelectionVC.screenData = screenData
+        
+        tableMultipleSelectionVC.videoPreparationService = videoPreparationService
+        tableMultipleSelectionVC.screen = screen
+        tableMultipleSelectionVC.media = screenData.media
+
+        
         return tableMultipleSelectionVC
     }
     
     @IBOutlet weak var iconImage: UIImageView!
 
-    @IBOutlet weak var collectionView: UICollectionView!
+//    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
     
@@ -63,6 +69,7 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScree
         }
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
     }
+
 }
 
 // MARK: - UICollectionViewDataSource
@@ -133,13 +140,13 @@ extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewDele
 }
 
 extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewDelegateFlowLayout {
+  
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let section = allSections()[indexPath.section]
         let row = rowsFor(section: section)[indexPath.row]
         switch row {
         case .label(let text):
-            let labelHeight =  text.textHeightBy(textWidth: collectionView.bounds.width) + cellConfigurator.spacingBetweenTitleLabels
-            
+            let labelHeight = calculateHeightOf(text: text)
             return CGSize(width: collectionView.bounds.width, height: labelHeight)
         case .item(let item):
             let itemHeight = calculateHeight(item: item)

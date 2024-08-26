@@ -139,7 +139,7 @@ extension ScreenImageTitleSubtitleMultiSelectionListVC: UICollectionViewDelegate
         let row = rowsFor(section: section)[indexPath.row]
         switch row {
         case .label(let text):
-            let labelHeight = text.textHeightBy(textWidth: collectionView.bounds.width)
+            let labelHeight = calculateHeightOf(text: text)
             return CGSize(width: collectionView.bounds.width, height: labelHeight)
         case .item(let item):
             let itemHeight = cellConfigurator.calculateHeightFor(titleText: item.title,
@@ -188,6 +188,17 @@ extension ScreenImageTitleSubtitleMultiSelectionListVC: UICollectionViewDelegate
 
 // MARK: - Private functions
 private extension ScreenImageTitleSubtitleMultiSelectionListVC {
+    
+    func calculateHeightOf(text: Text) -> CGFloat {
+        let textPaddings =  (text.box.styles.paddingLeft ?? 0.0) + (text.box.styles.paddingRight ?? 0.0)
+        let rowHeight = text.textHeightBy(textWidth: collectionView.bounds.width - textPaddings)
+        
+        let texVerticalPaddings =  (text.box.styles.paddingTop ?? 0.0) + (text.box.styles.paddingBottom ?? 0.0)
+        
+        let fullHeight = rowHeight + texVerticalPaddings
+        
+        return fullHeight
+    }
     
     func setTopInset() {
         let contentHeight = collectionView.contentSize.height

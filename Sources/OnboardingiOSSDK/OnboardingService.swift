@@ -43,6 +43,8 @@ public final class OnboardingService {
     private let windowManager: OnboardingWindowManagerProtocol
 
     public var projectId: String = ""
+    
+    public var customFontNames: [FontFamily : String]? = nil
 
     private let integrationManagerManager: AttributionStorageManager = AttributionStorageManager()
     

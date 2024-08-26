@@ -8,21 +8,22 @@
 import UIKit
 import ScreensGraph
 
-class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
+class ScreenCollectionMultipleSelectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTwoColumnMultipleSelection) -> ScreenCollectionMultipleSelectionVC {
+    static func instantiate(screenData: ScreenTwoColumnMultipleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenCollectionMultipleSelectionVC {
         let twoColumnMultipleSelectionVC = ScreenCollectionMultipleSelectionVC.storyBoardInstance()
         twoColumnMultipleSelectionVC.screenData = screenData
-
+        
+        twoColumnMultipleSelectionVC.videoPreparationService = videoPreparationService
+        twoColumnMultipleSelectionVC.screen = screen
+        twoColumnMultipleSelectionVC.media = screenData.media
+        
         return twoColumnMultipleSelectionVC
     }
     
-    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
-    @IBOutlet weak var mediaContainerView: UIView!
-    @IBOutlet weak var mediaContainerViewHeightConstraint: NSLayoutConstraint!
-
+    
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
     private let numberOfCellsInRow: CGFloat = 2
@@ -33,7 +34,7 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
     var selectedItem = [Int]()
     
     let cellConfigurator = TextCollectionCellWithBorderConfigurator.init()
-
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +43,7 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
         setupCollectionView()
         setupLabelsValue()
         
+        setupCollectionConstraintsWith(box: screenData.list.box.styles)        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,11 +65,6 @@ class ScreenCollectionMultipleSelectionVC: BaseChildScreenGraphViewController {
         OnboardingAnimation.runAnimationOfType(.tableViewCells(style: .fade), in: collectionView)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        mediaContainerViewHeightConstraint.constant = 0
-//        mediaContainerViewHeightConstraint.constant = view.bounds.height - collectionView.contentSize.height
-    }
 }
 // MARK: - UICollectionViewDataSource
 extension ScreenCollectionMultipleSelectionVC: UICollectionViewDataSource {
@@ -286,9 +283,9 @@ private extension ScreenCollectionMultipleSelectionVC {
         return ScreenCollectionConstants.verticalSpaceBetweenItemsConstraint
     }
     
-    func calculateHeightOf(text: Text) -> CGFloat {
-        return text.textHeightBy(textWidth: collectionView.bounds.width)
-    }
+//    func calculateHeightOf(text: Text) -> CGFloat {
+//        return text.textHeightBy(textWidth: collectionView.bounds.width)
+//    }
 }
 
 // MARK: - Setup methods

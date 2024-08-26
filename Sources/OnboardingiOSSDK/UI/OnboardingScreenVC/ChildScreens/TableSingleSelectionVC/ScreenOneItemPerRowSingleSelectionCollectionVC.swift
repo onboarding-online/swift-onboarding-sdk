@@ -10,16 +10,21 @@ import ScreensGraph
 
 class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenGraphViewController {
     
-    static func instantiate(screenData: ScreenTableSingleSelection) -> ScreenOneItemPerRowSingleSelectionCollectionVC {
+    static func instantiate(screenData: ScreenTableSingleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenOneItemPerRowSingleSelectionCollectionVC {
         let tableSingleSelectionVC = ScreenOneItemPerRowSingleSelectionCollectionVC.storyBoardInstance()
         tableSingleSelectionVC.screenData = screenData
+        
+        tableSingleSelectionVC.videoPreparationService = videoPreparationService
+        tableSingleSelectionVC.screen = screen
+        tableSingleSelectionVC.media = screenData.media
+
 
         return tableSingleSelectionVC
     }
     
     @IBOutlet weak var iconImage: UIImageView!
 
-    @IBOutlet weak var collectionView: UICollectionView!
+//    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableStackContainerView1: UIView!
     @IBOutlet weak var tableStackContainerView2: UIView!
     
@@ -133,7 +138,7 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDelega
         let row = rowsFor(section: section)[indexPath.row]
         switch row {
         case .label(let text):
-            let labelHeight = text.textHeightBy(textWidth: collectionView.bounds.width) + cellConfigurator.spacingBetweenTitleLabels
+            let labelHeight = calculateHeightOf(text: text)
             return CGSize(width: collectionView.bounds.width, height: labelHeight)
         case .item(let item):
             let itemHeight = calculateHeight(item: item, indexPath: indexPath)
