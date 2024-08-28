@@ -15,74 +15,51 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         let progressBarVC = ScreenProgressBarTitleSubtitleVC.storyBoardInstance()
         progressBarVC.screenData = screenData
         progressBarVC.screen = screen
-
+        
         return progressBarVC
     }
     
-//    @IBOutlet weak var titleLabel: UILabel!
-//    @IBOutlet weak var subtitleLabel: UILabel!
+    var titleLabel: UILabel!
+    
+    var subtitleLabel: UILabel!
+    var descriptionLabel: UILabel!
+    
+    var slideImage: UIImageView! = UIImageView()
     
     var mainView: UIView! = UIView()
-
+    
     var progressContentView: UIView! = UIView()
     
     var screenData: ScreenProgressBarTitle!
     var screen: Screen? = nil
-
+    
     var progressView: CircularProgressView? = nil
     
+    
+    override func viewDidLoad() {
+        setupMainStack(stackHeightMultiplier: 0.7, isStackAboveProgressView: true)
+        
+    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setupMainStack(stackHeightMultiplier: 0.3, isStackAboveProgressView: false)
-//        setupLabelsValue()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-//        setupMainStack()
-
-//        setupProgressView()
+        
+        setupProgressView()
     }
     
     
     func createImageTitleSubtitleVerticalStack() -> UIStackView {
         let bulletStackView = UIStackView()
-
+        
         bulletStackView.translatesAutoresizingMaskIntoConstraints = false
         bulletStackView.axis = .vertical
         bulletStackView.distribution = .fill
         bulletStackView.alignment = .fill
-        bulletStackView.backgroundColor = .orange
+        bulletStackView.backgroundColor = .clear
         return bulletStackView
-    }
-    
-    func buildLabel() -> UILabel {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 0
-
-//        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal)
-//        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal)
-//
-//        label.setContentHuggingPriority(UILayoutPriority(1000), for: .vertical)
-//        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical)
-        
-        return label
-    }
-    
-    func build(image: Image) -> UIImageView {
-        let imageView = UIImageView.init()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        load(image: image, in: imageView, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
-        if let imageContentMode = image.imageContentMode() {
-            imageView.contentMode = imageContentMode
-        } else {
-            imageView.contentMode = .scaleAspectFit
-        }
-        
-        return imageView
     }
     
     func setupMainStack(stackHeightMultiplier: CGFloat, isStackAboveProgressView: Bool) {
@@ -134,34 +111,78 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
             ])
         }
     }
-
+    
     func setupBulletStackView() -> UIStackView {
         let bulletStackView = createImageTitleSubtitleVerticalStack()
         bulletStackView.translatesAutoresizingMaskIntoConstraints = false
         bulletStackView.axis = .vertical
-        bulletStackView.distribution = .equalSpacing
+        bulletStackView.distribution = .fill
         bulletStackView.alignment = .fill
         
-        let titleLabel1 = buildLabel()
-        titleLabel1.text = "sometitle11119"
-        bulletStackView.addArrangedSubview(titleLabel1)
+        slideImage.translatesAutoresizingMaskIntoConstraints = false
+        slideImage.clipsToBounds = true
+        
+        slideImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        slideImage.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        
+        subtitleLabel = buildLabel()
+        descriptionLabel = buildLabel()
+        
+        var subtitleBox: BoxBlock? = nil
+        var descriptionBox: BoxBlock? = nil
+
+        
+        if let item = screenData.progressBar.items.first {
+            if let image = item.content.image {
+                slideImage = build(image: image)
+                
+                let imageContainer = wrapInUIView(imageView: slideImage, padding: image.box.styles)
+                bulletStackView.addArrangedSubview(imageContainer)
+            }
+            
+            if let subtitle = item.content.subtitle {
+                subtitleBox = subtitle.box.styles
+                subtitleLabel.apply(text: subtitle)
+            }
+            
+            if let description = item.content.description {
+                descriptionBox = description.box.styles
+                descriptionLabel.apply(text: description)
+            }
+        }
+        
+        
+        let titleView = wrapLabelInUIView(label: subtitleLabel, padding: subtitleBox)
+        bulletStackView.addArrangedSubview(titleView)
+        
+        let subtitleView = wrapLabelInUIView(label: descriptionLabel, padding: descriptionBox)
+        
+        bulletStackView.addArrangedSubview(subtitleView)
         
         return bulletStackView
     }
-
+    
     func setupProgressTitleContainerView() -> UIView {
         let progressTitleContainerView = UIView()
         progressTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        progressTitleContainerView.backgroundColor = .blue
+        progressTitleContainerView.backgroundColor = .clear
         
         // Добавляем прогресс вью и заголовок в контейнер
         progressContentView.translatesAutoresizingMaskIntoConstraints = false
-        progressContentView.backgroundColor = .green
+        progressContentView.backgroundColor = .clear
         progressTitleContainerView.addSubview(progressContentView)
         
-        let titleLabel = buildLabel()
-        titleLabel.text = "sometitle9"
-        progressTitleContainerView.addSubview(titleLabel)
+        titleLabel = buildLabel()
+        
+        var titleBox: BoxBlock? = nil
+        if let item = screenData.progressBar.items.first {
+            titleBox = item.content.title.box.styles
+            descriptionLabel.apply(text: item.content.title)
+        }
+        
+        let titleView = wrapLabelInUIView(label: titleLabel, padding: titleBox)
+        
+        progressTitleContainerView.addSubview(titleView)
         
         // Устанавливаем констрейнты для progressContentView и titleLabel
         NSLayoutConstraint.activate([
@@ -170,91 +191,87 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
             progressContentView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
             progressContentView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: 0.7),
             
-            titleLabel.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
-            titleLabel.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
+            titleView.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
+            titleView.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
+            titleView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
+            titleView.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
         ])
         
         return progressTitleContainerView
     }
+}
 
-    
-    func setupMainStack() {
-        self.view.addSubview(mainView)
+extension ScreenProgressBarTitleSubtitleVC {
+    func wrapInUIView(imageView: UIImageView, padding: BoxBlock? = nil) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .clear
+        containerView.addSubview(imageView)
+        containerView.clipsToBounds = true
         
-        // Убедитесь, что mainView закреплена к границам своего супервью
-        mainView.translatesAutoresizingMaskIntoConstraints = false
+        let bottom = -1 * (padding?.paddingBottom ?? 0)
+        let trailing = -1 * (padding?.paddingRight ?? 0)
+        
+        let leading = (padding?.paddingLeft ?? 0)
+        let top = (padding?.paddingTop ?? 0)
+        
         NSLayoutConstraint.activate([
-            mainView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            mainView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            mainView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            mainView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
+            imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
         ])
         
-        // Создаем основной вертикальный стек, занимающий верхнюю часть экрана
-        let bulletStackView = createImageTitleSubtitleVerticalStack()
-        bulletStackView.translatesAutoresizingMaskIntoConstraints = false
-        bulletStackView.axis = .vertical
-        bulletStackView.distribution = .equalSpacing
-        bulletStackView.alignment = .fill
-        
-        let titleLabel1 = buildLabel()
-        titleLabel1.text = "sometitle11119"
-        bulletStackView.addArrangedSubview(titleLabel1)
-        mainView.addSubview(bulletStackView)
-
-        // Создаем контейнер для progressContentView и UILabel
-        let progressTitleContainerView = UIView()
-        progressTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        progressTitleContainerView.backgroundColor = .blue
-        
-        mainView.addSubview(progressTitleContainerView)
-
-        // Добавляем прогресс вью и заголовок в контейнер
-        progressContentView.translatesAutoresizingMaskIntoConstraints = false
-        progressContentView.backgroundColor = .green
-        progressTitleContainerView.addSubview(progressContentView)
-
-        let titleLabel = buildLabel()
-        titleLabel.text = "sometitle9"
-        progressTitleContainerView.addSubview(titleLabel)
-
-        // Устанавливаем констрейнты для bulletStackView
-        NSLayoutConstraint.activate([
-            bulletStackView.topAnchor.constraint(equalTo: mainView.topAnchor),
-            bulletStackView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
-            bulletStackView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
-            bulletStackView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 0.2)
-        ])
-
-        // Устанавливаем констрейнты для контейнера progressTitleContainerView
-        NSLayoutConstraint.activate([
-            progressTitleContainerView.topAnchor.constraint(equalTo: bulletStackView.bottomAnchor),
-            progressTitleContainerView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
-            progressTitleContainerView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
-            progressTitleContainerView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor)
-        ])
-        
-        // Устанавливаем констрейнты для progressContentView
-        NSLayoutConstraint.activate([
-            progressContentView.topAnchor.constraint(equalTo: progressTitleContainerView.topAnchor),
-            progressContentView.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
-            progressContentView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
-            progressContentView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: 0.7)
-        ])
-        
-        // Устанавливаем констрейнты для titleLabel
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
-            titleLabel.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
-        ])
+        return containerView
     }
 
-
-
+    func buildLabel() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+        
+        return label
+    }
+    
+    func build(image: Image) -> UIImageView {
+        let imageView = UIImageView.init()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        load(image: image, in: imageView, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
+        if let imageContentMode = image.imageContentMode() {
+            imageView.contentMode = imageContentMode
+        } else {
+            imageView.contentMode = .scaleAspectFit
+        }
+        
+        return imageView
+    }
+    
+   
+    
+    
+    func wrapLabelInUIView(label: UILabel, padding: BoxBlock? = nil) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .clear
+        containerView.addSubview(label)
+        
+        let bottom = -1 * (padding?.paddingBottom ?? 0)
+        let trailing = -1 * (padding?.paddingRight ?? 0)
+        
+        let leading = (padding?.paddingLeft ?? 0)
+        let top = (padding?.paddingTop ?? 0)
+        
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
+            label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+            label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
+            label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+        ])
+        
+        return containerView
+    }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -296,10 +313,10 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
 
         NSLayoutConstraint.activate([
             // Констрейнты для bulletStackView (верхняя половина экрана)
-            progressViewStrong.topAnchor.constraint(equalTo: mainView.topAnchor),
-            progressViewStrong.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
-            progressViewStrong.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
-            progressViewStrong.bottomAnchor.constraint(equalTo: mainView.bottomAnchor)
+            progressViewStrong.topAnchor.constraint(equalTo: progressContentView.topAnchor),
+            progressViewStrong.leadingAnchor.constraint(equalTo: progressContentView.leadingAnchor),
+            progressViewStrong.trailingAnchor.constraint(equalTo: progressContentView.trailingAnchor),
+            progressViewStrong.bottomAnchor.constraint(equalTo: progressContentView.bottomAnchor)
         ])
         
         progressViewStrong.progressCallback = { [weak self](percentCount) in
@@ -315,9 +332,36 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
             })
 
             if let itemTitle = item?.content.title {
-//                self?.titleLabel.isHidden = false
-//                self?.titleLabel.apply(text: itemTitle)
+                self?.titleLabel.isHidden = false
+                self?.titleLabel.apply(text: itemTitle)
+            } else {
+                self?.titleLabel.isHidden = true
             }
+            
+            if let itemSubtitle = item?.content.title {
+                self?.subtitleLabel.isHidden = false
+                self?.subtitleLabel.apply(text: itemSubtitle)
+            } else {
+                self?.subtitleLabel.isHidden = true
+            }
+            
+            if let itemDescription = item?.content.title {
+                self?.descriptionLabel.isHidden = false
+                self?.descriptionLabel.apply(text: itemDescription)
+            } else {
+                self?.descriptionLabel.isHidden = true
+            }
+            
+            if let image = item?.content.image {
+                
+                if let imageView = self?.slideImage {
+                    self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+                }
+
+            } else {
+                self?.slideImage.image = nil
+            }
+            
         }
         
         progressViewStrong.isFinished = { [weak self] (isFinished) in
