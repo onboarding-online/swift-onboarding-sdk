@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,59 +19,14 @@
                     <view key="view" contentMode="scaleToFill" id="r09-h6-V7X">
                         <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ANa-zR-Pl7">
-                                <rect key="frame" x="0.0" y="91" width="428" height="801"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VEv-L1-CCS">
-                                        <rect key="frame" x="0.0" y="0.0" width="428" height="769"/>
-                                        <subviews>
-                                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8sg-K4-5Kv">
-                                                <rect key="frame" x="0.0" y="0.0" width="428" height="769"/>
-                                                <color key="backgroundColor" systemColor="systemRedColor"/>
-                                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </view>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="8sg-K4-5Kv" secondAttribute="trailing" id="YpH-3Y-lDV"/>
-                                            <constraint firstItem="8sg-K4-5Kv" firstAttribute="leading" secondItem="VEv-L1-CCS" secondAttribute="leading" id="dXf-aV-ctF"/>
-                                            <constraint firstAttribute="bottom" secondItem="8sg-K4-5Kv" secondAttribute="bottom" id="i3J-0n-Gto"/>
-                                            <constraint firstItem="8sg-K4-5Kv" firstAttribute="top" secondItem="VEv-L1-CCS" secondAttribute="top" id="jYd-bE-tcC"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="VEv-L1-CCS" firstAttribute="leading" secondItem="ANa-zR-Pl7" secondAttribute="leading" id="FIN-Xo-0ll"/>
-                                    <constraint firstAttribute="trailing" secondItem="VEv-L1-CCS" secondAttribute="trailing" id="SKo-qZ-hON"/>
-                                    <constraint firstItem="VEv-L1-CCS" firstAttribute="top" secondItem="ANa-zR-Pl7" secondAttribute="top" id="qli-tG-vjx"/>
-                                    <constraint firstAttribute="bottom" secondItem="VEv-L1-CCS" secondAttribute="bottom" constant="32" id="zZk-ay-GFg"/>
-                                </constraints>
-                            </view>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="SVO-Mi-KwX"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="ANa-zR-Pl7" firstAttribute="leading" secondItem="SVO-Mi-KwX" secondAttribute="leading" id="1ld-WC-VSY"/>
-                            <constraint firstItem="SVO-Mi-KwX" firstAttribute="trailing" secondItem="ANa-zR-Pl7" secondAttribute="trailing" id="8qd-Db-iY2"/>
-                            <constraint firstItem="ANa-zR-Pl7" firstAttribute="top" secondItem="SVO-Mi-KwX" secondAttribute="top" id="fg8-NN-SDL"/>
-                            <constraint firstItem="ANa-zR-Pl7" firstAttribute="bottom" secondItem="SVO-Mi-KwX" secondAttribute="bottom" id="vk3-A1-nWd"/>
-                        </constraints>
                     </view>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <connections>
-                        <outlet property="mainView" destination="8sg-K4-5Kv" id="Zgb-kQ-oEQ"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UEJ-oJ-AjR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="199" y="98"/>
         </scene>
     </scenes>
-    <resources>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-    </resources>
 </document>
