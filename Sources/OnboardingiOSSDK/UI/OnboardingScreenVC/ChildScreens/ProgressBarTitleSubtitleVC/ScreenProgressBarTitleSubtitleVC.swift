@@ -236,6 +236,11 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         
         progressTitleContainerView.addSubview(stack)
         
+        let paddingBottom = (screenData.progressBar.box.styles.paddingBottom ?? 0.0) * -1.0
+        let paddingTop = (screenData.progressBar.box.styles.paddingTop ?? 0.0)
+        let paddingRight = (screenData.progressBar.box.styles.paddingRight ?? 0.0) * -1.0
+        let paddingLeft = (screenData.progressBar.box.styles.paddingLeft ?? 0.0)
+
         if fullHeight {
             // Устанавливаем констрейнты для progressContentView и titleLabel
             NSLayoutConstraint.activate([
@@ -245,10 +250,10 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
                 progressContainerView.widthAnchor.constraint(equalTo: progressTitleContainerView.widthAnchor, multiplier: 0.75), // Устанавливаем ширину 75% от супервью
                 progressContainerView.heightAnchor.constraint(equalTo: progressContentView.widthAnchor), // Высота равна ширине
                 
-                progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: 0),
-                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: 0),
-                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: 0),
-                progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: 0),
+                progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: paddingTop),
+                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: paddingLeft),
+                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: paddingRight),
+                progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: paddingBottom),
 
                 stack.topAnchor.constraint(equalTo: progressContainerView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
@@ -263,10 +268,10 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
                 progressContainerView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
                 progressContainerView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: 0.7),
                 
-                progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: 0),
-                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: 0),
-                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: 0),
-                progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: 0),
+                progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: paddingTop),
+                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: paddingLeft),
+                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: paddingRight),
+                progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: paddingBottom),
                 
                 stack.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
