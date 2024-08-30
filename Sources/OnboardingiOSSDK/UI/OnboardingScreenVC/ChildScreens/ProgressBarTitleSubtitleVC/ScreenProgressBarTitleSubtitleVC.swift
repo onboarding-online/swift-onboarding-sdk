@@ -404,10 +404,10 @@ extension ScreenProgressBarTitleSubtitleVC {
 
         NSLayoutConstraint.activate([
             // Констрейнты для bulletStackView (верхняя половина экрана)
-            progressViewStrong.topAnchor.constraint(equalTo: progressContentView.topAnchor),
-            progressViewStrong.leadingAnchor.constraint(equalTo: progressContentView.leadingAnchor),
-            progressViewStrong.trailingAnchor.constraint(equalTo: progressContentView.trailingAnchor),
-            progressViewStrong.bottomAnchor.constraint(equalTo: progressContentView.bottomAnchor)
+//            progressViewStrong.topAnchor.constraint(equalTo: progressContentView.topAnchor),
+//            progressViewStrong.leadingAnchor.constraint(equalTo: progressContentView.leadingAnchor),
+//            progressViewStrong.trailingAnchor.constraint(equalTo: progressContentView.trailingAnchor),
+//            progressViewStrong.bottomAnchor.constraint(equalTo: progressContentView.bottomAnchor)
         ])
         
         progressViewStrong.progressCallback = { [weak self](percentCount) in
