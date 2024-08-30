@@ -62,6 +62,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         bulletStackView.axis = .vertical
         bulletStackView.distribution = .fill
         bulletStackView.alignment = .fill
+        bulletStackView.spacing = 0
         bulletStackView.backgroundColor = .clear
         return bulletStackView
     }
@@ -230,9 +231,23 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         }
         
         let titleView = wrapLabelInUIView(label: titleLabel, padding: titleBox)
-        
         let stack = createHorizontalStack()
-        stack.addArrangedSubview(titleView)
+        
+        let verticalStack = createImageTitleSubtitleVerticalStack()
+//        verticalStack.distribution = .fillProportionally
+
+        verticalStack.addArrangedSubview(titleView)
+        
+        if screenData.progressBar.kind == .circle && !screenData.title.textByLocale().isEmpty {
+            let mainScreenTitleLabel = buildLabel()
+            mainScreenTitleLabel.apply(text: screenData.title)
+            let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, padding: screenData.title.box.styles)
+
+            verticalStack.addArrangedSubview(mainScreenTitleLabelView)
+        }
+        
+        stack.addArrangedSubview(verticalStack)
+
         
         progressTitleContainerView.addSubview(stack)
         
