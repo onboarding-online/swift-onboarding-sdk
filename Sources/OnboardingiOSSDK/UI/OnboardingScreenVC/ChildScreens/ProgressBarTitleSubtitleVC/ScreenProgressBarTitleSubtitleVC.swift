@@ -44,7 +44,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let width = (screenData.progressBar.styles.heightPercentage ?? 40.0) / 100.0
+        let width = (screenData.progressBar.styles.heightPercentage ?? 50.0) / 100.0
         setupMainStack(stackHeightMultiplier: width, progressBarKind: screenData.progressBar.kind)
     }
     
@@ -207,7 +207,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     func setupProgressTitleContainerView(fullHeight: Bool) -> UIView {
         let progressTitleContainerView = UIView()
         progressTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        progressTitleContainerView.backgroundColor = .red
+        progressTitleContainerView.backgroundColor = .green
         
         // Добавляем прогресс вью и заголовок в контейнер
         progressContentView.translatesAutoresizingMaskIntoConstraints = false
@@ -215,8 +215,11 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         
         let progressContainerView = UIView()
         progressContainerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        progressTitleContainerView.addSubview(progressContentView)
+        progressContainerView.backgroundColor = .green
+
+        progressTitleContainerView.addSubview(progressContainerView)
+
+        progressContainerView.addSubview(progressContentView)
         
         titleLabel = buildLabel()
         
@@ -236,12 +239,18 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         if fullHeight {
             // Устанавливаем констрейнты для progressContentView и titleLabel
             NSLayoutConstraint.activate([
-                progressContentView.topAnchor.constraint(equalTo: progressTitleContainerView.topAnchor),
-                progressContentView.centerXAnchor.constraint(equalTo: progressTitleContainerView.centerXAnchor), // Центрируем по горизонтали
-                progressContentView.widthAnchor.constraint(equalTo: progressTitleContainerView.widthAnchor, multiplier: 0.75), // Устанавливаем ширину 75% от супервью
-                progressContentView.heightAnchor.constraint(equalTo: progressContentView.widthAnchor), // Высота равна ширине
+                
+                progressContainerView.topAnchor.constraint(equalTo: progressTitleContainerView.topAnchor),
+                progressContainerView.centerXAnchor.constraint(equalTo: progressTitleContainerView.centerXAnchor), // Центрируем по горизонтали
+                progressContainerView.widthAnchor.constraint(equalTo: progressTitleContainerView.widthAnchor, multiplier: 0.75), // Устанавливаем ширину 75% от супервью
+                progressContainerView.heightAnchor.constraint(equalTo: progressContentView.widthAnchor), // Высота равна ширине
+                
+                progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: 0),
+                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: 0),
+                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: 0),
+                progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: 0),
 
-                stack.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
+                stack.topAnchor.constraint(equalTo: progressContainerView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
                 stack.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
                 stack.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
@@ -249,10 +258,15 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         } else {
             // Устанавливаем констрейнты для progressContentView и titleLabel
             NSLayoutConstraint.activate([
-                progressContentView.topAnchor.constraint(equalTo: progressTitleContainerView.topAnchor),
-                progressContentView.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
-                progressContentView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
-                progressContentView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: 0.7),
+                progressContainerView.topAnchor.constraint(equalTo: progressTitleContainerView.topAnchor),
+                progressContainerView.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
+                progressContainerView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
+                progressContainerView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: 0.7),
+                
+                progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: 0),
+                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: 0),
+                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: 0),
+                progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: 0),
                 
                 stack.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
@@ -301,7 +315,7 @@ extension ScreenProgressBarTitleSubtitleVC {
     func build(image: Image) -> UIImageView {
         let imageView = UIImageView.init()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        
+        imageView.clipsToBounds = true
         load(image: image, in: imageView, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
         if let imageContentMode = image.imageContentMode() {
             imageView.contentMode = imageContentMode
@@ -361,7 +375,7 @@ extension ScreenProgressBarTitleSubtitleVC {
         
         self.view.layoutSubviews()
         
-        let maxHeight = self.view.bounds.width * 0.75
+        let maxHeight = self.mainView.bounds.width * 0.75
        
         let height =  maxHeight > progressContentView.bounds.height ? progressContentView.bounds.height : maxHeight
         
@@ -413,7 +427,7 @@ extension ScreenProgressBarTitleSubtitleVC {
             }
             
             if  self?.subtitleLabel != nil {
-                if let itemSubtitle = item?.content.title {
+                if let itemSubtitle = item?.content.subtitle {
                     self?.subtitleLabel.isHidden = false
                     self?.subtitleLabel.apply(text: itemSubtitle)
                 } else {
@@ -423,7 +437,7 @@ extension ScreenProgressBarTitleSubtitleVC {
             
             
             if  self?.descriptionLabel != nil {
-                if let itemDescription = item?.content.title  {
+                if let itemDescription = item?.content.description  {
                     self?.descriptionLabel.isHidden = false
                     self?.descriptionLabel.apply(text: itemDescription)
                 } else {

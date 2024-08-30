@@ -179,7 +179,16 @@ private extension AssetsPrefetchService {
         case .typeScreenImageTitleSubtitles(let value):
             try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenProgressBarTitle(let value):
-            try await prefetchAssetsFor(type: value, imageList: nil)
+            
+            let imageList = value.progressBar.items.compactMap({ (value) in
+                if let image = value.content.image {
+                  return ImageList.init(image: image)
+                } else {
+                    return nil
+                }
+            })
+
+            try await prefetchAssetsFor(type: value, imageList: imageList)
         case .typeScreenImageTitleSubtitlePicker(let value):
             try await prefetchAssetsFor(type: value, imageList: nil)
         case .typeScreenTitleSubtitleCalendar(let value):
