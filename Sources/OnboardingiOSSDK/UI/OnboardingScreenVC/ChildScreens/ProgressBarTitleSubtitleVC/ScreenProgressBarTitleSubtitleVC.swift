@@ -301,6 +301,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
 }
 
 extension ScreenProgressBarTitleSubtitleVC {
+    
     func wrapInUIView(imageView: UIImageView, padding: BoxBlock? = nil) -> UIView {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -396,14 +397,14 @@ extension ScreenProgressBarTitleSubtitleVC {
         self.view.layoutSubviews()
         
         let maxHeight = self.mainView.bounds.width * 0.75
-       
-        let height =  maxHeight > progressContentView.bounds.height ? progressContentView.bounds.height : maxHeight
+        var height = progressContentView.bounds.height > progressContentView.bounds.width ? progressContentView.bounds.width : progressContentView.bounds.height
+         height =  maxHeight > height ? height : maxHeight
         
-        
-//        let rect = CGRect(x: 0, y: 0, width: progressContentView.bounds.height, height: progressContentView.bounds.height)
         let rect = CGRect(x: 0, y: 0, width: height, height: height)
 
-        progressView = CircularProgressView(frame: rect, lineWidth: 15, rounded: false, timeTofill: screenData.progressBar.timer.duration.doubleValue)
+        let lineWidth = (screenData.progressBar.styles.thickness ?? 15.0).cgFloatValue
+        
+        progressView = CircularProgressView(frame: rect, lineWidth: lineWidth, rounded: false, timeTofill: screenData.progressBar.timer.duration.doubleValue)
         
         guard let progressViewStrong = progressView else { return }
 
@@ -553,7 +554,7 @@ class CircularProgressView: UIView {
     
     fileprivate func createProgressView(){
         self.backgroundColor = .clear
-        let widthOfLine  = lineWidth ?? 15
+        let widthOfLine  = lineWidth ?? 10
         let radius = frame.width / 2 - (widthOfLine / 2)
         let circularPath = UIBezierPath(arcCenter: CGPoint(x: frame.width / 2, y: frame.height / 2), radius: radius , startAngle: CGFloat(-0.5 * .pi), endAngle: CGFloat(1.5 * .pi), clockwise: true)
         trackLayer.fillColor = UIColor.blue.cgColor
