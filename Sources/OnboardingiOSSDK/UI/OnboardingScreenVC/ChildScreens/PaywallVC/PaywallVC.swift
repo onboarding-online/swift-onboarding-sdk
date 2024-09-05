@@ -483,7 +483,14 @@ private extension PaywallVC {
     }
     
     func purchaseSelectedProduct() {
-        guard selectedIndex < products.count else { return }
+        guard selectedIndex < products.count else {
+            return
+        }
+        
+        guard products.count == 0 else {
+            finishWith(action: screenData.footer.purchase?.action)
+            return
+        }
 
         let selectedProduct = products[selectedIndex]
         OnboardingService.shared.eventRegistered(event: .purchaseButtonPressed, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: selectedProduct.id])

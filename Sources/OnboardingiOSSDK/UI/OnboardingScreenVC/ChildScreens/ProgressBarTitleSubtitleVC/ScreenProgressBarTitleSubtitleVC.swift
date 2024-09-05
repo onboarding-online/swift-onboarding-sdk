@@ -216,7 +216,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         
         let progressContainerView = UIView()
         progressContainerView.translatesAutoresizingMaskIntoConstraints = false
-        progressContainerView.backgroundColor = .green
+        progressContainerView.backgroundColor = .orange
 
         progressTitleContainerView.addSubview(progressContainerView)
 
@@ -255,6 +255,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         let paddingTop = (screenData.progressBar.box.styles.paddingTop ?? 0.0)
         let paddingRight = (screenData.progressBar.box.styles.paddingRight ?? 0.0) * -1.0
         let paddingLeft = (screenData.progressBar.box.styles.paddingLeft ?? 0.0)
+        
+        let progressContainerHeightPercentage = ((screenData.progressBar.styles.height ?? 75.0) / 100.0).cgFloatValue
 
         if fullHeight {
             // Устанавливаем констрейнты для progressContentView и titleLabel
@@ -278,17 +280,20 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         } else {
             // Устанавливаем констрейнты для progressContentView и titleLabel
             NSLayoutConstraint.activate([
+                // Контейнер прогресса получает 0.7 высота всего контейнера с прогресом и тайтлом
                 progressContainerView.topAnchor.constraint(equalTo: progressTitleContainerView.topAnchor),
                 progressContainerView.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
                 progressContainerView.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
-                progressContainerView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: 0.7),
+                progressContainerView.heightAnchor.constraint(equalTo: progressTitleContainerView.heightAnchor, multiplier: progressContainerHeightPercentage),
                 
+                // В прогрес контейнер встраивается еще один контейнер в который будет вписываться прогресс и применяться констренйты
                 progressContentView.topAnchor.constraint(equalTo: progressContainerView.topAnchor, constant: paddingTop),
-                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: paddingLeft),
-                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: paddingRight),
+                progressContentView.leadingAnchor.constraint(equalTo: progressContainerView.leadingAnchor, constant: 0.0),
+                progressContentView.trailingAnchor.constraint(equalTo: progressContainerView.trailingAnchor, constant: 0.0),
                 progressContentView.bottomAnchor.constraint(equalTo: progressContainerView.bottomAnchor, constant: paddingBottom),
                 
-                stack.topAnchor.constraint(equalTo: progressContentView.bottomAnchor),
+                // Вертикальный стек с лейблами привязывается к низу контейнера с прогрессом
+                stack.topAnchor.constraint(equalTo: progressContainerView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
                 stack.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
                 stack.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
