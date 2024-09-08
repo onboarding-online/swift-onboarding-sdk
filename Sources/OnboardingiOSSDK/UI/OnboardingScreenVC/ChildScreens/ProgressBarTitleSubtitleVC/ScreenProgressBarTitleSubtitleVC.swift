@@ -20,9 +20,14 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     }
     
     var titleLabel: UILabel!
-    
+    var titleLabelContainer: UIView! = UIView()
+
     var subtitleLabel: UILabel!
+    var subtitleLabelContainer: UIView! = UIView()
+
     var descriptionLabel: UILabel!
+    var descriptionLabelContainer: UIView! = UIView()
+
     
     var slideImage: UIImageView! = UIImageView()
     
@@ -195,12 +200,12 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         }
         
         
-        let titleView = wrapLabelInUIView(label: subtitleLabel, padding: subtitleBox)
-        bulletStackView.addArrangedSubview(titleView)
-        
-        let subtitleView = wrapLabelInUIView(label: descriptionLabel, padding: descriptionBox)
-        
+        let subtitleView = wrapLabelInUIView(label: subtitleLabel, view: subtitleLabelContainer, padding: subtitleBox)
         bulletStackView.addArrangedSubview(subtitleView)
+        
+        let descriptionView = wrapLabelInUIView(label: descriptionLabel, view: descriptionLabelContainer, padding: descriptionBox)
+        
+        bulletStackView.addArrangedSubview(descriptionView)
         
         return bulletStackView
     }
@@ -230,18 +235,17 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
             titleLabel.apply(text: item.content.title)
         }
         
-        let titleView = wrapLabelInUIView(label: titleLabel, padding: titleBox)
+        let titleView = wrapLabelInUIView(label: titleLabel, view: titleLabelContainer, padding: titleBox)
         let stack = createHorizontalStack()
         
         let verticalStack = createImageTitleSubtitleVerticalStack()
-//        verticalStack.distribution = .fillProportionally
 
         verticalStack.addArrangedSubview(titleView)
         
         if screenData.progressBar.kind == .circle && !screenData.title.textByLocale().isEmpty {
             let mainScreenTitleLabel = buildLabel()
             mainScreenTitleLabel.apply(text: screenData.title)
-            let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, padding: screenData.title.box.styles)
+            let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, view: UIView(), padding: screenData.title.box.styles)
 
             verticalStack.addArrangedSubview(mainScreenTitleLabelView)
         }
@@ -353,10 +357,8 @@ extension ScreenProgressBarTitleSubtitleVC {
     }
     
    
-    
-    
-    func wrapLabelInUIView(label: UILabel, padding: BoxBlock? = nil) -> UIView {
-        let containerView = UIView()
+    func wrapLabelInUIView(label: UILabel, view: UIView, padding: BoxBlock? = nil) -> UIView {
+        let containerView = view
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear
         containerView.addSubview(label)
@@ -386,11 +388,6 @@ extension ScreenProgressBarTitleSubtitleVC {
             progressView?.removeFromSuperview()
             progressView = nil
         }
-    }
-    
-    func setupLabelsValue() {
-//        subtitleLabel.apply(text: screenData?.title)
-//        titleLabel.text = ""
     }
     
     func setupProgressView() {
@@ -444,30 +441,36 @@ extension ScreenProgressBarTitleSubtitleVC {
             })
 
             if  self?.titleLabel != nil {
-                if let itemTitle = item?.content.title {
+                if let itemTitle = item?.content.title, !itemTitle.textByLocale().isEmpty {
                     self?.titleLabel.isHidden = false
+                    self?.titleLabelContainer.isHidden = false
                     self?.titleLabel.apply(text: itemTitle)
                 } else {
                     self?.titleLabel.isHidden = true
+                    self?.titleLabelContainer.isHidden = true
+
                 }
             }
             
             if  self?.subtitleLabel != nil {
-                if let itemSubtitle = item?.content.subtitle {
+                if let itemSubtitle = item?.content.subtitle, !itemSubtitle.textByLocale().isEmpty  {
                     self?.subtitleLabel.isHidden = false
+                    self?.subtitleLabelContainer.isHidden = false
                     self?.subtitleLabel.apply(text: itemSubtitle)
                 } else {
                     self?.subtitleLabel.isHidden = true
+                    self?.subtitleLabelContainer.isHidden = true
                 }
             }
             
-            
             if  self?.descriptionLabel != nil {
-                if let itemDescription = item?.content.description  {
+                if let itemDescription = item?.content.description, !itemDescription.textByLocale().isEmpty   {
                     self?.descriptionLabel.isHidden = false
+                    self?.descriptionLabelContainer.isHidden = false
                     self?.descriptionLabel.apply(text: itemDescription)
                 } else {
                     self?.descriptionLabel.isHidden = true
+                    self?.descriptionLabelContainer.isHidden = true
                 }
             }
             
