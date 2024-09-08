@@ -19,6 +19,27 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         return progressBarVC
     }
     
+    var imageViewTopConstraint: NSLayoutConstraint!
+    var imageViewBottomConstraint: NSLayoutConstraint!
+    var imageViewLeadingConstraint: NSLayoutConstraint!
+    var imageViewTrailingConstraint: NSLayoutConstraint!
+    
+    var titleTopConstraint: NSLayoutConstraint!
+    var titleBottomConstraint: NSLayoutConstraint!
+    var titleLeadingConstraint: NSLayoutConstraint!
+    var titleTrailingConstraint: NSLayoutConstraint!
+    
+    var subtitleTopConstraint: NSLayoutConstraint!
+    var subtitleBottomConstraint: NSLayoutConstraint!
+    var subtitleLeadingConstraint: NSLayoutConstraint!
+    var subtitleTrailingConstraint: NSLayoutConstraint!
+    
+    
+    var descriptionTopConstraint: NSLayoutConstraint!
+    var descriptionBottomConstraint: NSLayoutConstraint!
+    var descriptionLeadingConstraint: NSLayoutConstraint!
+    var descriptionTrailingConstraint: NSLayoutConstraint!
+    
     var titleLabel: UILabel!
     var titleLabelContainer: UIView! = UIView()
 
@@ -40,12 +61,6 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     
     var progressView: CircularProgressView? = nil
     
-    
-//    override func viewDidLoad() {
-//        
-//
-//        
-//    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -240,6 +255,9 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         
         let verticalStack = createImageTitleSubtitleVerticalStack()
 
+//        verticalStack.setContentHuggingPriority(.defaultHigh, for: .vertical)
+//        verticalStack.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        
         verticalStack.addArrangedSubview(titleView)
         
         if screenData.progressBar.kind == .circle && !screenData.title.textByLocale().isEmpty {
@@ -252,6 +270,9 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         
         stack.addArrangedSubview(verticalStack)
 
+//        stack.setContentHuggingPriority(.defaultHigh, for: .vertical)
+//        stack.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        
         
         progressTitleContainerView.addSubview(stack)
         
@@ -299,8 +320,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
                 // Вертикальный стек с лейблами привязывается к низу контейнера с прогрессом
                 stack.topAnchor.constraint(equalTo: progressContainerView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
-                stack.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
-                stack.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
+                stack.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor)
+//                stack.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
             ])
         }
        
@@ -324,14 +345,42 @@ extension ScreenProgressBarTitleSubtitleVC {
         let leading = (padding?.paddingLeft ?? 0)
         let top = (padding?.paddingTop ?? 0)
         
+        imageViewTopConstraint = imageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top)
+        imageViewBottomConstraint = imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom)
+        imageViewLeadingConstraint = imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading)
+        imageViewTrailingConstraint = imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+        
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
-            imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
-            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
-            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            imageViewTopConstraint,
+            imageViewBottomConstraint,
+            imageViewLeadingConstraint,
+            imageViewTrailingConstraint
         ])
         
         return containerView
+    }
+    
+    func update(image: Image) {
+        let padding = image.box.styles
+        
+        let bottom = -1 * (padding.paddingBottom ?? 0)
+        let trailing = -1 * (padding.paddingRight ?? 0)
+        
+        let leading = (padding.paddingLeft ?? 0)
+        let top = (padding.paddingTop ?? 0)
+        
+        imageViewTopConstraint.constant = top
+        imageViewBottomConstraint.constant = bottom
+        imageViewLeadingConstraint.constant = leading
+        imageViewTrailingConstraint.constant = trailing
+        
+        slideImage.updateConstraints()
+        
+        if let imageContentMode = image.imageContentMode() {
+            slideImage.contentMode = imageContentMode
+        } else {
+            slideImage.contentMode = .scaleAspectFit
+        }
     }
 
     func buildLabel() -> UILabel {
@@ -369,15 +418,75 @@ extension ScreenProgressBarTitleSubtitleVC {
         let leading = (padding?.paddingLeft ?? 0)
         let top = (padding?.paddingTop ?? 0)
         
-        
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
-            label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
-            label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
-            label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
-        ])
+        if label == titleLabel {
+            titleTopConstraint = label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top)
+            titleBottomConstraint = label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom)
+            titleLeadingConstraint = label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading)
+            titleTrailingConstraint = label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            
+            NSLayoutConstraint.activate([
+                titleTopConstraint,
+                titleBottomConstraint,
+                titleLeadingConstraint,
+                titleTrailingConstraint
+            ])
+        } else if label == subtitleLabel {
+            subtitleTopConstraint = label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top)
+            subtitleBottomConstraint = label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom)
+            subtitleLeadingConstraint = label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading)
+            subtitleTrailingConstraint = label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            
+            NSLayoutConstraint.activate([
+                subtitleTopConstraint,
+                subtitleBottomConstraint,
+                subtitleLeadingConstraint,
+                titleTrailingConstraint
+            ])
+        } else if label == descriptionLabel {
+            descriptionTopConstraint = label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top)
+            descriptionBottomConstraint = label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom)
+            descriptionLeadingConstraint = label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading)
+            descriptionTrailingConstraint = label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            
+            NSLayoutConstraint.activate([
+                descriptionTopConstraint,
+                descriptionBottomConstraint,
+                descriptionLeadingConstraint,
+                descriptionTrailingConstraint
+            ])
+        }
         
         return containerView
+    }
+    
+    func updateLabelInUIView(label: UILabel, view: UIView, padding: BoxBlock? = nil) {
+        let containerView = view
+        
+        let bottom = -1 * (padding?.paddingBottom ?? 0)
+        let trailing = -1 * (padding?.paddingRight ?? 0)
+        
+        let leading = (padding?.paddingLeft ?? 0)
+        let top = (padding?.paddingTop ?? 0)
+        
+        if label == titleLabel {
+            titleTopConstraint.constant = top
+            titleBottomConstraint.constant = bottom
+            titleLeadingConstraint.constant = leading
+            titleTrailingConstraint.constant = trailing
+        } else if label == subtitleLabel {
+            subtitleTopConstraint.constant = top
+            subtitleBottomConstraint.constant = bottom
+            subtitleLeadingConstraint.constant = leading
+            subtitleTrailingConstraint.constant = trailing
+            
+        } else if label == descriptionLabel {
+            descriptionTopConstraint.constant = top
+            descriptionBottomConstraint.constant = bottom
+            descriptionLeadingConstraint.constant = leading
+            descriptionTrailingConstraint.constant = trailing
+        }
+        
+        containerView.updateConstraints()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -440,10 +549,11 @@ extension ScreenProgressBarTitleSubtitleVC {
                 }
             })
 
-            if  self?.titleLabel != nil {
+            if  let strongLabel = self?.titleLabel, let strongContainer = self?.titleLabelContainer {
                 if let itemTitle = item?.content.title, !itemTitle.textByLocale().isEmpty {
                     self?.titleLabel.isHidden = false
                     self?.titleLabelContainer.isHidden = false
+                    self?.updateLabelInUIView(label: strongLabel, view: strongContainer, padding: itemTitle.box.styles)
                     self?.titleLabel.apply(text: itemTitle)
                 } else {
                     self?.titleLabel.isHidden = true
@@ -452,10 +562,11 @@ extension ScreenProgressBarTitleSubtitleVC {
                 }
             }
             
-            if  self?.subtitleLabel != nil {
+            if  let strongLabel = self?.subtitleLabel, let strongContainer = self?.subtitleLabelContainer {
                 if let itemSubtitle = item?.content.subtitle, !itemSubtitle.textByLocale().isEmpty  {
                     self?.subtitleLabel.isHidden = false
                     self?.subtitleLabelContainer.isHidden = false
+                    self?.updateLabelInUIView(label: strongLabel, view: strongContainer, padding: itemSubtitle.box.styles)
                     self?.subtitleLabel.apply(text: itemSubtitle)
                 } else {
                     self?.subtitleLabel.isHidden = true
@@ -463,10 +574,11 @@ extension ScreenProgressBarTitleSubtitleVC {
                 }
             }
             
-            if  self?.descriptionLabel != nil {
+            if  let strongLabel = self?.descriptionLabel, let strongContainer = self?.descriptionLabelContainer  {
                 if let itemDescription = item?.content.description, !itemDescription.textByLocale().isEmpty   {
                     self?.descriptionLabel.isHidden = false
                     self?.descriptionLabelContainer.isHidden = false
+                    self?.updateLabelInUIView(label: strongLabel, view: strongContainer, padding: itemDescription.box.styles)
                     self?.descriptionLabel.apply(text: itemDescription)
                 } else {
                     self?.descriptionLabel.isHidden = true
@@ -477,11 +589,10 @@ extension ScreenProgressBarTitleSubtitleVC {
 
             
             if let image = item?.content.image {
-                
                 if let imageView = self?.slideImage {
+                    self?.update(image: image)
                     self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
                 }
-
             } else {
                 self?.slideImage.image = nil
             }
