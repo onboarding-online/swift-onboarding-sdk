@@ -201,27 +201,30 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
                 slideImage.setContentHuggingPriority(.defaultLow, for: .vertical)
                 slideImage.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 
+            
                 let imageContainer = wrapInUIView(imageView: slideImage, padding: image.box.styles)
                 bulletStackView.addArrangedSubview(imageContainer)
             }
             
             if let subtitle = item.content.subtitle {
                 subtitleBox = subtitle.box.styles
-                subtitleLabel.apply(text: subtitle)
+//                subtitleLabel.apply(text: subtitle)
             }
             
             if let description = item.content.description {
                 descriptionBox = description.box.styles
-                descriptionLabel.apply(text: description)
+//                descriptionLabel.apply(text: description)
             }
         }
         
         
         _ = wrapLabelInUIView(label: subtitleLabel, view: subtitleLabelContainer, padding: subtitleBox)
+        subtitleLabelContainer.layoutIfNeeded()
         bulletStackView.addArrangedSubview(subtitleLabelContainer)
         
         _ = wrapLabelInUIView(label: descriptionLabel, view: descriptionLabelContainer, padding: descriptionBox)
-        
+        descriptionLabelContainer.layoutIfNeeded()
+
         bulletStackView.addArrangedSubview(descriptionLabelContainer)
         
         return bulletStackView
