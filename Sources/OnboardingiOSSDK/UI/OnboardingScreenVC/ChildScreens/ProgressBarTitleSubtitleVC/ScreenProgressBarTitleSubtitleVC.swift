@@ -621,8 +621,13 @@ extension ScreenProgressBarTitleSubtitleVC {
                         if let image = item.content.image {
                             
                             if let imageView = self?.slideImage {
+                                if let imageContentMode = image.imageContentMode() {
+                                    imageView.contentMode = imageContentMode
+                                } else {
+                                    imageView.contentMode = .scaleAspectFit
+                                }
+                                
                                 self?.loadLocalFirst(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
-//                                self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
                             }
                             
                         } else {
