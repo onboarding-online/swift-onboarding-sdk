@@ -398,7 +398,9 @@ extension ScreenProgressBarTitleSubtitleVC {
         let imageView = UIImageView.init()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.clipsToBounds = true
-        load(image: image, in: imageView, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
+//        loadLocalFirst(image: image, in: imageView, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
+//        load(image: image, in: imageView, useLocalAssetsIfAvailable: screenData.useLocalAssetsIfAvailable)
+        
         if let imageContentMode = image.imageContentMode() {
             imageView.contentMode = imageContentMode
         } else {
@@ -618,7 +620,8 @@ extension ScreenProgressBarTitleSubtitleVC {
                         if let image = item.content.image {
                             
                             if let imageView = self?.slideImage {
-                                self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+                                self?.loadLocalFirst(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+//                                self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
                             }
                             
                         } else {
