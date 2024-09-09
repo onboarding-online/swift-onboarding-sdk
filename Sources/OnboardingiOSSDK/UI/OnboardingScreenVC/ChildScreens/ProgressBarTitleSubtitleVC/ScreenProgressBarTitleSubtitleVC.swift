@@ -166,12 +166,7 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         bulletStackView.alignment = .fill
         
         slideImage.translatesAutoresizingMaskIntoConstraints = false
-//        slideImage.clipsToBounds = true
-        
-
-        slideImage.setContentHuggingPriority(.defaultLow, for: .vertical)
-        slideImage.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-                                                               
+                                            
         subtitleLabel = buildLabel()
         descriptionLabel = buildLabel()
         
@@ -182,10 +177,10 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         if let item = screenData.progressBar.items.first {
             if let image = item.content.image {
                 slideImage = build(image: image)
+                slideImage.setContentHuggingPriority(.defaultLow, for: .vertical)
+                slideImage.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 
                 let imageContainer = wrapInUIView(imageView: slideImage, padding: image.box.styles)
-                imageContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
-                imageContainer.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 bulletStackView.addArrangedSubview(imageContainer)
             }
             
@@ -461,11 +456,7 @@ extension ScreenProgressBarTitleSubtitleVC {
                     
                 } else {
                     self?.currentItem = item
-                    print("from \(item.valueFrom) to \(item.valueTo) subtitle \(item.content.hashValue)")
-                    print("subtitle \(item.content.subtitle?.textByLocale() ?? "")")
-                    print("description \(item.content.description?.textByLocale() ?? "")")
-                    
-                    
+  
                     DispatchQueue.main.async { [weak self] in
                         
                         if  self?.titleLabel != nil {
@@ -507,7 +498,7 @@ extension ScreenProgressBarTitleSubtitleVC {
                         if let image = item.content.image {
                             
                             if let imageView = self?.slideImage {
-//                                self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+                                self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
                             }
                             
                         } else {
