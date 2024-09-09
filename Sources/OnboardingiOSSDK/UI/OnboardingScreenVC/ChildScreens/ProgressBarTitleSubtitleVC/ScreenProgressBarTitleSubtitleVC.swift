@@ -479,6 +479,7 @@ extension ScreenProgressBarTitleSubtitleVC {
         }
         
         let containerView = view
+        view.clipsToBounds = true
         
         let bottom = -1 * (padding?.paddingBottom ?? 0)
         let trailing = -1 * (padding?.paddingRight ?? 0)
