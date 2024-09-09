@@ -423,7 +423,6 @@ extension ScreenProgressBarTitleSubtitleVC {
         let leading = (padding?.paddingLeft ?? 0)
         let top = (padding?.paddingTop ?? 0)
         
-//<<<<<<< HEAD
         if label == titleLabel {
             titleTopConstraint = label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top)
             titleBottomConstraint = label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom)
@@ -448,7 +447,7 @@ extension ScreenProgressBarTitleSubtitleVC {
                 subtitleTopConstraint,
                 subtitleBottomConstraint,
                 subtitleLeadingConstraint,
-                titleTrailingConstraint
+                subtitleTrailingConstraint
             ])
         } else if label == descriptionLabel {
             descriptionTopConstraint = label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top)
