@@ -218,6 +218,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         let subtitleView = wrapLabelInUIView(label: subtitleLabel, view: subtitleLabelContainer, padding: subtitleBox)
         bulletStackView.addArrangedSubview(subtitleView)
         
+        
+        
         let descriptionView = wrapLabelInUIView(label: descriptionLabel, view: descriptionLabelContainer, padding: descriptionBox)
         
         bulletStackView.addArrangedSubview(descriptionView)
@@ -254,7 +256,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         let stack = createHorizontalStack()
         
         let verticalStack = createImageTitleSubtitleVerticalStack()
-
+        verticalStack.clipsToBounds = true
 //        verticalStack.setContentHuggingPriority(.defaultHigh, for: .vertical)
 //        verticalStack.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         
@@ -269,6 +271,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         }
         
         stack.addArrangedSubview(verticalStack)
+        stack.clipsToBounds = true
+
 
 //        stack.setContentHuggingPriority(.defaultHigh, for: .vertical)
 //        stack.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -320,8 +324,9 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
                 // Вертикальный стек с лейблами привязывается к низу контейнера с прогрессом
                 stack.topAnchor.constraint(equalTo: progressContainerView.bottomAnchor),
                 stack.leadingAnchor.constraint(equalTo: progressTitleContainerView.leadingAnchor),
-                stack.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor)
-//                stack.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
+                stack.trailingAnchor.constraint(equalTo: progressTitleContainerView.trailingAnchor),
+                
+                stack.bottomAnchor.constraint(equalTo: progressTitleContainerView.bottomAnchor)
             ])
         }
        
@@ -408,6 +413,10 @@ extension ScreenProgressBarTitleSubtitleVC {
    
     func wrapLabelInUIView(label: UILabel, view: UIView, padding: BoxBlock? = nil) -> UIView {
         let containerView = view
+        
+        containerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        containerView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear
         containerView.addSubview(label)
@@ -423,7 +432,9 @@ extension ScreenProgressBarTitleSubtitleVC {
             titleBottomConstraint = label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom)
             titleLeadingConstraint = label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading)
             titleTrailingConstraint = label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
-            
+
+            titleTopConstraint.priority = .defaultLow
+
             NSLayoutConstraint.activate([
                 titleTopConstraint,
                 titleBottomConstraint,
