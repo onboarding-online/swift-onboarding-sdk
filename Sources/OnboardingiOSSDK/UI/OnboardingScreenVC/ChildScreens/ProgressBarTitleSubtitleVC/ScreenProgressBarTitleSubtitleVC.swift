@@ -21,13 +21,12 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     
     var titleLabel: UILabel!
     var titleLabelContainer: UIView! = UIView()
-
+    
     var subtitleLabel: UILabel!
     var subtitleLabelContainer: UIView! = UIView()
-
+    
     var descriptionLabel: UILabel!
     var descriptionLabelContainer: UIView! = UIView()
-
     
     var slideImage: UIImageView! = UIImageView()
     
@@ -40,12 +39,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     
     var progressView: CircularProgressView? = nil
     
+    var currentItem: ProgressBarItem? = nil
     
-//    override func viewDidLoad() {
-//        
-//
-//        
-//    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -56,9 +51,12 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+
         setupProgressView()
     }
     
+}
+fileprivate extension ScreenProgressBarTitleSubtitleVC {
     
     func createImageTitleSubtitleVerticalStack() -> UIStackView {
         let bulletStackView = UIStackView()
@@ -168,11 +166,12 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         bulletStackView.alignment = .fill
         
         slideImage.translatesAutoresizingMaskIntoConstraints = false
-        slideImage.clipsToBounds = true
+//        slideImage.clipsToBounds = true
         
-        slideImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
+
+        slideImage.setContentHuggingPriority(.defaultLow, for: .vertical)
         slideImage.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        
+                                                               
         subtitleLabel = buildLabel()
         descriptionLabel = buildLabel()
         
@@ -185,6 +184,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
                 slideImage = build(image: image)
                 
                 let imageContainer = wrapInUIView(imageView: slideImage, padding: image.box.styles)
+                imageContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
+                imageContainer.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 bulletStackView.addArrangedSubview(imageContainer)
             }
             
@@ -200,12 +201,12 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         }
         
         
-        let subtitleView = wrapLabelInUIView(label: subtitleLabel, view: subtitleLabelContainer, padding: subtitleBox)
-        bulletStackView.addArrangedSubview(subtitleView)
+        _ = wrapLabelInUIView(label: subtitleLabel, view: subtitleLabelContainer, padding: subtitleBox)
+        bulletStackView.addArrangedSubview(subtitleLabelContainer)
         
-        let descriptionView = wrapLabelInUIView(label: descriptionLabel, view: descriptionLabelContainer, padding: descriptionBox)
+        _ = wrapLabelInUIView(label: descriptionLabel, view: descriptionLabelContainer, padding: descriptionBox)
         
-        bulletStackView.addArrangedSubview(descriptionView)
+        bulletStackView.addArrangedSubview(descriptionLabelContainer)
         
         return bulletStackView
     }
@@ -251,7 +252,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         }
         
         stack.addArrangedSubview(verticalStack)
-
+        stack.clipsToBounds = true
+        stack.backgroundColor = .red
         
         progressTitleContainerView.addSubview(stack)
         
@@ -261,7 +263,7 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
         let paddingLeft = (screenData.progressBar.box.styles.paddingLeft ?? 0.0)
         
         let progressContainerHeightPercentage = ((screenData.progressBar.styles.height ?? 75.0) / 100.0).cgFloatValue
-
+        
         if fullHeight {
             // Устанавливаем констрейнты для progressContentView и titleLabel
             NSLayoutConstraint.activate([
@@ -360,6 +362,7 @@ extension ScreenProgressBarTitleSubtitleVC {
     func wrapLabelInUIView(label: UILabel, view: UIView, padding: BoxBlock? = nil) -> UIView {
         let containerView = view
         containerView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear
         containerView.addSubview(label)
         
@@ -368,6 +371,9 @@ extension ScreenProgressBarTitleSubtitleVC {
         
         let leading = (padding?.paddingLeft ?? 0)
         let top = (padding?.paddingTop ?? 0)
+        
+        view.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        view.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         
         
         NSLayoutConstraint.activate([
@@ -432,59 +438,89 @@ extension ScreenProgressBarTitleSubtitleVC {
             let progress = percentCount > 100 ? 100 : percentCount
             progressViewStrong.oneLabel.text = "\(progress)%"
             
-            let item = self?.screenData.progressBar.items.first(where: { item in
-                if (progress >= item.valueFrom)  && (progress < item.valueTo) {
-                    return true
-                } else {
-                    return false
-                }
-            })
-
-            if  self?.titleLabel != nil {
-                if let itemTitle = item?.content.title, !itemTitle.textByLocale().isEmpty {
-                    self?.titleLabel.isHidden = false
-                    self?.titleLabelContainer.isHidden = false
-                    self?.titleLabel.apply(text: itemTitle)
-                } else {
-                    self?.titleLabel.isHidden = true
-                    self?.titleLabelContainer.isHidden = true
-
+//            let item = self?.screenData.progressBar.items.first(where: { item in
+//                if (progress >= item.valueFrom)  && (progress < item.valueTo) {
+//                    return true
+//                } else {
+//                    return false
+//                }
+//            })
+            
+            var item: ProgressBarItem? = nil
+            
+            if let items = self?.screenData.progressBar.items {
+                for currentItem in items {
+                    if (progress >= currentItem.valueFrom)  && (progress < currentItem.valueTo) {
+                        item = currentItem
+                    }
                 }
             }
-            
-            if  self?.subtitleLabel != nil {
-                if let itemSubtitle = item?.content.subtitle, !itemSubtitle.textByLocale().isEmpty  {
-                    self?.subtitleLabel.isHidden = false
-                    self?.subtitleLabelContainer.isHidden = false
-                    self?.subtitleLabel.apply(text: itemSubtitle)
+           
+            if let item = item  {
+                if self?.currentItem == item {
+                    
                 } else {
-                    self?.subtitleLabel.isHidden = true
-                    self?.subtitleLabelContainer.isHidden = true
-                }
-            }
-            
-            if  self?.descriptionLabel != nil {
-                if let itemDescription = item?.content.description, !itemDescription.textByLocale().isEmpty   {
-                    self?.descriptionLabel.isHidden = false
-                    self?.descriptionLabelContainer.isHidden = false
-                    self?.descriptionLabel.apply(text: itemDescription)
-                } else {
-                    self?.descriptionLabel.isHidden = true
-                    self?.descriptionLabelContainer.isHidden = true
-                }
-            }
-            
+                    self?.currentItem = item
+                    print("from \(item.valueFrom) to \(item.valueTo) subtitle \(item.content.hashValue)")
+                    print("subtitle \(item.content.subtitle?.textByLocale() ?? "")")
+                    print("description \(item.content.description?.textByLocale() ?? "")")
+                    
+                    
+                    DispatchQueue.main.async { [weak self] in
+                        
+                        if  self?.titleLabel != nil {
+                            let itemTitle = item.content.title
+                            if !itemTitle.textByLocale().isEmpty {
+                                self?.titleLabel.isHidden = false
+                                self?.titleLabelContainer.isHidden = false
+                                self?.titleLabel.apply(text: itemTitle)
+                            } else {
+                                self?.titleLabel.isHidden = true
+                                self?.titleLabelContainer.isHidden = true
+                            }
+                        }
+                        
+                        if  self?.subtitleLabel != nil {
+                            if let itemSubtitle = item.content.subtitle, !itemSubtitle.textByLocale().isEmpty  {
+                                self?.subtitleLabel.apply(text: itemSubtitle)
 
-            
-            if let image = item?.content.image {
-                
-                if let imageView = self?.slideImage {
-                    self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+                                self?.subtitleLabel.isHidden = false
+                                self?.subtitleLabelContainer.isHidden = false
+                            } else {
+                                self?.subtitleLabel.isHidden = true
+                                self?.subtitleLabelContainer.isHidden = true
+                            }
+                        }
+                        
+                        if  self?.descriptionLabel != nil {
+                            if let itemDescription = item.content.description, !itemDescription.textByLocale().isEmpty   {
+                                self?.descriptionLabel.apply(text: itemDescription)
+                                self?.descriptionLabel.isHidden = false
+                                self?.descriptionLabelContainer.isHidden = false
+                            } else {
+                                self?.descriptionLabel.isHidden = true
+                                self?.descriptionLabelContainer.isHidden = true
+                            }
+                        }
+                        
+                        
+                        if let image = item.content.image {
+                            
+                            if let imageView = self?.slideImage {
+//                                self?.load(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+                            }
+                            
+                        } else {
+                            self?.slideImage.image = nil
+                        }
+                        
+                    }
                 }
-
-            } else {
-                self?.slideImage.image = nil
+               
             }
+            
+            
+            
             
         }
         
