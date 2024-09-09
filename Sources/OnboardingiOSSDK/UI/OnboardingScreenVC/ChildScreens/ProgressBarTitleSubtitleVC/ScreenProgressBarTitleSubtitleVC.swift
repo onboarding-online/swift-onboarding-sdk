@@ -430,6 +430,8 @@ extension ScreenProgressBarTitleSubtitleVC {
             titleTrailingConstraint = label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
 
             titleTopConstraint.priority = .defaultLow
+            titleBottomConstraint.priority = .defaultLow
+
 
             NSLayoutConstraint.activate([
                 titleTopConstraint,
