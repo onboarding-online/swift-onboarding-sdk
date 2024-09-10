@@ -40,20 +40,22 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     var descriptionLeadingConstraint: NSLayoutConstraint!
     var descriptionTrailingConstraint: NSLayoutConstraint!
     
+    var staticTitleLabel: UILabel? = nil
+
     var titleLabel: UILabel!
-    var titleLabelContainer: UIView! = UIView()
+    var titleLabelContainer: UIView!
     
     var subtitleLabel: UILabel!
-    var subtitleLabelContainer: UIView! = UIView()
+    var subtitleLabelContainer: UIView!
     
     var descriptionLabel: UILabel!
-    var descriptionLabelContainer: UIView! = UIView()
+    var descriptionLabelContainer: UIView!
     
-    var slideImage: UIImageView! = UIImageView()
+    var slideImage: UIImageView!
     
     var mainView: UIView! = UIView()
     
-    var progressContentView: UIView! = UIView()
+    var progressContentView: UIView!
     
     var screenData: ScreenProgressBarTitle!
     var screen: Screen? = nil
@@ -62,6 +64,17 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     
     var currentItem: ProgressBarItem? = nil
 
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        progressContentView = UIView()
+        slideImage = UIImageView()
+        titleLabelContainer = UIView()
+        subtitleLabelContainer = UIView()
+        descriptionLabelContainer = UIView()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -186,7 +199,6 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         bulletStackView.distribution = .fill
         bulletStackView.alignment = .fill
         
-        slideImage.translatesAutoresizingMaskIntoConstraints = false
                                             
         subtitleLabel = buildLabel()
         descriptionLabel = buildLabel()
@@ -198,6 +210,7 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         if let item = screenData.progressBar.items.first {
             if let image = item.content.image {
                 slideImage = build(image: image)
+                slideImage.translatesAutoresizingMaskIntoConstraints = false
                 slideImage.setContentHuggingPriority(.defaultLow, for: .vertical)
                 slideImage.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 
@@ -260,17 +273,18 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         
         let verticalStack = createImageTitleSubtitleVerticalStack()
         verticalStack.clipsToBounds = true
-//        verticalStack.setContentHuggingPriority(.defaultHigh, for: .vertical)
-//        verticalStack.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+
         
         verticalStack.addArrangedSubview(titleView)
         
         if screenData.progressBar.kind == .circle && !screenData.title.textByLocale().isEmpty {
-            let mainScreenTitleLabel = buildLabel()
-            mainScreenTitleLabel.apply(text: screenData.title)
-            let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, view: UIView(), padding: screenData.title.box.styles)
+            staticTitleLabel = buildLabel()
+            if let mainScreenTitleLabel = staticTitleLabel {
+                mainScreenTitleLabel.apply(text: screenData.title)
+                let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, view: UIView(), padding: screenData.title.box.styles)
 
-            verticalStack.addArrangedSubview(mainScreenTitleLabelView)
+                verticalStack.addArrangedSubview(mainScreenTitleLabelView)
+            }
         }
         
         stack.addArrangedSubview(verticalStack)
@@ -468,6 +482,13 @@ extension ScreenProgressBarTitleSubtitleVC {
                 descriptionLeadingConstraint,
                 descriptionTrailingConstraint
             ])
+        } else {
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
+                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+                label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
+                label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+            ])
         }
         
         return containerView
@@ -515,6 +536,31 @@ extension ScreenProgressBarTitleSubtitleVC {
             progressView?.isFinished = nil
             progressView?.removeFromSuperview()
             progressView = nil
+        }
+        
+        if slideImage != nil {
+            slideImage.removeFromSuperview()
+            slideImage = nil
+        }
+        
+        if descriptionLabel != nil {
+            descriptionLabel.removeFromSuperview()
+            descriptionLabel = nil
+        }
+        
+        if subtitleLabel != nil {
+            subtitleLabel.removeFromSuperview()
+            subtitleLabel = nil
+        }
+        
+        if titleLabel != nil {
+            titleLabel.removeFromSuperview()
+            titleLabel = nil
+        }
+        
+        if staticTitleLabel != nil {
+            staticTitleLabel?.removeFromSuperview()
+            staticTitleLabel = nil
         }
     }
     
@@ -626,7 +672,9 @@ extension ScreenProgressBarTitleSubtitleVC {
                             }
                             
                         } else {
-                            self?.slideImage.image = nil
+                            if (self?.slideImage) != nil {
+                                self?.slideImage.image = nil
+                            }
                         }
                         
                     }
