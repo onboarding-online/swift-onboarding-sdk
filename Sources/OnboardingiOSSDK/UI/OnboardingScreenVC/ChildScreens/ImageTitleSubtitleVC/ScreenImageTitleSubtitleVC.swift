@@ -147,6 +147,7 @@ extension ScreenImageTitleSubtitleVC {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear
+        containerView.clipsToBounds = true
         containerView.addSubview(imageView)
         
         let bottom = -1 * (padding?.paddingBottom ?? 0)

@@ -29,6 +29,35 @@ extension UIImageLoader {
         }
     }
     
+    func loadLocalFirst(image: Image?, in imageView: UIImageView, useLocalAssetsIfAvailable: Bool) {
+        if let cornerRadius = image?.styles.mainCornerRadius {
+            imageView.layer.cornerRadius = cornerRadius
+        }
+        
+        if let image = image {
+            let urlByLocale = image.assetUrlByLocale()
+            
+            if !useLocalAssetsIfAvailable,
+               let url = urlByLocale?.assetUrl?.origin {
+                if let localImage = AssetsLoadingService.shared.loadLocalImageImage(from: url) {
+                    imageView.setImage(localImage, animated: false)
+                    return
+                }
+            }
+        }
+
+        Task { @MainActor in
+            
+            guard let image = await image?.loadImage(useLocalAssetsIfAvailable: useLocalAssetsIfAvailable) else {
+                imageView.image = nil
+                return
+            }
+            if imageView.image != image {
+                imageView.setImage(image, animated: true)
+            }
+        }
+    }
+    
     func load(image: BaseImage?, in imageView: UIImageView, useLocalAssetsIfAvailable: Bool) {
         if let cornerRadius = image?.styles.mainCornerRadius {
             imageView.layer.cornerRadius = cornerRadius

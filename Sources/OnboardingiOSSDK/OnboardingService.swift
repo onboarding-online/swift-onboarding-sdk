@@ -446,7 +446,13 @@ private extension OnboardingService {
         OnboardingNavigationController(rootViewController: viewController)
     }
     
-    func finishOnboarding() {
+   
+}
+
+// MARK: -  Custom flow
+extension OnboardingService {
+    
+    public func finishOnboarding() {
         eventRegistered(event: .onboardingFinished, params: [.userInputValues: onboardingUserData])
         
         let result = GenericResult.success(onboardingUserData)
@@ -484,10 +490,6 @@ private extension OnboardingService {
         self.currentLoadingViewController = nil
         self.videoPreparationService = nil
     }
-}
-
-// MARK: -  Custom flow
-extension OnboardingService {
     
     struct CustomFlowDescription {
         let screen: Screen

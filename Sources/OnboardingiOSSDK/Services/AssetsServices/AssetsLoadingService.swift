@@ -22,6 +22,7 @@ protocol AssetsLoadingServiceProtocol {
     func urlToStoredData(from url: String, assetType: StoredAssetType) -> URL?
     func cacheImage(_ image: UIImage, withName name: String)
     func getCachedImageWith(name: String) -> UIImage?
+    func loadLocalImageImage(from url: String) -> UIImage? 
     func clear()
 }
 
@@ -76,6 +77,15 @@ extension AssetsLoadingService: AssetsLoadingServiceProtocol {
         serialQueue.sync { currentAsyncImageProcess[key] = nil }
         
         return image
+    }
+    
+    func loadLocalImageImage(from url: String) -> UIImage? {
+        let key = url
+        if let cachedImage = cacheStorage.getCachedImage(for: key) {
+            return cachedImage
+        }
+        
+        return nil
     }
     
     func loadData(from url: String,

@@ -100,8 +100,12 @@ extension ScreenSlider: BaseScreenProtocol { }
 
 extension ItemTypeSelection: ImageProtocol { }
 
+
 extension ItemTypeRegular: ImageProtocol {}
 
+struct ImageList: ImageProtocol {
+    let image: Image
+}
 
 extension ScreenTitleSubtitlePicker: BaseScreenProtocol, PickerScreenProtocol { }
 
