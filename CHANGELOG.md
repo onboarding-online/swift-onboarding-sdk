@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.5](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.4...v1.1.5) (2024-09-10)
+
+
+### Current Version Changes
+
+* added draft for new progress ([ab6b288](https://github.com/onboarding-online/swift-onboarding-sdk/commit/ab6b2881a28322d3334213328b3e5dc6454257ef))
+* added fix for slider image ([5d3deb9](https://github.com/onboarding-online/swift-onboarding-sdk/commit/5d3deb94cdd38e4244814efe22b7bb2f9becd96b))
+* added main screen title for circle progress bar ([e35c5f3](https://github.com/onboarding-online/swift-onboarding-sdk/commit/e35c5f33673b7b352488e555627843448c1e584c))
+* added new progress types with paddings ([1ef83d9](https://github.com/onboarding-online/swift-onboarding-sdk/commit/1ef83d933a8b5ad1144397c3753e059f9ff25c28))
+* adopt paywall to regular screen if products count == 0 ([57f8e3c](https://github.com/onboarding-online/swift-onboarding-sdk/commit/57f8e3c9e1519a536b952e7c809755c94d4e822b))
+* constraint priority for top and bottom padings changed to low ([3a39945](https://github.com/onboarding-online/swift-onboarding-sdk/commit/3a3994535b93bd0bafa3adac406030809afcd8b5))
+* draft version of new progress bar types ([974c254](https://github.com/onboarding-online/swift-onboarding-sdk/commit/974c2546cb3e9761547032826cda1e9b641e7809))
+* finishOnboarding has been open-public ([5f46ac7](https://github.com/onboarding-online/swift-onboarding-sdk/commit/5f46ac7682d1e4f38895bd1cb6f76a354af42f1b))
+* height percentage for progress screen has been added ([2ddea79](https://github.com/onboarding-online/swift-onboarding-sdk/commit/2ddea79e61cd76a81ef93cf4e9c32e8d38c1f437))
+* paddings added to progress bar ([c3c4e80](https://github.com/onboarding-online/swift-onboarding-sdk/commit/c3c4e804129156cbe760c3a6f0268a9b2836c926))
+* prefetch has been added for progress bar ([170dc8f](https://github.com/onboarding-online/swift-onboarding-sdk/commit/170dc8f6f38474395ced0a52bfe295a831d073f5))
+* remove paddings for label container if text is emapty in progress bar screen ([2020597](https://github.com/onboarding-online/swift-onboarding-sdk/commit/202059743b2a4f7f0095b61598eeb763d96ec27f))
+* removed broken constraint ([cdbd28f](https://github.com/onboarding-online/swift-onboarding-sdk/commit/cdbd28fcbfe1d5fa9c67e8a4a6d03dba0d21dfe0))
+* set constraint for each item in prrogress bar ([76b973d](https://github.com/onboarding-online/swift-onboarding-sdk/commit/76b973dc35dcf3e931cb5e037f2c456502169a91))
+* set lineHeight for progressBar ([4b6b9c8](https://github.com/onboarding-online/swift-onboarding-sdk/commit/4b6b9c89845c761a6e97e59d25976d179a06e9c6))
+* update constraint ptiority for progress bar ([31ef4bb](https://github.com/onboarding-online/swift-onboarding-sdk/commit/31ef4bb215e4a53f07758b3c14f9c562a00e0ba5))
+* update image constraint ([856bf74](https://github.com/onboarding-online/swift-onboarding-sdk/commit/856bf7416a7a8676e650b5553a5e25556f3ca9da))
+* update image priority ([76b769e](https://github.com/onboarding-online/swift-onboarding-sdk/commit/76b769eba370a410fc0b09db65e5029b5b071b1d))
+* update image settings ([7948224](https://github.com/onboarding-online/swift-onboarding-sdk/commit/7948224549098483e1a8088cb49a82df14a59892))
+* update label settings ([53f4fe6](https://github.com/onboarding-online/swift-onboarding-sdk/commit/53f4fe6ef058f908774de55188ab41f2d69c0c80))
+* update local image for progress bar ([f5eead6](https://github.com/onboarding-online/swift-onboarding-sdk/commit/f5eead60ee82bd86fc770eeca9eb311dcc1a9829))
+* update scale mode for each mode ([cd6772d](https://github.com/onboarding-online/swift-onboarding-sdk/commit/cd6772d3268e63fb410df0b1393cde2dca806fa3))
+* update subtitle constraint for progress bar ([f5651fe](https://github.com/onboarding-online/swift-onboarding-sdk/commit/f5651fe5eeab0137cf468a30a095f486b9ffc6d7))
+* update text setting for progress items ([9f650b2](https://github.com/onboarding-online/swift-onboarding-sdk/commit/9f650b2859a9edc2540b986e672b376c51e0e6f0))
+* update UI for old progress bar function ([4e68f19](https://github.com/onboarding-online/swift-onboarding-sdk/commit/4e68f199dfd5393792edbf396c83f9231ec21e69))
+
 ### [1.1.4](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.3...v1.1.4) (2024-08-26)
 
 
