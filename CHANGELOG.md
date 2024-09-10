@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.6](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.5...v1.1.6) (2024-09-10)
+
+
+### Current Version Changes
+
+* back flow fixed ([322e459](https://github.com/onboarding-online/swift-onboarding-sdk/commit/322e459cad6bae08c05264658e0423c15da89f9d))
+* back flow fixed for regular progress bar ([68ab223](https://github.com/onboarding-online/swift-onboarding-sdk/commit/68ab2239b53e322fd3a9b1eb86fd8da5e8c7a8c8))
+* update constraint for static progress title ([ddbdcc5](https://github.com/onboarding-online/swift-onboarding-sdk/commit/ddbdcc56a6d5637f8d627146a2efd56160f388ac))
+
 ### [1.1.5](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.4...v1.1.5) (2024-09-10)
 
 
