@@ -40,7 +40,7 @@ extension UIImageLoader {
             if !useLocalAssetsIfAvailable,
                let url = urlByLocale?.assetUrl?.origin {
                 if let localImage = AssetsLoadingService.shared.loadLocalImageImage(from: url) {
-                    imageView.setImage(localImage, animated: true)
+                    imageView.setImage(localImage, animated: false)
                     return
                 }
             }

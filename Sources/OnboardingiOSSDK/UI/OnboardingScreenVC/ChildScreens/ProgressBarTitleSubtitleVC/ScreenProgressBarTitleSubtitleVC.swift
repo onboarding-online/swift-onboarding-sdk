@@ -233,15 +233,15 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
     func setupProgressTitleContainerView(fullHeight: Bool) -> UIView {
         let progressTitleContainerView = UIView()
         progressTitleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        progressTitleContainerView.backgroundColor = .green
+        progressTitleContainerView.backgroundColor = .clear
         
         // Добавляем прогресс вью и заголовок в контейнер
         progressContentView.translatesAutoresizingMaskIntoConstraints = false
-        progressContentView.backgroundColor = .blue
+        progressContentView.backgroundColor = .clear
         
         let progressContainerView = UIView()
         progressContainerView.translatesAutoresizingMaskIntoConstraints = false
-        progressContainerView.backgroundColor = .orange
+        progressContainerView.backgroundColor = .clear
 
         progressTitleContainerView.addSubview(progressContainerView)
 
@@ -621,9 +621,8 @@ extension ScreenProgressBarTitleSubtitleVC {
                         if let image = item.content.image {
                             
                             if let imageView = self?.slideImage {
-                                self?.update(image: image)
-                                
                                 self?.loadLocalFirst(image: image, in: imageView, useLocalAssetsIfAvailable: self?.screenData.useLocalAssetsIfAvailable ?? true)
+                                self?.update(image: image)
                             }
                             
                         } else {
