@@ -271,8 +271,7 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         
         let verticalStack = createImageTitleSubtitleVerticalStack()
         verticalStack.clipsToBounds = true
-//        verticalStack.setContentHuggingPriority(.defaultHigh, for: .vertical)
-//        verticalStack.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+
         
         verticalStack.addArrangedSubview(titleView)
         
@@ -478,6 +477,13 @@ extension ScreenProgressBarTitleSubtitleVC {
                 descriptionBottomConstraint,
                 descriptionLeadingConstraint,
                 descriptionTrailingConstraint
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
+                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+                label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
+                label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
             ])
         }
         
