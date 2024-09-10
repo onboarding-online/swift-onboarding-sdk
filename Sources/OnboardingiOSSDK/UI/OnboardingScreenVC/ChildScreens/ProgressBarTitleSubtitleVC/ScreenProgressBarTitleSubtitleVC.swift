@@ -40,6 +40,8 @@ class ScreenProgressBarTitleSubtitleVC: BaseChildScreenGraphViewController {
     var descriptionLeadingConstraint: NSLayoutConstraint!
     var descriptionTrailingConstraint: NSLayoutConstraint!
     
+    var staticTitleLabel: UILabel? = nil
+
     var titleLabel: UILabel!
     var titleLabelContainer: UIView!
     
@@ -276,11 +278,13 @@ fileprivate extension ScreenProgressBarTitleSubtitleVC {
         verticalStack.addArrangedSubview(titleView)
         
         if screenData.progressBar.kind == .circle && !screenData.title.textByLocale().isEmpty {
-            let mainScreenTitleLabel = buildLabel()
-            mainScreenTitleLabel.apply(text: screenData.title)
-            let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, view: UIView(), padding: screenData.title.box.styles)
+            staticTitleLabel = buildLabel()
+            if let mainScreenTitleLabel = staticTitleLabel {
+                mainScreenTitleLabel.apply(text: screenData.title)
+                let mainScreenTitleLabelView = wrapLabelInUIView(label: mainScreenTitleLabel, view: UIView(), padding: screenData.title.box.styles)
 
-            verticalStack.addArrangedSubview(mainScreenTitleLabelView)
+                verticalStack.addArrangedSubview(mainScreenTitleLabelView)
+            }
         }
         
         stack.addArrangedSubview(verticalStack)
@@ -554,6 +558,10 @@ extension ScreenProgressBarTitleSubtitleVC {
             titleLabel = nil
         }
         
+        if staticTitleLabel != nil {
+            staticTitleLabel?.removeFromSuperview()
+            staticTitleLabel = nil
+        }
     }
     
     func setupProgressView() {
