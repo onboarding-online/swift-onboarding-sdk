@@ -17,8 +17,8 @@ class ScreenTitleSubtitleFieldVC: BaseChildScreenGraphViewController {
         return titleSubtitleFieldVC
     }
     
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var subtitleLabel: UILabel!
+    var titleLabel: UILabel!
+    var subtitleLabel: UILabel!
     
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var textBottomBorderView: UIView!
@@ -31,6 +31,9 @@ class ScreenTitleSubtitleFieldVC: BaseChildScreenGraphViewController {
 
     @IBOutlet weak var footerBottomConstraint: NSLayoutConstraint?
 
+    @IBOutlet weak var mainStackView: UIStackView!
+
+    
     var screenData: ScreenTitleSubtitleField!
     
     override func viewDidLoad() {
@@ -44,6 +47,7 @@ class ScreenTitleSubtitleFieldVC: BaseChildScreenGraphViewController {
         setupLabelsValue()
         setupTextField()
     }
+    
     
     override func runInitialAnimation() {
         super.runInitialAnimation()
@@ -64,6 +68,46 @@ class ScreenTitleSubtitleFieldVC: BaseChildScreenGraphViewController {
         super.viewWillDisappear(animated)
     
         removeKeyboardListener()
+    }
+    
+    
+    func wrapLabelInUIView(label: UILabel, padding: BoxBlock? = nil) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = .clear
+        containerView.addSubview(label)
+        
+        containerView.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal) // Для вертикального стека
+        containerView.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal) // Для вертикальног
+        
+        let bottom = -1 * (padding?.paddingBottom ?? 0)
+        var trailing = -1 * (padding?.paddingRight ?? 0)
+        
+        var leading = (padding?.paddingLeft ?? 0)
+        let top = (padding?.paddingTop ?? 0)
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: top),
+            label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: bottom),
+            label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leading),
+            label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: trailing)
+        ])
+        
+        return containerView
+    }
+    
+    func buildLabel() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+
+        label.setContentHuggingPriority(UILayoutPriority(300), for: .horizontal)
+        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .horizontal)
+
+        label.setContentHuggingPriority(UILayoutPriority(1000), for: .vertical)
+        label.setContentCompressionResistancePriority(UILayoutPriority(800), for: .vertical)
+        
+        return label
     }
     
 }
@@ -95,8 +139,19 @@ extension ScreenTitleSubtitleFieldVC: UITextFieldDelegate {
 private extension ScreenTitleSubtitleFieldVC {
 
     func setupLabelsValue() {
+        
+        titleLabel = buildLabel()
+        subtitleLabel = buildLabel()
+        
+        let titleLabelView = wrapLabelInUIView(label: titleLabel, padding: screenData.title.box.styles)
+        let subtitleLabelView = wrapLabelInUIView(label: subtitleLabel, padding: screenData.subtitle.box.styles)
+        
         titleLabel.apply(text: screenData?.title)
         subtitleLabel.apply(text: screenData?.subtitle)
+        
+        mainStackView.addArrangedSubview(titleLabelView)
+        mainStackView.addArrangedSubview(subtitleLabelView)
+
     }
     
     func setupTextField() {
