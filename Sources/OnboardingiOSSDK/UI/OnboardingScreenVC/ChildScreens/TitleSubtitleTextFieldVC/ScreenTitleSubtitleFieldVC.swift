@@ -149,9 +149,13 @@ private extension ScreenTitleSubtitleFieldVC {
         titleLabel.apply(text: screenData?.title)
         subtitleLabel.apply(text: screenData?.subtitle)
         
-        mainStackView.addArrangedSubview(titleLabelView)
-        mainStackView.addArrangedSubview(subtitleLabelView)
-
+        if let text = titleLabel.text, !text.isEmpty {
+            mainStackView.addArrangedSubview(titleLabelView)
+        }
+        
+        if let text = subtitleLabel.text, !text.isEmpty {
+            mainStackView.addArrangedSubview(subtitleLabelView)
+        }
     }
     
     func setupTextField() {
