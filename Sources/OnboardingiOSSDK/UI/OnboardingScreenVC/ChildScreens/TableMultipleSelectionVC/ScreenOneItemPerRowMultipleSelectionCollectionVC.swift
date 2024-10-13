@@ -43,10 +43,13 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScree
         super.viewDidLoad()
         
         setup()
+        cellConfigurator.distanceFromTitlesToItems = screenData.list.box.styles.paddingTop ?? 0.0
+
         setupCollectionView()
         
         setupCollectionConstraintsWith(box: screenData.list.box.styles)
         
+
         cellConfigurator.setupItemsConstraintsWith(box: screenData.list.styles)
         cellConfigurator.setupImage(settings: screenData.list.items.first?.image.styles)
     }

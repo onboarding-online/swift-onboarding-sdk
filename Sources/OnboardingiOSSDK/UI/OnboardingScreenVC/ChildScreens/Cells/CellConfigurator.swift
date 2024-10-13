@@ -58,7 +58,7 @@ class CellConfigurator: CellConfiguratorProtocol {
     var containerTop: CGFloat = 16
     var containerBottom: CGFloat = 16
     
-    var distanceFromTitlesToItems: CGFloat = 0
+    var distanceFromTitlesToItems: CGFloat = 16
     
     var spacingBetweenTitleLabels: CGFloat = 0
     
