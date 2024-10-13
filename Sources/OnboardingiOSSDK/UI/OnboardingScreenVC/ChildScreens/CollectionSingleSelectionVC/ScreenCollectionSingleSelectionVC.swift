@@ -41,12 +41,19 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
         super.viewDidLoad()
 
         setup()
+        
+        if screenData.list.itemType == .tittle || screenData.list.itemType == .titleSubtitle {
+            cellConfigurator.distanceFromTitlesToItems = screenData.list.box.styles.paddingTop ?? 0.0
+        } else {
+            cellConfigurator.distanceFromTitlesToItems = 0.0
+        }
+        
         setupCollectionView()
         setupLabelsValue()
         
         setupCollectionConstraintsWith(box: screenData.list.box.styles)
     }
-    
+        
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         

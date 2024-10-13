@@ -37,6 +37,7 @@ class ScreenImageTitleSubtitleMultiSelectionListVC: BaseChildScreenGraphViewCont
         
         setupInitialCellConfig()
         setup()
+        cellConfigurator.distanceFromTitlesToItems = screenData.list.box.styles.paddingTop ?? 0.0
         setupCollectionView()
         setupLabelsValue()
     }
