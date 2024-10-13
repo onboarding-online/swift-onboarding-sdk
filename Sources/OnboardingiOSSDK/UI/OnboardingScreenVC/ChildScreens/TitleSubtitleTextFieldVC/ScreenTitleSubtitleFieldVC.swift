@@ -25,6 +25,10 @@ class ScreenTitleSubtitleFieldVC: BaseChildScreenGraphViewController {
     
     @IBOutlet weak var separatorView: UIView!
 
+    @IBOutlet weak var textFieldTopConstraint: NSLayoutConstraint?
+    @IBOutlet weak var textFieldLeftConstraint: NSLayoutConstraint?
+    @IBOutlet weak var textFieldRightConstraint: NSLayoutConstraint?
+
     @IBOutlet weak var footerBottomConstraint: NSLayoutConstraint?
 
     var screenData: ScreenTitleSubtitleField!
@@ -32,6 +36,11 @@ class ScreenTitleSubtitleFieldVC: BaseChildScreenGraphViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
                 
+        textFieldTopConstraint?.constant = screenData.field.box.styles.paddingTop ?? 0.0
+        
+        textFieldLeftConstraint?.constant = screenData.field.box.styles.paddingLeft ?? 0.0
+        textFieldRightConstraint?.constant = screenData.field.box.styles.paddingRight ?? 0.0
+
         setupLabelsValue()
         setupTextField()
     }
