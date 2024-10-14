@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.7](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.6...v1.1.7) (2024-10-14)
+
+
+### Current Version Changes
+
+* update textfield paddings ([fffc504](https://github.com/onboarding-online/swift-onboarding-sdk/commit/fffc5046c606734460b3d22d03f5cb6da8617d55))
+
 ### [1.1.6](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.5...v1.1.6) (2024-09-10)
 
 
