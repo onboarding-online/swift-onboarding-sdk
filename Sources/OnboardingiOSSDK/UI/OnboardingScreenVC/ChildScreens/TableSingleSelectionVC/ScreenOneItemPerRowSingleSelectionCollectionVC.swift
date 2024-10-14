@@ -43,6 +43,7 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
 
         setupInitialCellConfig()
         setup()
+        cellConfigurator.distanceFromTitlesToItems = screenData.list.box.styles.paddingTop ?? 0.0
         setupCollectionView()
         setupCollectionConstraintsWith(box: screenData.list.box.styles)
     }

@@ -39,8 +39,11 @@ class ScreenImageTitleSubtitleBulletsVC: BaseChildScreenGraphViewController {
         super.viewDidLoad()
 
         setup()
+        cellConfigurator.distanceFromTitlesToItems = screenData.list.box.styles.paddingTop ?? 0.0
+
         setupCollectionView()
         setupLabelsValue()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
