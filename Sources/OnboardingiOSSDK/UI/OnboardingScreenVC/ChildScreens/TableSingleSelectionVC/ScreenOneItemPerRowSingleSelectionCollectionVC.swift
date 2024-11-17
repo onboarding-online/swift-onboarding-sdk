@@ -35,6 +35,8 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
     
     var selectedItem = [Int]()
     
+    var isSelected = false
+
     let cellConfigurator = ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderConfigurator.init()
 
 
@@ -50,7 +52,6 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         DispatchQueue.main.async { [weak self] in
             self?.setTopInset()
             self?.collectionView.collectionViewLayout.invalidateLayout()
@@ -88,7 +89,7 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDataSo
         case .item(let item):
             let cell = collectionView.dequeueCellOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
             cell.cellConfig = cellConfigurator
-            cell.setWith(list: screenData.list, item: item, styles: screenData.list.styles, isSelected: false,
+            cell.setWith(list: screenData.list, item: item, styles: screenData.list.styles, isSelected: isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
         case .label(let text):
@@ -113,10 +114,17 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDelega
         case .item(_):
             let item = screenData.list.items[indexPath.row]
 
-            delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
-            
-            delegate?.onboardingChildScreenPerform(action: item.action)
-            
+            isSelected = true
+            reloadItem(indexPath: indexPath)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                DispatchQueue.main.async {[weak self] in
+                    self?.isSelected = false
+                    self?.reloadItem(indexPath: indexPath)
+
+                    self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
+                    self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                }
+            }
         case .label(_):
             break
         }
