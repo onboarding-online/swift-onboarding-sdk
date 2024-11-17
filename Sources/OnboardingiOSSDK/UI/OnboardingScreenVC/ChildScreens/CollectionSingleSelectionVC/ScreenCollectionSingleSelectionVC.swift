@@ -157,9 +157,10 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDelegate {
             isSelected = true
             reloadItem(indexPath: indexPath)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 DispatchQueue.main.async {[weak self] in
                     self?.isSelected = false
+                    self?.reloadItem(indexPath: indexPath)
 
                     self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
                     self?.delegate?.onboardingChildScreenPerform(action: item.action)
