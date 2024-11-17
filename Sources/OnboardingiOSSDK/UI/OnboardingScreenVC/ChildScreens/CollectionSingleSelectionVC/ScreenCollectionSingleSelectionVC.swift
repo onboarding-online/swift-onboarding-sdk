@@ -108,34 +108,34 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDataSource {
         switch self.screenData.list.itemType {
         case .tittle:
             let cell = collectionView.dequeueCellOfType(TitleSubtitleMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected)
             return cell
 
         case .titleSubtitle:
             let cell = collectionView.dequeueCellOfType(TitleSubtitleMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected)
             return cell
         case .smallImageTitle:
             let cell = collectionView.dequeueCellOfType(SmallImageTitleCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         case .mediumImageTitle:
             let cell = collectionView.dequeueCellOfType(MediumImageTitleCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         case .bigImageTitle:
             let cell = collectionView.dequeueCellOfType(CollectionSelectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
 
         case .fullImage:
             let cell = collectionView.dequeueCellOfType(FullImageCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
@@ -153,8 +153,10 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDelegate {
         switch row {
         case .item(_):
             let item = screenData.list.items[indexPath.row]
-            
+          
+            isSelected = true
             reloadItem(indexPath: indexPath)
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 DispatchQueue.main.async {[weak self] in
                     self?.isSelected = false
