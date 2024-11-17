@@ -36,10 +36,10 @@
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="727"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8sg-K4-5Kv">
-                                                <rect key="frame" x="0.0" y="0.0" width="393" height="695"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="393" height="727"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="240" horizontalCompressionResistancePriority="751" axis="vertical" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="M9B-9b-joQ">
-                                                        <rect key="frame" x="0.0" y="0.0" width="393" height="695"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="393" height="727"/>
                                                         <subviews>
                                                             <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="lLP-D6-Ygg">
                                                                 <rect key="frame" x="0.0" y="0.0" width="393" height="16"/>
@@ -80,7 +80,7 @@
                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </stackView>
                                                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Gx2-6c-mN1">
-                                                                <rect key="frame" x="0.0" y="0.0" width="393" height="695"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="393" height="727"/>
                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="mz3-pu-0jN">
                                                                     <size key="itemSize" width="128" height="128"/>
@@ -118,7 +118,7 @@
                                             <constraint firstAttribute="trailing" secondItem="8sg-K4-5Kv" secondAttribute="trailing" id="YpH-3Y-lDV"/>
                                             <constraint firstItem="8sg-K4-5Kv" firstAttribute="leading" secondItem="VEv-L1-CCS" secondAttribute="leading" id="dXf-aV-ctF"/>
                                             <constraint firstItem="8sg-K4-5Kv" firstAttribute="top" secondItem="VEv-L1-CCS" secondAttribute="top" id="jYd-bE-tcC"/>
-                                            <constraint firstAttribute="bottom" secondItem="8sg-K4-5Kv" secondAttribute="bottom" constant="32" id="rWv-ig-hJQ"/>
+                                            <constraint firstAttribute="bottom" secondItem="8sg-K4-5Kv" secondAttribute="bottom" id="rWv-ig-hJQ"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
