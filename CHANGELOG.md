@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.8](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.7...v1.1.8) (2024-11-17)
+
+
+### Current Version Changes
+
+* delete old images for the checkbox ([edca749](https://github.com/onboarding-online/swift-onboarding-sdk/commit/edca749f6b7d4fbeef9e7e5a25fdb8ce579c3346))
+* deleted unneeded padding for single selection screen ([992df37](https://github.com/onboarding-online/swift-onboarding-sdk/commit/992df3791dda37a605b4c045b852dae9789b1e21))
+* single selection 2 columns selected state updated ([b23eba9](https://github.com/onboarding-online/swift-onboarding-sdk/commit/b23eba95ccd58f068d828986fa15c8a8e0b4ff6a))
+* update animation time to 0.2 second ([f2ac9d9](https://github.com/onboarding-online/swift-onboarding-sdk/commit/f2ac9d92ca4a5e0a7ce033e2e7977db8e39455b6))
+* update single selection selected state ([e4aab9b](https://github.com/onboarding-online/swift-onboarding-sdk/commit/e4aab9b8a20dfc9b3bbbe03bdd308a85315169fb))
+
 ### [1.1.7](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.6...v1.1.7) (2024-10-14)
 
 
