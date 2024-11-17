@@ -36,6 +36,7 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
     
     let cellConfigurator = TextCollectionCellWithBorderConfigurator.init()
 
+    var isSelected = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -153,10 +154,26 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDelegate {
         case .item(_):
             let item = screenData.list.items[indexPath.row]
             
-            delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
-            delegate?.onboardingChildScreenPerform(action: item.action)
+            reloadItem(indexPath: indexPath)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                DispatchQueue.main.async {[weak self] in
+                    self?.isSelected = false
+
+                    self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
+                    self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                }
+            }
+        
         case .label(_):
             break
+        }
+    }
+    
+    func reloadItem(indexPath: IndexPath) {
+        if #available(iOS 15.0, *) {
+            collectionView.reconfigureItems(at: [indexPath])
+        } else {
+            collectionView.reloadItems(at: [indexPath])
         }
     }
 }
