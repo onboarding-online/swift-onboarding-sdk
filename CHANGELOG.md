@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.9](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.8...v1.1.9) (2025-01-19)
+
+
+### Current Version Changes
+
+* update list cell paddings and container structure ([75cad39](https://github.com/onboarding-online/swift-onboarding-sdk/commit/75cad3909e1af51c5e559c335282e1337306e2fe))
+
 ### [1.1.8](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.7...v1.1.8) (2024-11-17)
 
 
