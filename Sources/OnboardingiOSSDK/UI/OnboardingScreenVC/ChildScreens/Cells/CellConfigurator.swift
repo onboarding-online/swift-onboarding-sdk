@@ -63,6 +63,8 @@ class CellConfigurator: CellConfiguratorProtocol {
     var spacingBetweenTitleLabels: CGFloat = 0
     
     var spacingBetweenItems: CGFloat = 16
+    
+    var currentItem: ItemTypeSelection? = nil
 
     func setupImage(settings: ImageBlock?) {
         guard let imageWidth = settings?.width, let imageHeight = settings?.width else { return }
@@ -97,6 +99,91 @@ class CellConfigurator: CellConfiguratorProtocol {
         } else {
             self.containerBottom = 0.0
         }
+    }
+    
+    func calculateHeightFor1(titleText: Text?,
+                                   subtitleText: Text?,
+                                   itemType: Any,
+                                   containerWidth: CGFloat,
+                            horizontalInset: CGFloat, isSelected: Bool? = nil) -> CGFloat {
+        // Calculate effective width for labels heights calculation
+        var labelWidth = containerWidth - containerLeading - containerTrailing
+        
+        var labelTitleWidth: CGFloat = 0.0
+        var labelSubtitleWidth: CGFloat = 0.0
+        
+        var titlePaddingHeight: CGFloat = 0.0
+        var subtitlePaddingHeight: CGFloat = 0.0
+
+
+        if let titleStyle = titleText?.box.styles {
+            labelTitleWidth = labelWidth - titleStyle.paddingLeft.cgFloatValue - titleStyle.paddingRight.cgFloatValue
+            titlePaddingHeight = titleStyle.paddingTop.cgFloatValue  + titleStyle.paddingBottom.cgFloatValue
+            
+            if let titleStyle = titleText?.styles {
+                labelTitleWidth = labelTitleWidth - titleStyle.paddingLeft.cgFloatValue - titleStyle.paddingRight.cgFloatValue
+                titlePaddingHeight  += titleStyle.paddingTop.cgFloatValue  + titleStyle.paddingBottom.cgFloatValue
+            }
+        }
+        
+        if let titleStyle = subtitleText?.box.styles {
+            labelSubtitleWidth = labelWidth - titleStyle.paddingLeft.cgFloatValue - titleStyle.paddingRight.cgFloatValue
+            subtitlePaddingHeight = titleStyle.paddingTop.cgFloatValue + titleStyle.paddingBottom.cgFloatValue
+            
+            if let titleStyle = subtitleText?.styles {
+                labelSubtitleWidth = labelSubtitleWidth - titleStyle.paddingLeft.cgFloatValue - titleStyle.paddingRight.cgFloatValue
+                subtitlePaddingHeight += titleStyle.paddingTop.cgFloatValue  + titleStyle.paddingBottom.cgFloatValue
+            }
+        }
+
+        
+        if !isImageHiddenFor(itemType: itemType) {
+            labelWidth -= imageWidth
+            labelTitleWidth -= imageWidth
+            labelSubtitleWidth -= imageWidth
+
+        } else {
+            self.imageWidth = 0
+            self.imageHeigh = 0
+        }
+        
+        if !isCheckboxHiddenFor(itemType: itemType) {
+            labelWidth -= checkboxSize
+            labelTitleWidth -= checkboxSize
+            labelSubtitleWidth -= checkboxSize
+        }
+        
+        //Calculate labels height
+        var totalLabelsBlockHeight = 0.0
+        var subtitleHeight: CGFloat = 0.0
+        
+
+        let titleHeight = titleText?.textHeightBy(textWidth: labelTitleWidth) ?? 0.0
+
+        if !(titleText?.textByLocale() ?? "").isEmpty {
+            totalLabelsBlockHeight += titleHeight > 0.0 ? titleHeight : 0
+            totalLabelsBlockHeight += titlePaddingHeight
+        }
+
+        
+        if !isSubtitleHiddenFor(itemType: itemType)  {
+            if !(subtitleText?.textByLocale() ?? "").isEmpty {
+                subtitleHeight = subtitleText?.textHeightBy(textWidth: labelSubtitleWidth) ?? 0.0
+                if subtitleHeight > 0.0  {
+                    totalLabelsBlockHeight += subtitleHeight
+                    totalLabelsBlockHeight += subtitlePaddingHeight
+                }
+            }
+        }
+
+                
+        //Get max elemets height for cell height
+        var maxHeight = totalLabelsBlockHeight > imageHeigh ? totalLabelsBlockHeight : imageHeigh
+        maxHeight = maxHeight > checkboxSize ? maxHeight : checkboxSize
+        
+        let cellHeight = maxHeight + containerTop + containerBottom
+        
+        return cellHeight
     }
     
     func calculateHeightFor(titleText: Text?,

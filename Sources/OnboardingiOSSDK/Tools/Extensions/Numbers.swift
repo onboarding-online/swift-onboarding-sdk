@@ -73,6 +73,18 @@ extension Int16 {
     
 }
 
+extension Double? {
+    
+    var cgFloatValue: CGFloat {
+        if let double = self {
+            return CGFloat(double)
+        } else {
+            return CGFloat(0.0)
+        }
+    }
+    
+}
+
 extension BinaryFloatingPoint {
     
     var cgFloatValue: CGFloat {
