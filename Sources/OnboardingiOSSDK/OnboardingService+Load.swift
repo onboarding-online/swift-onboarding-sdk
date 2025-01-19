@@ -51,16 +51,35 @@ public extension OnboardingService {
                                     launchWithAnimation: launchWithAnimation)
             startNew()
         case .preparing:
+            let syncQueue = DispatchQueue(label: "com.example.didFinishQueue")
+            var didFinish = false
+            
+            DispatchQueue.global().asyncAfter(deadline: .now() + useLocalJSONAfterTimeout) {
+                syncQueue.sync {
+                    if !didFinish {
+                        didFinish = true
+                        mainQueue.async { [weak self] in
+                            self?.startOnboardingFrom(localJSONFileName: localJSONFileName, finishedCallback: finishedCallback)
+                        }
+                    }
+                }
+            }
+            
             showLoadingAssetsScreen(appearance: .default,
                                     launchWithAnimation: launchWithAnimation)
             OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: env) { result in
-                switch result {
-                case .success:
-                    //print("------- onboarding assets downloaded")
-                    startPrepared()
-                case .failure:
-                //print("------- onboarding assets loading failed, restart onboarding")
-                    startNew()
+                syncQueue.sync {
+                    if !didFinish {
+                        didFinish = true
+                        switch result {
+                        case .success:
+                            //print("------- onboarding assets downloaded")
+                            startPrepared()
+                        case .failure:
+                            //print("------- onboarding assets loading failed, restart onboarding")
+                            startNew()
+                        }
+                    }
                 }
             }
         case .ready:

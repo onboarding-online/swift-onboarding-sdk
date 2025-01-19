@@ -51,6 +51,7 @@ class ScreenOneItemPerRowMultipleSelectionCollectionVC: BaseCollectionChildScree
         
 
         cellConfigurator.setupItemsConstraintsWith(box: screenData.list.styles)
+        cellConfigurator.currentItem = screenData.list.items.first
         cellConfigurator.setupImage(settings: screenData.list.items.first?.image.styles)
     }
     
@@ -94,7 +95,7 @@ extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewData
         
         switch row {
         case .item(let item):
-            let cell = collectionView.dequeueCellOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
+            let cell = collectionView.dequeueCellOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexiblePaddings.self, forIndexPath: indexPath)
             cell.cellConfig = cellConfigurator
             let isSelected =  selectedItem.contains(indexPath.row)
             cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
@@ -163,7 +164,7 @@ extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewDele
             let itemHeight = maxSizeFor(width: collectionView.bounds.width, includeSubtitle: true)
             return itemHeight
         } else {
-            let itemHeight = cellConfigurator.calculateHeightFor(titleText: item.title,
+            let itemHeight = cellConfigurator.calculateHeightFor1(titleText: item.title,
                                                                   subtitleText: item.subtitle,
                                                                   itemType: screenData.list.itemType,
                                                                   containerWidth: collectionView.bounds.width,
@@ -178,7 +179,7 @@ extension ScreenOneItemPerRowMultipleSelectionCollectionVC: UICollectionViewDele
         for item in screenData.list.items {
             let subtitle = includeSubtitle ? item.subtitle : nil
             
-            let height =  cellConfigurator.calculateHeightFor(titleText: item.title, subtitleText: subtitle, itemType: screenData.list.itemType, containerWidth: width, horizontalInset: 0.0)
+            let height =  cellConfigurator.calculateHeightFor1(titleText: item.title, subtitleText: subtitle, itemType: screenData.list.itemType, containerWidth: width, horizontalInset: 0.0)
             maxHeight = height > maxHeight ? height : maxHeight
         }
         return maxHeight
@@ -225,7 +226,7 @@ private extension ScreenOneItemPerRowMultipleSelectionCollectionVC {
         if let alignment = screenData.list.styles.verticalAlignment?.verticalAlignment() {
             contentAlignment = alignment
         }
-        collectionView.registerCellNibOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorder.self)
+        collectionView.registerCellNibOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexiblePaddings.self)
         collectionView.registerCellNibOfType(CollectionLabelCell.self)
         collectionView.delegate = self
         collectionView.dataSource = self
