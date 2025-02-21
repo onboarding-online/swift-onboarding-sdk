@@ -366,7 +366,7 @@ private extension PaywallHeaderCell {
                     gradientView.isHidden = true
                 }
                 if let color = gradient.colors.first?.hexStringToColor {
-                    gradientView.gradientColors = [color, .init(white: 1, alpha: 0.001)]
+                    gradientView.gradientColors = [color, color.withAlphaComponent(0.001)]
                     gradientView.gradientDirection = .bottomToTop
                 }
                
