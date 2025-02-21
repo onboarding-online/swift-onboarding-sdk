@@ -30,6 +30,8 @@ public final class OnboardingService {
     public var paymentService: OnboardingPaymentServiceProtocol?
     public var appearance: AppearanceStyle?
 
+    public var paywallScreenScrollEnabled: Bool = true
+
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?
     private var navigationController: OnboardingNavigationController?

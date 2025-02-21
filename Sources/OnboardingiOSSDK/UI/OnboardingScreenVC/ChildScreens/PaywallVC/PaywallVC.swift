@@ -56,11 +56,10 @@ public final class PaywallVC: BaseScreenGraphViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.hidesBottomBarWhenPushed = true
+
         setup()
         setupSubscriptionType()
         setupProducts()
-        
         baseAppearanceSetup()
         loadProducts()
     }
@@ -646,6 +645,9 @@ private extension PaywallVC {
     
     
     func setup() {
+        self.hidesBottomBarWhenPushed = true
+        collectionView.isScrollEnabled = OnboardingService.shared.paywallScreenScrollEnabled
+        
         setupBackground()
     }
     var useLocalAssetsIfAvailable: Bool { screenData?.useLocalAssetsIfAvailable ?? true }
