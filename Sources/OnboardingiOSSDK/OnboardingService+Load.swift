@@ -30,6 +30,8 @@ public extension OnboardingService {
                                           finishedCallback: @escaping OnboardingFinishResult) {
         let preparationState = OnboardingPreparationService.onboardingPreparationState(projectId: projectId, env: env)
         
+        let appearance = self.appearance ?? .default
+        
         self.projectId = projectId
         //print("------- onboarding assets loading state \(preparationState)")
         func startNew() {
@@ -47,7 +49,7 @@ public extension OnboardingService {
         
         switch preparationState {
         case .notStarted, .failed:
-            showLoadingAssetsScreen(appearance: .default,
+            showLoadingAssetsScreen(appearance: appearance,
                                     launchWithAnimation: launchWithAnimation)
             startNew()
         case .preparing:
@@ -65,7 +67,7 @@ public extension OnboardingService {
                 }
             }
             
-            showLoadingAssetsScreen(appearance: .default,
+            showLoadingAssetsScreen(appearance: appearance,
                                     launchWithAnimation: launchWithAnimation)
             OnboardingPreparationService.onPreparedWithResult(projectId: projectId, env: env) { result in
                 syncQueue.sync {
@@ -250,10 +252,13 @@ public extension OnboardingService {
                              finishedCallback: @escaping OnboardingFinishResult) {
         do {
             let localScreenGraph = try OnboardingLoadingService.getOnboardingFromLocalJsonName(localJSONFileName)
+            let url = try OnboardingLoadingService.getUrlFor(jsonName: localJSONFileName)
+
             let config = RunConfiguration.init(screenGraph: localScreenGraph,
                                                appearance: (self.appearance ?? .default),
                                                launchWithAnimation: launchWithAnimation)
-            
+            OnboardingLoadingService.registerSourceTypeEvent(localPath: url, timeout: 0.0, screenGraph: localScreenGraph)
+
             OnboardingService.shared.startOnboarding(configuration: config,
                                                      finishedCallback: finishedCallback)
         } catch {
