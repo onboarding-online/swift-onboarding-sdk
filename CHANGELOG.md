@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.12](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.11...v1.1.12) (2025-03-05)
+
+
+### Current Version Changes
+
+* update the logic for localization ([0d38b77](https://github.com/onboarding-online/swift-onboarding-sdk/commit/0d38b7707107e20856b9edaf55d531a68fa5526a))
+
 ### [1.1.11](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.10...v1.1.11) (2025-02-27)
 
 
