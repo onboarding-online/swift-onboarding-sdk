@@ -31,6 +31,8 @@ public final class OnboardingService {
     public var appearance: AppearanceStyle?
 
     public var paywallScreenScrollEnabled: Bool = true
+    
+    public var prefersLanguageOverRegion: Bool = false
 
     private var environment: OnboardingEnvironment = .prod
     private var initialRootViewController: UIViewController?

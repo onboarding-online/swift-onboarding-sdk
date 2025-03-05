@@ -66,6 +66,16 @@ final class LocaleHelper {
         // Check value for language code + region. Example: en-US
         let filteredDict = filteredLanguagesFor(anyDict: anyDict)
        
+        if OnboardingService.shared.prefersLanguageOverRegion {
+            let preferredLocalizations = Bundle.main.preferredLocalizations
+            for language in preferredLocalizations {
+                let lang = language
+                if  let value =  filteredDict[lang] {
+                    return value
+                }
+            }
+        }
+        
         for language in Locale.preferredLanguages {
             let lang = language
             if  let value =  filteredDict[lang] {
