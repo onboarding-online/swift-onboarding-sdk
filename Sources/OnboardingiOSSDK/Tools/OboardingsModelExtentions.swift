@@ -907,6 +907,7 @@ extension UIImageView  {
                 imageName = "Square_Rounded_off"
             }
         }
+    
         
         if let image = UIImage.init(named: "\(imageName).png", in: .module, with: nil) {
             self.image = image.withRenderingMode(.alwaysTemplate)
@@ -914,6 +915,24 @@ extension UIImageView  {
             
             self.tintColor = tintColor?.hexStringToColor ?? .clear
         }
+        
+        
+        if !isSelected {
+            if  let unselectedImage = OnboardingService.shared.unselectedCheckBoxImage  {
+                self.image = unselectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor = checkbox.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        } else {
+            if  let selectedImage = OnboardingService.shared.selectedCheckBoxImage {
+                self.image = selectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor =  checkbox.selectedBlock.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        }
+
     }
     
     func apply(checkbox: BaseCheckBox?, isSelected: Bool) {

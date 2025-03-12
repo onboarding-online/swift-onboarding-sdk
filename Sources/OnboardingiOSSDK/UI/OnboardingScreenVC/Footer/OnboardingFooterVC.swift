@@ -39,6 +39,9 @@ class OnboardingFooterVC: UIViewController, FooterVCProtocol {
     
     @IBOutlet var secondButtonCenterNextButtonConstraint: NSLayoutConstraint!
     
+    @IBOutlet var defaultFooterLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet var defaultFooterTrailingConstraint: NSLayoutConstraint!
+    
     public var firstButtonAction: ((Action) -> ())? = nil
     public var secondButtonAction: ((Action) -> ())? = nil
     
@@ -64,6 +67,11 @@ class OnboardingFooterVC: UIViewController, FooterVCProtocol {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        if OnboardingService.shared.disableDefaultFooterPaddings {
+            defaultFooterLeadingConstraint.constant = 0
+            defaultFooterTrailingConstraint.constant = 0
+        }
+
         nextButton1.alpha =  nextButton1.isEnabled ? 1 : 0.5
         nextButton2.alpha =  nextButton2.isEnabled ? 1 : 0.5
     }

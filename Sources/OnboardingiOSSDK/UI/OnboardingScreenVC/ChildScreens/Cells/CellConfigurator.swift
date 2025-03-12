@@ -62,7 +62,7 @@ class CellConfigurator: CellConfiguratorProtocol {
     
     var spacingBetweenTitleLabels: CGFloat = 0
     
-    var spacingBetweenItems: CGFloat = 16
+    var spacingBetweenItems: CGFloat = OnboardingService.shared.spacingBetweenItems
     
     var currentItem: ItemTypeSelection? = nil
 

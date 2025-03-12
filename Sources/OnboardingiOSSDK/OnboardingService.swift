@@ -48,6 +48,14 @@ public final class OnboardingService {
 
     public var projectId: String = ""
     
+    public var spacingBetweenItems: CGFloat = 16
+    public var disableDefaultFooterPaddings = false
+    
+    
+    public var selectedCheckBoxImage: UIImage? = nil
+    public var unselectedCheckBoxImage: UIImage? = nil
+
+    
     public var customFontNames: [FontFamily : String]? = nil
 
     private let integrationManagerManager: AttributionStorageManager = AttributionStorageManager()
