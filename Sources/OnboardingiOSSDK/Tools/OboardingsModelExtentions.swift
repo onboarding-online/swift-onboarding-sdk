@@ -641,7 +641,11 @@ extension Text {
     
     func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?,  currencyFormat: CurrencyFormatKind?) -> CGFloat {
         guard let product = product else {
-            return textHeightBy(textWidth: textWidth)
+            if self.textByLocale().isEmpty {
+                return 0.0
+            } else {
+                return textHeightBy(textWidth: textWidth)
+            }
         }
         
         let labelKey = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)

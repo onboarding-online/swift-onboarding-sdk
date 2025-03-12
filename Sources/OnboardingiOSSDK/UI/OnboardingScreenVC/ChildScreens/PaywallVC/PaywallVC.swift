@@ -214,16 +214,28 @@ extension PaywallVC: UICollectionViewDataSource {
             
             return cell
         case .listSubscription, .oneTimePurchase:
-            let index = indexPath.row
-            let isSelected = selectedIndex == index
-            let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
-            cell.currencyFormatKind =  screenData.currencyFormat
-            let currentProduct = self.products[index]
+            if self.products.isEmpty {
+                let index = indexPath.row
+                let isSelected = selectedIndex == index
+                let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
+                cell.currencyFormatKind =  screenData.currencyFormat
+                let item = screenData.subscriptions.items[index]
 
-            if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
-                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+                cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions)
+
+                return cell
+            } else {
+                let index = indexPath.row
+                let isSelected = selectedIndex == index
+                let cell = collectionView.dequeueCellOfType(PaywallListSubscriptionCell.self, at: indexPath)
+                cell.currencyFormatKind =  screenData.currencyFormat
+                let currentProduct = self.products[index]
+
+                if let item = screenData.subscriptions.items.first(where: {$0.subscriptionId == currentProduct.id}) {
+                    cell.setWith(isSelected: isSelected, subscriptionItem: item, listWithStyles: screenData.subscriptions, product: currentProduct)
+                }
+                return cell
             }
-            return cell
         case .tileSubscription:
             let index = indexPath.row
             let isSelected = selectedIndex == index
@@ -253,19 +265,27 @@ extension PaywallVC: UICollectionViewDelegate {
             return
         case .listSubscription, .oneTimePurchase, .tileSubscription:
             let index = indexPath.row
-            if selectedIndex != index {
+            
+            if self.products.isEmpty {
                 var indexPathsToReload = [indexPath]
                 indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
                 selectedIndex = index
                 reloadCellsAt(indexPaths: indexPathsToReload)
-                let currentProduct = self.products[selectedIndex]
-                
-                self.value = currentProduct.id
+            } else {
+                if selectedIndex != index{
+                    var indexPathsToReload = [indexPath]
+                    indexPathsToReload.append(IndexPath(row: selectedIndex, section: indexPath.section))
+                    selectedIndex = index
+                    reloadCellsAt(indexPaths: indexPathsToReload)
+                    let currentProduct = self.products[selectedIndex]
+                    
+                    self.value = currentProduct.id
 
-                bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
+                    bottomView.setupPaymentDetailsLabel(content: currentProduct, currencyFormat: screenData.currencyFormat)
 
-                OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
-                OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
+                    OnboardingService.shared.eventRegistered(event: .productSelected, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
+                    OnboardingService.shared.eventRegistered(event: .userUpdatedValue, params: [.screenID: screen.id, .screenName: screen.name, .selectedProductId: currentProduct.id])
+                }
             }
         }
     }
@@ -304,13 +324,20 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
             return calculateItemCellSize()
 //            return Constants.subscriptionTileItemSize
         case .listSubscription, .oneTimePurchase:
-            let currentProduct = self.products[indexPath.row]
-            
-            if let item = itemFor(product: currentProduct) {
-                height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
+            if self.products.isEmpty {
+                let item = screenData.subscriptions.items[indexPath.row]
+                
+                height = cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
+                
             } else {
-                height = max(40, height)
-                print("row height \(height)")
+                let currentProduct = self.products[indexPath.row]
+                
+                if let item = itemFor(product: currentProduct) {
+                    height =  cellConfigurator.calculateHeightFor(item: item, product: currentProduct, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
+                } else {
+                    height = max(40, height)
+                    print("row height \(height)")
+                }
             }
 
         case .separator:
@@ -344,9 +371,15 @@ extension PaywallVC: UICollectionViewDelegateFlowLayout {
                         itemsHeight +=  PaywallSeparatorCell.calculateHeightFor(divider: screenData.divider)
                     }
                     
-                    for product in  self.products {
-                        if let item = itemFor(product: product) {
-                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
+                    if products.isEmpty {
+                        for item in  self.screenData.subscriptions.items {
+                            itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: nil, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
+                        }
+                    } else {
+                        for product in  self.products {
+                            if let item = itemFor(product: product) {
+                                itemsHeight += cellConfigurator.calculateHeightFor(item: item, product: product, screenData: screenData, containerWidth: collectionView.bounds.width, currencyFormat: screenData.currencyFormat)
+                            }
                         }
                     }
                     
@@ -425,7 +458,7 @@ private extension PaywallVC {
                 }
             }
         }
-        
+
         self.isLoadingProducts = false
         
         DispatchQueue.main.async {
@@ -830,6 +863,7 @@ extension PaywallVC {
     
     func allSections() -> [SectionType] {
         var sections: [SectionType] = [.header]
+            
         if screenData.divider != nil {
             sections.append(.separator)
         }
@@ -847,34 +881,40 @@ extension PaywallVC {
 //            if isLoadingProducts {
 //                return [.loading]
 //            }
-
-            switch style {
-            case .subscriptionsList:
-                
-                return products.compactMap { product in
-                    if itemFor(product: product) != nil {
+            
+            if products.isEmpty {
+                let serverProducts = screenData.subscriptions.items
+                return serverProducts.compactMap { product in
+                    return .listSubscription
+                }
+            }  else {
+                switch style {
+                case .subscriptionsList:
+                    return products.compactMap { product in
+                        if itemFor(product: product) != nil {
+                            switch product.type {
+                            case .oneTimePurchase:
+                                return .listSubscription
+                            case .subscription(_):
+                                return .listSubscription
+                            }
+                        } else {
+                            return nil
+                        }
+                    }
+                case .subscriptionsTiles:
+                    return products.compactMap { product in
                         switch product.type {
                         case .oneTimePurchase:
-                            return .listSubscription
+                            return .tileSubscription
                         case .subscription(_):
-                            return .listSubscription
+                            return .tileSubscription
                         }
-                    } else {
-                        return nil
-                    }
-                    
-                }
-            case .subscriptionsTiles:
-                return products.compactMap { product in
-                    switch product.type {
-                    case .oneTimePurchase:
-                        return .tileSubscription
-                    case .subscription(_):
-                        return .tileSubscription
                     }
                 }
             }
         }
+            
     }
     
     

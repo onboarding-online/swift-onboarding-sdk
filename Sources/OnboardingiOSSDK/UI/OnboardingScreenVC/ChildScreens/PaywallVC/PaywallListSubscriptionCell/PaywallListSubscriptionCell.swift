@@ -108,6 +108,36 @@ extension PaywallListSubscriptionCell {
         }
     }
     
+    func setWith(isSelected: Bool,
+                 subscriptionItem: ItemTypeSubscription,
+                 listWithStyles: SubscriptionList) {
+        
+        checkbox.apply(checkbox: subscriptionItem.checkBox, isSelected: isSelected)
+
+        self.item = subscriptionItem
+        self.list = listWithStyles
+        if let settings = subscriptionItem.badge {
+            savedMoneyViewContainer.isHidden = false
+            savedMoneyLabel.isHidden = false
+            updatePosition(settings: settings)
+            
+
+        } else {
+            savedMoneyViewContainer.isHidden = true
+            savedMoneyLabel.isHidden = true
+        }
+        
+        setSelected(isSelected, listWithStyles: listWithStyles)
+        
+        setupLabels(subscriptionItem: subscriptionItem)
+        setupCheckboxWith(list: listWithStyles)
+        
+        if let item = item, let list = list {
+            self.layoutSubviews()
+            setupSizes(subscriptionItem: item, list: list)
+        }
+    }
+    
     func setupCheckboxWith(list: SubscriptionList) {
         switch list.itemType {
         case .checkboxLabels:
@@ -132,6 +162,13 @@ extension PaywallListSubscriptionCell {
         leftLabelBottom.text = subscriptionItem.leftLabelBottom.textFor(product: product, currencyFormat: currencyFormatKind)
         rightLabelTop.text = subscriptionItem.rightLabelTop.textFor(product: product, currencyFormat: currencyFormatKind)
         rightLabelBottom.text = subscriptionItem.rightLabelBottom.textFor(product: product, currencyFormat: currencyFormatKind)
+    }
+    
+    func setupLabels(subscriptionItem: ItemTypeSubscription) {
+        leftLabelTop.apply(text: subscriptionItem.leftLabelTop)
+        leftLabelBottom.apply(text: subscriptionItem.leftLabelBottom)
+        rightLabelTop.apply(text: subscriptionItem.rightLabelTop)
+        rightLabelBottom.apply(text: subscriptionItem.rightLabelBottom)
     }
 
 }
