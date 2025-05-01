@@ -952,6 +952,22 @@ extension UIImageView  {
             
             self.tintColor = tintColor?.hexStringToColor
         }
+        
+        if !isSelected {
+            if  let unselectedImage = OnboardingService.shared.unselectedCheckBoxImage  {
+                self.image = unselectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor = checkbox.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        } else {
+            if  let selectedImage = OnboardingService.shared.selectedCheckBoxImage {
+                self.image = selectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor =  checkbox.selectedBlock.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        }
     }
     
 }
