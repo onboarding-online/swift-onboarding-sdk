@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.13](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.12...v1.1.13) (2025-05-03)
+
+
+### Current Version Changes
+
+* added params for gaps between list items, selected and unselected checkbox images and footer default padding ([ddbfad8](https://github.com/onboarding-online/swift-onboarding-sdk/commit/ddbfad80d47db3d50f5512a4461e419df792054e))
+* allow fake  cells on the paywall ([5c88af3](https://github.com/onboarding-online/swift-onboarding-sdk/commit/5c88af3d0c08aa4e4308d3ced6dbf87131fff6a1))
+* custom images for checkbox has been added ([ab5d9d2](https://github.com/onboarding-online/swift-onboarding-sdk/commit/ab5d9d2822cd3116b2b515f23c9573e89db3b254))
+* selection state for the single selection collections has been updated ([27f72fd](https://github.com/onboarding-online/swift-onboarding-sdk/commit/27f72fddd51059835495cf373bf674fe49d5dd8a))
+* unnecessary dispatch call has been removed ([c42e513](https://github.com/onboarding-online/swift-onboarding-sdk/commit/c42e5136758a9768c76e8daff361d6a3b69d4998))
+
 ### [1.1.12](https://github.com/onboarding-online/swift-onboarding-sdk/compare/v1.1.11...v1.1.12) (2025-03-05)
 
 
