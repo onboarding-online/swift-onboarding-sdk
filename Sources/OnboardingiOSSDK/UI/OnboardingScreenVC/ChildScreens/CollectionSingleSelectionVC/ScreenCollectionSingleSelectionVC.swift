@@ -61,6 +61,11 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
         DispatchQueue.main.async { [weak self] in
             self?.setTopInset()
             self?.collectionView.collectionViewLayout.invalidateLayout()
+            
+            if self?.isSelected ?? true {
+                self?.isSelected = false
+                self?.collectionView.reloadData()
+            }
         }
     }
     
@@ -157,14 +162,9 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDelegate {
             isSelected = true
             reloadItem(indexPath: indexPath)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                DispatchQueue.main.async {[weak self] in
-                    self?.isSelected = false
-                    self?.reloadItem(indexPath: indexPath)
-
-                    self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
-                    self?.delegate?.onboardingChildScreenPerform(action: item.action)
-                }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
+                self?.delegate?.onboardingChildScreenPerform(action: item.action)
             }
         
         case .label(_):

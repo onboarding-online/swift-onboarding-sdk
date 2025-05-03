@@ -641,7 +641,11 @@ extension Text {
     
     func textHeightBy(textWidth: CGFloat, product: StoreKitProduct?,  currencyFormat: CurrencyFormatKind?) -> CGFloat {
         guard let product = product else {
-            return textHeightBy(textWidth: textWidth)
+            if self.textByLocale().isEmpty {
+                return 0.0
+            } else {
+                return textHeightBy(textWidth: textWidth)
+            }
         }
         
         let labelKey = self.textByLocale().applyWith(product: product, currencyFormat: currencyFormat)
@@ -903,6 +907,7 @@ extension UIImageView  {
                 imageName = "Square_Rounded_off"
             }
         }
+    
         
         if let image = UIImage.init(named: "\(imageName).png", in: .module, with: nil) {
             self.image = image.withRenderingMode(.alwaysTemplate)
@@ -910,6 +915,24 @@ extension UIImageView  {
             
             self.tintColor = tintColor?.hexStringToColor ?? .clear
         }
+        
+        
+        if !isSelected {
+            if  let unselectedImage = OnboardingService.shared.unselectedCheckBoxImage  {
+                self.image = unselectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor = checkbox.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        } else {
+            if  let selectedImage = OnboardingService.shared.selectedCheckBoxImage {
+                self.image = selectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor =  checkbox.selectedBlock.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        }
+
     }
     
     func apply(checkbox: BaseCheckBox?, isSelected: Bool) {
@@ -928,6 +951,22 @@ extension UIImageView  {
             let tintColor = isSelected ? checkbox.selectedBlock.styles.color : checkbox.styles.color
             
             self.tintColor = tintColor?.hexStringToColor
+        }
+        
+        if !isSelected {
+            if  let unselectedImage = OnboardingService.shared.unselectedCheckBoxImage  {
+                self.image = unselectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor = checkbox.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
+        } else {
+            if  let selectedImage = OnboardingService.shared.selectedCheckBoxImage {
+                self.image = selectedImage.withRenderingMode(.alwaysTemplate)
+                let tintColor =  checkbox.selectedBlock.styles.color
+                
+                self.tintColor = tintColor?.hexStringToColor ?? .clear
+            }
         }
     }
     
