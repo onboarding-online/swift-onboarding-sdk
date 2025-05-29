@@ -27,7 +27,10 @@ let package = Package(
             name: "OnboardingiOSSDK",
             dependencies: [
                 .product(name: "ScreensGraph", package: "swift-screens-graph")
-            ], path: "Sources/OnboardingiOSSDK", resources: [.process("Resources")]),
+            ], path: "Sources/OnboardingiOSSDK", resources: [.process("Resources")],
+            publicHeadersPath: "include",
+            cSettings: [.headerSearchPath("include"),]
+        ),
         .target(
             name: "OnboardingPaymentKit",
             dependencies: [

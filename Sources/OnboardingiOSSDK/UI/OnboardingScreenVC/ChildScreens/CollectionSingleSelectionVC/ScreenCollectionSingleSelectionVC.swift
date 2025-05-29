@@ -8,7 +8,23 @@
 import UIKit
 import ScreensGraph
 
+
 final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphViewController {
+    
+    
+     func someMethodThatMightThrowObjCException() {
+        do {
+            try ObjectiveCErrorCatcher.catchException { [weak self] in
+                // Код, который может выбросить NSException
+                // Например, некоторые старые API или библиотеки
+              
+            }
+            print("Objective-C operation succeeded.")
+        } catch {
+            print("Objective-C operation failed with error: \(error.localizedDescription)")
+            // Обработка ошибки, например, перезагрузка данных
+        }
+    }
     
     static func instantiate(screenData: ScreenTwoColumnSingleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenCollectionSingleSelectionVC {
         let twoColumnSingleSelectionVC = ScreenCollectionSingleSelectionVC.storyBoardInstance()
