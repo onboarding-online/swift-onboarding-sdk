@@ -160,7 +160,12 @@ final class ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexibleP
     
     func loadImageFor(item: ItemTypeSelection, useLocalAssetsIfAvailable: Bool) {
         if currentItem != item {
-            load(image: item.image, in: cellImage, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            load(
+                image: item.image,
+                in: cellImage,
+                useLocalAssetsIfAvailable: useLocalAssetsIfAvailable,
+                animated: false
+            )
             currentItem = item
             setupImageContentMode(item: item)
         }

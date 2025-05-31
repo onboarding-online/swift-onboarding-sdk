@@ -95,13 +95,15 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDataSo
         case .item(let item):
             let cell = collectionView.dequeueCellOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexiblePaddings.self, forIndexPath: indexPath)
             cell.cellConfig = cellConfigurator
-            cell.setWith(
-                list: screenData.list,
-                item: item,
-                styles: screenData.list.styles,
-                isSelected: indexPath == selectedIndexPath,
-                useLocalAssetsIfAvailable: useLocalAssetsIfAvailable
-            )
+            UIView.performWithoutAnimation {
+                cell.setWith(
+                    list: screenData.list,
+                    item: item,
+                    styles: screenData.list.styles,
+                    isSelected: indexPath == selectedIndexPath,
+                    useLocalAssetsIfAvailable: useLocalAssetsIfAvailable
+                )
+            }
             return cell
         case .label(let text):
             
