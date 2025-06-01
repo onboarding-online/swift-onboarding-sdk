@@ -125,11 +125,15 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDelega
         
         switch row {
         case .item(_):
-            let item = screenData.list.items[indexPath.row]
-            setSelectedIndexPath(indexPath)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
-                self?.delegate?.onboardingChildScreenPerform(action: item.action)
+            if selectedIndexPath != indexPath {
+                let item = screenData.list.items[indexPath.row]
+                setSelectedIndexPath(indexPath)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                    self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
+                    self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                }
+            } else {
+                break
             }
         case .label(_):
             break
