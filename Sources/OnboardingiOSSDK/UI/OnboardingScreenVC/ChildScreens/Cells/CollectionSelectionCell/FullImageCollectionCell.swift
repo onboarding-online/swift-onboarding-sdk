@@ -52,7 +52,7 @@ final class FullImageCollectionCell: UICollectionViewCell, UIImageLoader {
     private func loadImageFor(item: ItemTypeSelection) {
         if currentItem != item {
             setupImageContentMode(item: item)
-            load(image: item.image, in: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            load(image: item.image, in: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable, animated: false)
             currentItem = item
         }
     }

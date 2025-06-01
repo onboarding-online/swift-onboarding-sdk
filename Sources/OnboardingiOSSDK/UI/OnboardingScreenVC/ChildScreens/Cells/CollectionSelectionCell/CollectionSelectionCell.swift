@@ -66,7 +66,7 @@ final class CollectionSelectionCell: UICollectionViewCell, UIImageLoader {
         if currentItem != item {
             setupImageContentMode(item: item)
             load(image: item.image, in: image,
-                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+                 useLocalAssetsIfAvailable: useLocalAssetsIfAvailable, animated: false)
             currentItem = item
         }
     }
