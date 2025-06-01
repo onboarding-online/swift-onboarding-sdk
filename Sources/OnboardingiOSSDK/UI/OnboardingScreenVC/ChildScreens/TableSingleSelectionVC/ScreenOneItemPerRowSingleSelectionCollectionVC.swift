@@ -126,8 +126,19 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDelega
         switch row {
         case .item(_):
             if selectedIndexPath != indexPath {
+                selectedIndexPath = indexPath
+
                 let item = screenData.list.items[indexPath.row]
-                setSelectedIndexPath(indexPath)
+
+                if let cell = collectionView.cellForItem(at: indexPath) as? ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexiblePaddings {
+                    cell.setWith(
+                        list: screenData.list,
+                        item: item,
+                        styles: screenData.list.styles,
+                        isSelected: indexPath == selectedIndexPath,
+                        useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+                }
+            
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                     self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
                     self?.delegate?.onboardingChildScreenPerform(action: item.action)
