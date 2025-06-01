@@ -12,7 +12,12 @@ protocol UIImageLoader { }
 
 extension UIImageLoader {
     
-    func load(image: Image?, in imageView: UIImageView, useLocalAssetsIfAvailable: Bool) {
+    func load(
+        image: Image?,
+        in imageView: UIImageView,
+        useLocalAssetsIfAvailable: Bool,
+        animated: Bool = true
+    ) {
         if let cornerRadius = image?.styles.mainCornerRadius {
             imageView.layer.cornerRadius = cornerRadius
         }
@@ -24,7 +29,7 @@ extension UIImageLoader {
                 return
             }
             if imageView.image != image {
-                imageView.setImage(image, animated: true)
+                imageView.setImage(image, animated: animated)
             }
         }
     }
