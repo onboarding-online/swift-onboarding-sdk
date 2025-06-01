@@ -35,7 +35,7 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
     
     var selectedItem = [Int]()
     
-    var isSelected = false
+    var selectedIndexPath: IndexPath? = nil
 
     let cellConfigurator = ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderConfigurator.init()
 
@@ -58,9 +58,8 @@ class ScreenOneItemPerRowSingleSelectionCollectionVC: BaseCollectionChildScreenG
             self?.setTopInset()
             self?.collectionView.collectionViewLayout.invalidateLayout()
             
-            if self?.isSelected ?? true {
-                self?.isSelected = false
-                self?.collectionView.reloadData()
+            if self?.selectedIndexPath != nil {
+                self?.setSelectedIndexPath(nil)
             }
         }
     }
@@ -96,8 +95,15 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDataSo
         case .item(let item):
             let cell = collectionView.dequeueCellOfType(ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexiblePaddings.self, forIndexPath: indexPath)
             cell.cellConfig = cellConfigurator
-            cell.setWith(list: screenData.list, item: item, styles: screenData.list.styles, isSelected: isSelected,
-                         useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            UIView.performWithoutAnimation {
+                cell.setWith(
+                    list: screenData.list,
+                    item: item,
+                    styles: screenData.list.styles,
+                    isSelected: indexPath == selectedIndexPath,
+                    useLocalAssetsIfAvailable: useLocalAssetsIfAvailable
+                )
+            }
             return cell
         case .label(let text):
             
@@ -119,27 +125,36 @@ extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDelega
         
         switch row {
         case .item(_):
-            let item = screenData.list.items[indexPath.row]
+            if selectedIndexPath != indexPath {
+                selectedIndexPath = indexPath
 
-            isSelected = true
-            reloadItem(indexPath: indexPath)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
-                self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                let item = screenData.list.items[indexPath.row]
+
+                if let cell = collectionView.cellForItem(at: indexPath) as? ImageLabelCheckboxMultipleSelectionCollectionCellWithBorderFlexiblePaddings {
+                    cell.setWith(
+                        list: screenData.list,
+                        item: item,
+                        styles: screenData.list.styles,
+                        isSelected: indexPath == selectedIndexPath,
+                        useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+                }
+            
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                    self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
+                    self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                }
+            } else {
+                break
             }
         case .label(_):
             break
         }
     }
-    
-    func reloadItem(indexPath: IndexPath) {
-        if #available(iOS 15.0, *) {
-            collectionView.reconfigureItems(at: [indexPath])
-        } else {
-            collectionView.reloadItems(at: [indexPath])
-        }
+
+    func setSelectedIndexPath(_ indexPath: IndexPath?) {
+        selectedIndexPath = indexPath
+        collectionView.reloadData()
     }
-    
 }
 
 extension ScreenOneItemPerRowSingleSelectionCollectionVC: UICollectionViewDelegateFlowLayout {

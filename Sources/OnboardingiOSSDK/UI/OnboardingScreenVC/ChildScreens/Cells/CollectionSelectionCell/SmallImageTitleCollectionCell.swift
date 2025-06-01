@@ -55,7 +55,7 @@ final class SmallImageTitleCollectionCell: UICollectionViewCell, UIImageLoader {
     func loadImageFor(item: ItemTypeSelection, useLocalAssetsIfAvailable: Bool) {
         if currentItem != item {
             setupImageContentMode(item: item)
-            load(image: item.image, in: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            load(image: item.image, in: image, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable, animated: false)
             currentItem = item
         }
     }

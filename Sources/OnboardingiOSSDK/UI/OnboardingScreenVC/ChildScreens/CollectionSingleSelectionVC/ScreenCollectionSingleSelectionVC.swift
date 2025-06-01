@@ -8,6 +8,7 @@
 import UIKit
 import ScreensGraph
 
+
 final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphViewController {
     
     static func instantiate(screenData: ScreenTwoColumnSingleSelection, videoPreparationService: VideoPreparationService?, screen: Screen) -> ScreenCollectionSingleSelectionVC {
@@ -36,7 +37,7 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
     
     let cellConfigurator = TextCollectionCellWithBorderConfigurator.init()
 
-    var isSelected = false
+    var selectedIndexPath: IndexPath? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,9 +63,8 @@ final class ScreenCollectionSingleSelectionVC: BaseCollectionChildScreenGraphVie
             self?.setTopInset()
             self?.collectionView.collectionViewLayout.invalidateLayout()
             
-            if self?.isSelected ?? true {
-                self?.isSelected = false
-                self?.collectionView.reloadData()
+            if self?.selectedIndexPath != nil {
+                self?.setSelectedIndexPath(nil)
             }
         }
     }
@@ -110,37 +110,38 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDataSource {
     
     func createCellFor(item: ItemTypeSelection, indexPath: IndexPath, collectionView: UICollectionView, isSelected: Bool) -> UICollectionViewCell {
         
+        let isSelected = indexPath == selectedIndexPath
         switch self.screenData.list.itemType {
         case .tittle:
             let cell = collectionView.dequeueCellOfType(TitleSubtitleMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
             return cell
 
         case .titleSubtitle:
             let cell = collectionView.dequeueCellOfType(TitleSubtitleMultipleSelectionCollectionCellWithBorder.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected)
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
             return cell
         case .smallImageTitle:
             let cell = collectionView.dequeueCellOfType(SmallImageTitleCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         case .mediumImageTitle:
             let cell = collectionView.dequeueCellOfType(MediumImageTitleCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
         case .bigImageTitle:
             let cell = collectionView.dequeueCellOfType(CollectionSelectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
             return cell
 
         case .fullImage:
             let cell = collectionView.dequeueCellOfType(FullImageCollectionCell.self, forIndexPath: indexPath)
-            cell.setWith(list: screenData.list, item: item, isSelected: self.isSelected,
+            cell.setWith(list: screenData.list, item: item, isSelected: isSelected,
                          useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
 
             return cell
@@ -157,19 +158,59 @@ extension ScreenCollectionSingleSelectionVC: UICollectionViewDelegate {
         
         switch row {
         case .item(_):
-            let item = screenData.list.items[indexPath.row]
-          
-            isSelected = true
-            reloadItem(indexPath: indexPath)
+            if selectedIndexPath != indexPath {
+                let item = screenData.list.items[indexPath.row]
+                selectedIndexPath = indexPath
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
-                self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                updateCellFor(indexPath: indexPath, item: item)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                    self?.delegate?.onboardingChildScreenUpdate(value: indexPath.row, description: item.title.textByLocale(), logAnalytics: true)
+                    self?.delegate?.onboardingChildScreenPerform(action: item.action)
+                }
+            } else {
+                break
             }
         
         case .label(_):
             break
         }
+    }
+    
+    func updateCellFor(indexPath: IndexPath, item: ItemTypeSelection) {
+        let isSelected = indexPath == selectedIndexPath
+        switch self.screenData.list.itemType {
+        case .tittle:
+            if let cell = collectionView.cellForItem(at: indexPath) as? TitleSubtitleMultipleSelectionCollectionCellWithBorder  {
+                cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            }
+
+        case .titleSubtitle:
+            if let cell = collectionView.cellForItem(at: indexPath) as? TitleSubtitleMultipleSelectionCollectionCellWithBorder  {
+                cell.setWith(list: screenData.list, item: item, isSelected: isSelected)
+            }
+        case .smallImageTitle:
+            if let cell = collectionView.cellForItem(at: indexPath) as? SmallImageTitleCollectionCell  {
+                cell.setWith(list: screenData.list, item: item, isSelected: isSelected, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            }
+        case .mediumImageTitle:
+            if let cell = collectionView.cellForItem(at: indexPath) as? MediumImageTitleCollectionCell  {
+                cell.setWith(list: screenData.list, item: item, isSelected: isSelected, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            }
+        case .bigImageTitle:
+            if let cell = collectionView.cellForItem(at: indexPath) as? CollectionSelectionCell  {
+                cell.setWith(list: screenData.list, item: item, isSelected: isSelected, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            }
+
+        case .fullImage:
+            if let cell = collectionView.cellForItem(at: indexPath) as? FullImageCollectionCell  {
+                cell.setWith(list: screenData.list, item: item, isSelected: isSelected, useLocalAssetsIfAvailable: useLocalAssetsIfAvailable)
+            }
+        }
+    }
+    
+    func setSelectedIndexPath(_ indexPath: IndexPath?) {
+        selectedIndexPath = indexPath
+        collectionView.reloadData()
     }
     
     func reloadItem(indexPath: IndexPath) {
